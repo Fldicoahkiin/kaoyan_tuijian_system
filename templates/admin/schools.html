@@ -1,0 +1,102 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}院校数据管理{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid">
+    <h1 class="mt-4">院校数据管理</h1>
+
+    <div class="alert alert-info" role="alert">
+        注意：当前系统直接读取 `data/schools.json` 文件。直接编辑此文件风险较高。建议通过爬虫或数据处理脚本更新数据。
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span>
+                <i class="fas fa-database me-1"></i>
+                院校列表 (共 {{ pagination.total_items }} 条，当前第 {{ pagination.page }} / {{ pagination.total_pages }} 页)
+            </span>
+            {# 触发爬虫按钮占位符 #}
+            <form action="{{ url_for('trigger_crawler') }}" method="POST" style="display: inline;" onsubmit="return confirm('将尝试启动爬虫更新任务（占位符），确定吗？');">
+                 <button type="submit" class="btn btn-warning btn-sm"><i class="fas fa-sync-alt me-1"></i> 触发爬虫更新 (占位)</button>
+            </form>
+        </div>
+        <div class="card-body">
+             <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>名称</th>
+                            <th>等级</th>
+                            <th>计算机等级</th>
+                            <th>省份</th>
+                            <th>地区</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if schools %}
+                            {% for school in schools %}
+                                <tr>
+                                    <td>{{ school.name }}</td>
+                                    <td>{{ school.level }}</td>
+                                    <td>{{ school.computer_rank }}</td>
+                                    <td>{{ school.province }}</td>
+                                    <td>{{ school.region }}</td>
+                                    <td>
+                                        <a href="{{ url_for('school_detail', school_id=(school.id or school.name)) }}" target="_blank" class="btn btn-sm btn-info">查看详情</a>
+                                        {# 编辑功能待定，直接编辑 JSON 不太可行 #}
+                                        {# <a href="#" class="btn btn-sm btn-warning">编辑</a> #}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center">没有找到院校数据。</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 分页导航 -->
+            {% if pagination.total_pages > 1 %}
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    {# 上一页 #}
+                    <li class="page-item {% if pagination.page == 1 %}disabled{% endif %}">
+                        <a class="page-link" href="{{ url_for('admin_schools', page=pagination.page - 1) }}">上一页</a>
+                    </li>
+
+                    {# 显示部分页码 #}
+                    {% set start_page = [1, pagination.page - 2] | max %}
+                    {% set end_page = [pagination.total_pages, pagination.page + 2] | min %}
+
+                    {% if start_page > 1 %}
+                        <li class="page-item"><a class="page-link" href="{{ url_for('admin_schools', page=1) }}">1</a></li>
+                        {% if start_page > 2 %}<li class="page-item disabled"><span class="page-link">...</span></li>{% endif %}
+                    {% endif %}
+
+                    {% for p in range(start_page, end_page + 1) %}
+                        <li class="page-item {% if p == pagination.page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('admin_schools', page=p) }}">{{ p }}</a>
+                        </li>
+                    {% endfor %}
+
+                    {% if end_page < pagination.total_pages %}
+                        {% if end_page < pagination.total_pages - 1 %}<li class="page-item disabled"><span class="page-link">...</span></li>{% endif %}
+                         <li class="page-item"><a class="page-link" href="{{ url_for('admin_schools', page=pagination.total_pages) }}">{{ pagination.total_pages }}</a></li>
+                    {% endif %}
+
+                    {# 下一页 #}
+                    <li class="page-item {% if pagination.page == pagination.total_pages %}disabled{% endif %}">
+                        <a class="page-link" href="{{ url_for('admin_schools', page=pagination.page + 1) }}">下一页</a>
+                    </li>
+                </ul>
+            </nav>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+{% endblock %} 

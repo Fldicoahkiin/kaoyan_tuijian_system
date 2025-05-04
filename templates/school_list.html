@@ -97,7 +97,42 @@
                 </tbody>
             </table>
         </div>
-         {# TODO: 添加分页逻辑 (如果需要) #}
+         {# 分页控件 #}
+         {% if pagination and pagination.total_pages > 1 %}
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {# 上一页 #}
+                    <li class="page-item {% if pagination.page == 1 %}disabled{% endif %}">
+                        <a class="page-link" href="{{ url_for('school_list', page=pagination.page - 1, **pagination.args) }}">上一页</a>
+                    </li>
+
+                    {# 显示部分页码 #}
+                    {% set start_page = [1, pagination.page - 2] | max %}
+                    {% set end_page = [pagination.total_pages, pagination.page + 2] | min %}
+
+                    {% if start_page > 1 %}
+                        <li class="page-item"><a class="page-link" href="{{ url_for('school_list', page=1, **pagination.args) }}">1</a></li>
+                        {% if start_page > 2 %}<li class="page-item disabled"><span class="page-link">...</span></li>{% endif %}
+                    {% endif %}
+
+                    {% for p in range(start_page, end_page + 1) %}
+                        <li class="page-item {% if p == pagination.page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('school_list', page=p, **pagination.args) }}">{{ p }}</a>
+                        </li>
+                    {% endfor %}
+
+                    {% if end_page < pagination.total_pages %}
+                        {% if end_page < pagination.total_pages - 1 %}<li class="page-item disabled"><span class="page-link">...</span></li>{% endif %}
+                         <li class="page-item"><a class="page-link" href="{{ url_for('school_list', page=pagination.total_pages, **pagination.args) }}">{{ pagination.total_pages }}</a></li>
+                    {% endif %}
+
+                    {# 下一页 #}
+                    <li class="page-item {% if pagination.page == pagination.total_pages %}disabled{% endif %}">
+                        <a class="page-link" href="{{ url_for('school_list', page=pagination.page + 1, **pagination.args) }}">下一页</a>
+                    </li>
+                </ul>
+            </nav>
+            {% endif %}
     </div>
 </div>
 

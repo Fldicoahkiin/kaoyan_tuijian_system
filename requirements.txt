@@ -1,4 +1,7 @@
 Flask>=2.0
 pandas>=1.0
 openpyxl>=3.0 # pandas 读取 .xlsx 需要
-Werkzeug>=2.0 # 用于密码哈希 
+Werkzeug>=2.0 # 用于密码哈希
+requests>=2.25
+beautifulsoup4>=4.9
+selenium>=4.0 # 添加 Selenium 

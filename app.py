@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template, session, redirect, url_for, request, flash
+from flask import Flask, jsonify, render_template, session, redirect, url_for, request, flash, abort
 from functools import wraps # 导入 wraps 用于装饰器
 import json
 import os
@@ -6,6 +6,10 @@ import datetime # 导入 datetime 模块
 # 导入 Werkzeug 用于密码哈希 (比明文安全)
 from werkzeug.security import generate_password_hash, check_password_hash
 import re # 导入 re 用于解析分数线
+from math import ceil # 用于分页计算
+
+# --- 导入爬虫函数 ---
+from utils.scraper import run_scraper 
 
 app = Flask(__name__)
 # 设置一个密钥用于 session 加密，请在实际部署中替换为更安全的随机值
@@ -284,13 +288,15 @@ def profile():
 
 @app.route('/school-list')
 def school_list():
-    # 获取查询参数
+    # 获取查询参数和页码
+    page = request.args.get('page', 1, type=int)
+    per_page = 15 # 前台每页显示 15 条
     query_province = request.args.get('province', '').strip()
     query_level = request.args.get('level', '')
     query_name = request.args.get('name', '').strip()
     query_rank = request.args.get('computer_rank', '')
 
-    # --- 计算收藏数 --- (效率较低)
+    # --- 计算收藏数 --- (效率仍然较低)
     favorite_counts = {}
     try:
         if os.path.exists(USERS_DIR):
@@ -302,43 +308,58 @@ def school_list():
                         for fav_id in user_data['favorites']:
                             favorite_counts[fav_id] = favorite_counts.get(fav_id, 0) + 1
     except Exception as e:
-        print(f"计算收藏数时出错: {e}")
+        app.logger.error(f"计算收藏数时出错: {e}") # 使用 logger
 
     # 筛选学校
     filtered_schools = []
     for school in schools_data:
         match = True
-        # 省份/地区匹配 (模糊匹配省份)
         if query_province and query_province.lower() not in school.get('province', '').lower():
             match = False
-        # 等级匹配
         if query_level and school.get('level') != query_level:
             match = False
-        # 名称匹配 (模糊匹配)
         if query_name and query_name.lower() not in school.get('name', '').lower():
             match = False
-        # 计算机等级匹配
         if query_rank and school.get('computer_rank') != query_rank:
             match = False
 
         if match:
-            # 复制学校数据以避免修改原始数据
             school_copy = school.copy()
-            # 添加收藏数字段 (使用 id 或 name 作为 key)
             school_id = school_copy.get('id') or school_copy.get('name')
             school_copy['favorites_count'] = favorite_counts.get(school_id, 0)
             filtered_schools.append(school_copy)
 
-    # 按收藏数排序 (降序)
+    # 按收藏数排序
     filtered_schools.sort(key=lambda s: s.get('favorites_count', 0), reverse=True)
 
-    return render_template('school_list.html', schools=filtered_schools)
+    # --- 对排序后的结果进行分页 ---
+    total_items = len(filtered_schools)
+    start_index = (page - 1) * per_page
+    end_index = start_index + per_page
+    schools_on_page = filtered_schools[start_index:end_index]
+    total_pages = ceil(total_items / per_page)
 
-@app.route('/recommend', methods=['GET', 'POST'])
+    # 创建分页对象 (保留查询参数用于分页链接)
+    pagination_args = request.args.copy()
+    pagination_args.pop('page', None) # 移除旧的 page 参数
+
+    pagination = {
+        'page': page,
+        'per_page': per_page,
+        'total_pages': total_pages,
+        'total_items': total_items,
+        'args': pagination_args # 保留其他查询参数
+    }
+
+    return render_template('school_list.html',
+                           schools=schools_on_page,
+                           pagination=pagination)
+
+@app.route('/recommend', methods=['GET'])
 def recommend():
     if 'username' not in session:
         flash('请先登录以使用智能推荐功能。', 'warning')
-        return redirect(url_for('login'))
+        return redirect(url_for('login', next=request.url))
 
     username = session['username']
     user_data = get_user_data(username)
@@ -347,37 +368,59 @@ def recommend():
         return redirect(url_for('profile'))
 
     user_profile = user_data['profile']
-    recommendations = None # 初始化推荐结果
-    target_level_from_form = None
-    target_rank_from_form = None
+    recommendations = None
+    pagination = None
+    run_recommendation = False
 
-    if request.method == 'POST':
-        # --- 获取推荐条件 (优先表单，否则用 profile) ---\n        try:\n            target_score_str = request.form.get(\'target_score\')\n            target_score = int(target_score_str) if target_score_str else user_profile.get(\'expected_score\')\n        except (ValueError, TypeError):\n            target_score = user_profile.get(\'expected_score\')\n
+    page = request.args.get('page', 1, type=int)
+    per_page = 10
+    target_score_str = request.args.get('target_score')
+    target_level = request.args.get('target_level')
+    target_rank = request.args.get('target_rank')
+    target_location_str = request.args.get('target_location')
 
-        target_level_from_form = request.form.get('target_level')
-        target_level = target_level_from_form if target_level_from_form else user_profile.get('target_level')
+    try:
+        final_target_score = int(target_score_str) if target_score_str else user_profile.get('expected_score')
+    except (ValueError, TypeError):
+        final_target_score = user_profile.get('expected_score')
 
-        target_rank_from_form = request.form.get('target_rank') # 计算机等级条件
+    final_target_level = target_level if target_level else user_profile.get('target_level')
+    final_target_rank = target_rank if target_rank else None
+    final_target_location = target_location_str.strip().replace('省', '').replace('市', '') if target_location_str else user_profile.get('target_location')
+    final_target_location = final_target_location.replace('省', '').replace('市', '') if final_target_location else None
 
-        target_location_str = request.form.get('target_location')
-        target_location = target_location_str.strip() if target_location_str else user_profile.get('target_location')
-        target_location = target_location.replace('省', '').replace('市', '') if target_location else None # 简单清理省市后缀
+    if final_target_score is not None and final_target_level and final_target_location:
+        run_recommendation = True
+        ranked_schools = calculate_recommendations(
+            final_target_score, final_target_level, final_target_rank, final_target_location
+        )
 
-        if target_score is None or not target_level or not target_location:
-            flash('请确保目标分数、期望院校等级和目标地区都已设置（在个人中心或当前表单）。', 'warning')
-        else:
-            # --- 执行推荐计算 ---
-            ranked_schools = calculate_recommendations(
-                target_score, target_level, target_rank_from_form, target_location
-            )
-            recommendations = ranked_schools[:20] # 取前20名
+        total_items = len(ranked_schools)
+        start_index = (page - 1) * per_page
+        end_index = start_index + per_page
+        recommendations = ranked_schools[start_index:end_index]
+        total_pages = ceil(total_items / per_page)
 
-    # 渲染页面，传递用户资料和推荐结果 (修正缩进，移出 POST 判断)
+        pagination_args = request.args.copy()
+        pagination_args.pop('page', None)
+
+        pagination = {
+            'page': page,
+            'per_page': per_page,
+            'total_pages': total_pages,
+            'total_items': total_items,
+            'args': pagination_args
+        }
+
     return render_template('recommendation.html',
                            user_profile=user_profile,
                            recommendations=recommendations,
-                           target_level=target_level_from_form, # 用于回显表单选项
-                           target_rank=target_rank_from_form)
+                           pagination=pagination,
+                           run_recommendation=run_recommendation,
+                           target_score=target_score_str,
+                           target_level=target_level,
+                           target_rank=target_rank,
+                           target_location=target_location_str)
 
 @app.route('/school/<path:school_id>') # 使用 path 转换器允许 school_id 包含斜杠 (虽然可能不需要)
 def school_detail(school_id):
@@ -393,10 +436,43 @@ def school_detail(school_id):
 
         # 准备要传递给模板的数据
         template_data = school.copy()
-        # 确保 school_id 是唯一的，优先使用 id
         template_data['id'] = template_data.get('id') or template_data.get('name')
 
-        return render_template('school_detail.html', school=template_data, user_favorites=user_favorites)
+        # 尝试为四川院校提取近三年分数线数据用于图表
+        sichuan_score_chart_data = None
+        if template_data.get('province') == '四川省':
+            # 假设分数线在第一个系的第一个专业里 (可能需要更复杂的逻辑)
+            try:
+                if template_data.get('departments') and template_data['departments'][0].get('majors'):
+                     major_scores = template_data['departments'][0]['majors'][0].get('score_lines', {})
+                     years = sorted([y for y in major_scores.keys() if y.isdigit() and int(y) >= 2022], reverse=True)[:3] # 取近三年
+                     scores = []
+                     valid_years = []
+                     if len(years) >= 2: # 至少需要两年数据才能画线
+                         for year in reversed(years): # 按年份升序
+                            score_str = major_scores.get(year)
+                            if score_str:
+                                # 尝试提取总分
+                                score_val = None
+                                match = re.search(r'总分[:：]?\s*(\d+)', score_str)
+                                if match:
+                                    score_val = int(match.group(1))
+                                else:
+                                    numbers = re.findall(r'\d+', score_str)
+                                    if numbers:
+                                        score_val = int(numbers[-1]) # 取最后一个数字
+                                if score_val is not None:
+                                     scores.append(score_val)
+                                     valid_years.append(year)
+                         if len(scores) >= 2:
+                             sichuan_score_chart_data = {'years': valid_years, 'scores': scores}
+            except (AttributeError, IndexError, ValueError, TypeError) as e:
+                 app.logger.warning(f"为四川院校 {template_data['name']} 提取分数线图表数据时出错: {e}")
+
+        return render_template('school_detail.html', 
+                               school=template_data, 
+                               user_favorites=user_favorites,
+                               sichuan_score_chart_data=sichuan_score_chart_data) # 传递图表数据
     else:
         flash('未找到指定的学校。', 'error')
         return redirect(url_for('school_list')) # 重定向到院校库
@@ -740,7 +816,50 @@ def toggle_admin_status(username):
     # 可以重定向回用户列表或详情页
     return redirect(url_for('admin_users'))
 
-# ... (其他管理路由)
+@app.route('/admin/schools')
+@admin_required
+def admin_schools():
+    page = request.args.get('page', 1, type=int)
+    per_page = 20 # 每页显示20条
+
+    # 简单分页逻辑 (直接操作内存中的 schools_data)
+    total_schools = len(schools_data)
+    start_index = (page - 1) * per_page
+    end_index = start_index + per_page
+    schools_on_page = schools_data[start_index:end_index]
+
+    # 计算总页数
+    total_pages = ceil(total_schools / per_page)
+
+    # 简单的分页导航数据
+    pagination = {
+        'page': page,
+        'per_page': per_page,
+        'total_pages': total_pages,
+        'total_items': total_schools
+    }
+
+    return render_template('admin/schools.html',
+                           schools=schools_on_page,
+                           pagination=pagination)
+
+@app.route('/admin/schools/trigger_crawler', methods=['POST'])
+@admin_required
+def trigger_crawler():
+    # 这里是触发爬虫的地方
+    admin_username = session.get('username')
+    app.logger.info(f"管理员 '{admin_username}' 触发了爬虫任务...")
+    try:
+        # --- 直接调用爬虫函数 --- 
+        # 注意：这会在请求期间运行，可能很慢！
+        run_scraper() 
+        flash('爬虫任务已尝试运行完成。请检查控制台输出或日志了解详情。', 'success')
+        app.logger.info(f"爬虫任务由 '{admin_username}' 触发，已尝试运行。")
+    except Exception as e:
+        flash(f'运行爬虫时发生错误: {e}', 'error')
+        app.logger.error(f"管理员 '{admin_username}' 触发爬虫时出错: {e}", exc_info=True) # 记录完整错误信息
+
+    return redirect(url_for('admin_schools'))
 
 if __name__ == '__main__':
-    app.run(debug=True) 
+    app.run(debug=True, port=5001) 

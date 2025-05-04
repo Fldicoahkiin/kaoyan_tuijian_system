@@ -70,12 +70,12 @@
                     <i class="fas fa-bullhorn"></i> 公告管理
                 </a>
             </li>
-            {# 可以添加更多管理链接，例如院校数据管理 #}
-            {# <li class="nav-item">
+            {# 院校数据管理 #}
+            <li class="nav-item">
                 <a class="nav-link {% if request.path.startswith(url_for('admin_schools')) %}active{% endif %}" href="{{ url_for('admin_schools') }}">
                     <i class="fas fa-database"></i> 院校数据
                 </a>
-            </li> #}
+            </li>
             {# 管理员个人中心 #}
             <li class="nav-item">
                 <a class="nav-link {% if request.path == url_for('admin_profile') %}active{% endif %}" href="{{ url_for('admin_profile') }}">

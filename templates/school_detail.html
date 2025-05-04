@@ -3,8 +3,8 @@
 {% block title %}{{ school.name }} - 详情{% endblock %}
 
 {% block head_scripts %}
-    {# 如果需要绘制分数线图表，在这里引入 ECharts #}
-    {# <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script> #}
+    {# 引入 ECharts 用于可能的分数线图表 #}
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .favorite-btn {
@@ -26,6 +26,11 @@
         .list-group-item span {
             font-weight: bold;
             margin-right: 5px;
+        }
+        #score-line-chart {
+            width: 100%;
+            height: 300px; /* 设置图表高度 */
+            margin-top: 15px;
         }
     </style>
 {% endblock %}
@@ -84,7 +89,10 @@
                                                     {% if score is not none %}<li>{{ year }}: {{ score }}</li>{% endif %}
                                                 {% endfor %}
                                             </ul>
-                                            {# TODO: 如果是四川院校且有足够数据，可在此处加图表容器 #}
+                                            {# 四川院校复试线图表容器 #}
+                                            {% if sichuan_score_chart_data %}
+                                                <div id="score-line-chart"></div>
+                                            {% endif %}
                                         </li>
                                     {% endif %}
                                     {% if major.admission_info_23 %}<li class="list-group-item"><span>23拟录取情况:</span> <pre>{{ major.admission_info_23 }}</pre></li>{% endif %}
@@ -156,7 +164,57 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // TODO: ECharts 分数线图表初始化逻辑 (如果需要)
+    // --- Sichuan Score Line Chart Logic ---
+    const chartDataElement = document.getElementById('score-line-chart');
+    // 从后端获取图表数据 (如果存在)
+    const chartData = {{ sichuan_score_chart_data | tojson | safe if sichuan_score_chart_data else 'null' }};
+
+    if (chartDataElement && chartData && chartData.years && chartData.scores) {
+        const scoreLineChart = echarts.init(chartDataElement);
+        const option = {
+            title: {
+                text: '近三年复试线趋势 (总分)',
+                left: 'center',
+                textStyle: { fontSize: 14 }
+            },
+            tooltip: { trigger: 'axis' },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: chartData.years
+            },
+            yAxis: {
+                type: 'value',
+                name: '分数',
+                scale: true // 允许 Y 轴根据数据缩放
+            },
+            series: [
+                {
+                    name: '总分线',
+                    type: 'line',
+                    data: chartData.scores,
+                    markPoint: { // 标记最高最低点
+                         data: [
+                             {type: 'max', name: '最大值'},
+                             {type: 'min', name: '最小值'}
+                         ]
+                     },
+                     markLine: { // 平均值线
+                         data: [
+                             {type: 'average', name: '平均值'}
+                         ]
+                     }
+                }
+            ]
+        };
+        scoreLineChart.setOption(option);
+
+         // 监听窗口大小变化，重新绘制图表
+        window.addEventListener('resize', function() {
+            scoreLineChart.resize();
+        });
+    }
+
 });
 </script>
 {% endblock %} 
