@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}可视化面板 - {{ super() }}{% endblock %}
+
+{% block head_scripts %}
+    <!-- 引入 ECharts -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+{% endblock %}
+
+{% block content %}
+    {# <h1>计算机考研院校可视化推荐系统 - 主页</h1> #} {# 标题可以移到 base.html 或保留 #}
+
+    <div class="dashboard-grid">
+        <!-- 左侧区域 -->
+        <div class="chart-container" id="national-line-total"></div>
+        <div class="chart-container" id="national-line-politics"></div>
+        <div class="chart-container" id="national-line-others"></div>
+
+        <!-- 中间区域 (滚动列表) -->
+        <div id="school-list-container">  <!-- 保留原有ID，样式可能依赖它 -->
+            <h2>院校列表</h2>
+            <div class="scrollable-table">
+                <table id="school-table">
+                    <thead>
+                        <tr>
+                            <th>院校名称</th>
+                            <th>院校等级</th>
+                            <th>计算机等级</th>
+                            <th>24年招生人数</th> {# TODO: 确认数据源 #}
+                            <th>初试科目</th> {# TODO: 确认数据源 #}
+                            <th>地区</th>
+                        </tr>
+                    </thead>
+                    <tbody id="school-table-body">
+                        <!-- 数据将由 JavaScript 动态填充 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 右侧区域 -->
+        <div class="chart-container" id="exam-type-pie"></div>
+        <div class="announcements-container" id="announcements">
+            <h2>公告通知</h2>
+            <ul id="announcement-list">
+                <!-- 公告将由 JavaScript 动态填充 -->
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_scripts %}
+    <!-- 引入自定义 JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% endblock %} 

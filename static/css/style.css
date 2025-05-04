@@ -1,0 +1,129 @@
+/* 基本样式 */
+body {
+    font-family: sans-serif;
+    margin: 20px;
+    background-color: #f4f4f4;
+}
+
+h1,
+h2 {
+    color: #333;
+}
+
+/* 滚动列表容器和表格样式 */
+#school-list-container {
+    margin-top: 30px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.scrollable-table {
+    max-height: 400px;
+    /* 设置最大高度以启用滚动 */
+    overflow-y: auto;
+    /* 垂直方向滚动 */
+    border: 1px solid #ddd;
+}
+
+#school-table {
+    width: 100%;
+    border-collapse: collapse;
+    /* 合并边框 */
+}
+
+#school-table th,
+#school-table td {
+    border: 1px solid #ddd;
+    /* 单元格边框 */
+    padding: 8px 12px;
+    /* 内边距 */
+    text-align: left;
+}
+
+#school-table thead th {
+    background-color: #e9e9e9;
+    /* 表头背景色 */
+    position: sticky;
+    /* 让表头在滚动时固定 */
+    top: 0;
+    z-index: 1;
+}
+
+#school-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+    /* 偶数行背景色 */
+}
+
+#school-table tbody tr:hover {
+    background-color: #f1f1f1;
+    /* 鼠标悬停背景色 */
+}
+
+/* 仪表盘网格布局 */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr; /* 左中右三列，中间列更宽 */
+    grid-template-rows: auto auto 1fr; /* 自动高度行，最后一行填充剩余空间 */
+    gap: 20px; /* 网格间隙 */
+    margin-top: 20px;
+    height: calc(100vh - 150px); /* 尝试让仪表盘填充大部分视口高度 */
+}
+
+/* 定义网格区域 */
+#national-line-total { grid-area: 1 / 1 / 2 / 2; } /* 第1行第1列 */
+#national-line-politics { grid-area: 2 / 1 / 3 / 2; } /* 第2行第1列 */
+#national-line-others { grid-area: 3 / 1 / 4 / 2; } /* 第3行第1列 */
+
+#school-list-container { grid-area: 1 / 2 / 4 / 3; } /* 跨越所有行，占据第2列 */
+
+#exam-type-pie { grid-area: 1 / 3 / 2 / 4; } /* 第1行第3列 */
+#announcements { grid-area: 2 / 3 / 4 / 4; } /* 跨越第2、3行，占据第3列 */
+
+
+/* 图表和公告容器通用样式 */
+.chart-container, .announcements-container {
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex; /* 使用 flex 方便内部元素对齐 */
+    flex-direction: column;
+    min-height: 200px; /* 给个最小高度 */
+}
+
+/* 特别调整滚动列表容器，因为它已有部分样式 */
+#school-list-container {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* 防止内容溢出 */
+}
+#school-list-container h2 {
+    margin-bottom: 10px;
+    flex-shrink: 0; /* 防止标题被压缩 */
+}
+.scrollable-table {
+    flex-grow: 1; /* 让表格区域填充剩余空间 */
+    max-height: none; /* 取消之前的固定高度，让其填充父容器 */
+}
+
+/* 公告列表样式 */
+.announcements-container h2 {
+    margin-bottom: 10px;
+    flex-shrink: 0;
+}
+#announcement-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow-y: auto; /* 如果公告多，允许滚动 */
+    flex-grow: 1;
+}
+#announcement-list li {
+    padding: 8px 0;
+    border-bottom: 1px dashed #eee;
+}
+#announcement-list li:last-child {
+    border-bottom: none;
+}

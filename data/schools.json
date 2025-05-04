@@ -1,0 +1,4841 @@
+[
+  {
+    "id": "山东科技大学",
+    "name": "山东科技大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "山东科技大学，简称“山科大，SDUST”，是一所山东省属重点高校，由山东省人民政府和中华人民共和国应急管理部共建，是国家卓越工程师教育培养计划、新工科研究与实践项目。",
+    "computer_rank": "第四轮评级：计算机B-，软件无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与技术学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术\n25改考",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408 计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "1数据库系统\n2软件工程\n初复试占比6：4",
+            "enrollment_24": 85,
+            "tuition_duration": "学制：3年\n学费：8000/年",
+            "score_lines": {
+              "2024": "最低分297",
+              "2023": null
+            },
+            "admission_info_23": "38/38/57/57/298",
+            "admission_info_24": "一志愿复试名单：http://cise.sdust.edu.cn/home/page/details/catId/18/id/2015.html\n一志愿复试成绩公示：http://cise.sdust.edu.cn/home/page/details/catId/18/id/2020.html"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "济南大学",
+    "name": "济南大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "济南大学是山东省人民政府和教育部共建的综合性大学，是山东省重点建设大学、首批山东省应用型人才培养特色名校、教育部“卓越工程师教育培养计划”高校、山东省“冲一流”建设高校。",
+    "computer_rank": "第四轮评级：计算机B-，软件无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "信息科学与工程学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 847算法与数据结构",
+            "reference_books": "《C程序设计(第四版)》,谭浩强著,\n《程序设计基础(C语言)》杨波,刘明军编,清华大学出版社\n",
+            "retrial_subjects": "《高级程序设计》机试",
+            "enrollment_24": 25,
+            "tuition_duration": "学制：3年\n学费：全8000/年，非全10000/年",
+            "score_lines": {
+              "2024": "273",
+              "2023": null
+            },
+            "admission_info_23": "38/38/57/57/273",
+            "admission_info_24": "复试名单：https://yanzhao.ujn.edu.cn/zsFsmdGbjh/enterQueryFsmdGs?nd=2024\n"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "同济大学",
+    "name": "同济大学",
+    "level": "985",
+    "region": "A区",
+    "province": null,
+    "intro": "同济大学简称“同济”，是教育部直属并与上海市共建的全国重点大学；国家“世界一流大学建设高校”，国家“211工程”和“985工程”建设高校。",
+    "computer_rank": "第四轮评级：计算机B+，软件A。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "电子与信息工程学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "综合能力测试\n复试内容包括:专业课(笔试,100分,其中计算机科学与技术/电子信息(计算机与智能技术)的专业课分数中,机试编程占40%)、外语听力与口语(口试,50分)、专业外语(笔试,50分)、专业综合(口试,150分),合计350分。",
+            "enrollment_24": 24,
+            "tuition_duration": "学制：硕士研究生学制一般为2.5年\n学费：\n软件工程/计算机学硕8000/年\n软件工程/计算机专硕20000/年",
+            "score_lines": {
+              "2024": "330/55/80",
+              "2023": null
+            },
+            "admission_info_23": "50/85/335",
+            "admission_info_24": "官网上没有找到拟录取名单"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "中山大学",
+    "name": "中山大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "中山大学，简称中大，位于广州市，由中华人民共和国教育部直属，是教育部、国家国防科技工业局和广东省共建的综合性全国重点大学，位列首批国家“双一流”A类、“985工程”、“211工程”",
+    "computer_rank": "第四轮评级：计算机B+，软件B。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机学院",
+        "majors": [
+          {
+            "major_code": "085400电子信息-计算机技术",
+            "major_name": "计算机技术",
+            "exam_subjects": "① 101 思想政治理论\n② 202英语（二）\n③ 302数学（二）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "6705000 离散数学与C程序设计\n总成绩=初试×50%+复试×50%",
+            "enrollment_24": 40,
+            "tuition_duration": "学制：3年\n学费：学8000/年\n全专20000/年\n非全专25000/年",
+            "score_lines": {
+              "2024": "338",
+              "2023": null
+            },
+            "admission_info_23": "382/50/60",
+            "admission_info_24": "拟录取名单：https://cse.sysu.edu.cn/content/7053"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "宁夏大学",
+    "name": "宁夏大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": null,
+    "computer_rank": "第四轮评级：计算机无评级，软件工程无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "信息工程学院",
+        "majors": [
+          {
+            "major_code": "085400电子信息-计算机技术",
+            "major_name": "计算机技术",
+            "exam_subjects": "① 101 思想政治理论\n② 202英语（二）\n③ 302 数学（二）\n④ 844 数据结构与组成原理",
+            "reference_books": null,
+            "retrial_subjects": "复试科目:《数据库系统原理》",
+            "enrollment_24": null,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": "263/34/51",
+              "2023": null
+            },
+            "admission_info_23": "267",
+            "admission_info_24": "https://graduate.nxu.edu.cn/info/1020/8253.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "中国地质大学（武汉）",
+    "name": "中国地质大学（武汉）",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "中国地质大学（武汉）（China University of Geosciences, Wuhan），简称地大，位于武汉市，是中华人民共和国教育部直属的全国重点大学，由教育部和湖北省人民政府共建，是国家“双一流”，“211工程”、“985工程优势学科创新平台”建设高校，是国家批准设立研究生院的大学，入选“111计划”、“卓越工程师教育培养计划”、国家建设高水平大学公派研究生项目、中国政府奖学金来华留学生接收院校、首批高等学校科技成果转化和技术转移基地，高水平行业特色大学优质资源共享联盟、地球科学国际大学联盟、中国高校行星科学联盟、“七校联合办学”创始成员。",
+    "computer_rank": "第四轮评级：计算机B，软件B。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机学院",
+        "majors": [
+          {
+            "major_code": "085400电子信息",
+            "major_name": "计算机技术",
+            "exam_subjects": "① 101 思想政治理论\n② 202英语（二）\n③ 302 数学（二）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "计算机综合，初复试占比6：4",
+            "enrollment_24": null,
+            "tuition_duration": "学制：3年\n学费：全日制非定向硕士研究生：学术学位各专业学费为8000元/人/年；专业学位学费为13000元/人/年，",
+            "score_lines": {
+              "2024": "273/37/56",
+              "2023": null
+            },
+            "admission_info_23": "38/57/328",
+            "admission_info_24": "拟录取名单：https://yz.cug.edu.cn/page/detail/PVKZRL/900/61113"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "齐鲁工业大学",
+    "name": "齐鲁工业大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "齐鲁工业大学（山东省科学院）（Qilu University of Technology），位于山东省济南市，是山东省重点建设的应用研究型大学、山东省综合性自然科学研究机构，山东省属高校高水平大学“冲一流”建设高校，是国务院学位委员会批准的硕士学位授权单位和全国首批学士学位授权单位，博士学位授予单位  ，为首批山东特色名校工程学校和“山东省2011协同创新中心”牵头单位，是国家首批“卓越工程师教育培养计划2.0”、“新工科研究与实践项目”入选高校。",
+    "computer_rank": "第四轮评级：计算机无评级，软件工程无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与技术学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术\n24改考",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 872数据结构与操作系统",
+            "reference_books": "273/37/56",
+            "retrial_subjects": "高级程序设计\n初复试占比5：5",
+            "enrollment_24": 49,
+            "tuition_duration": "学制：硕士研究生学制为3年，最长修业年限为5年\n\n学费：全日制硕士研究生（含学术学位和专业学位）收费标准为每生每年6000元,非全日制硕士研究生收费标准为每生每年7000元。",
+            "score_lines": {
+              "2024": null,
+              "2023": null
+            },
+            "admission_info_23": "273/38/57",
+            "admission_info_24": "拟录取：https://mp.weixin.qq.com/s/yw9341FyJUiBxaXCCa9sKg\n一志愿复试：https://mp.weixin.qq.com/s/X3w2VOa5MLdhxWtbb5y-Xg"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "广东工业大学",
+    "name": "广东工业大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "广东工业大学（Guangdong University of Technology）简称“广工”，是广东省重点建设的省属重点大学、广东省“211工程”、首批广东省高水平大学、首批广东省高水平理工科大学、国家“111计划”“2011计划”高校；入选教育部“卓越工程师教育培养计划”、国家大学生文化素质教育基地、国家知识产权示范高校、教育部深化创新创业教育改革示范高校，是粤港澳高校联盟、全国大学生创新创业实践联盟、金砖国家智库合作中方理事会、国际设计艺术院校联盟、国家集成电路产教融合发展联盟、大学通识教育联盟主要单位",
+    "computer_rank": "第四轮评级：计算机B+，软件工程B。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "复试：考察程序设计能力",
+            "enrollment_24": 45,
+            "tuition_duration": "学制：3年\n学费：学硕8000元/生/学年\n专硕15000元/生/学年\n非全日制30000元/生/学年",
+            "score_lines": {
+              "2024": "297",
+              "2023": null
+            },
+            "admission_info_23": "297",
+            "admission_info_24": "一志愿复试名单：https://yzw.gdut.edu.cn/fujianguangdonggongyedaxue2024nianshuoshiyanjiushengzhaoshengkaoshidiyizhiyuankaoshengfushimingdan.pdf\n拟录取名单：https://yzw.gdut.edu.cn/info/1137/7590.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "广州大学",
+    "name": "广州大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "广州大学（Guangzhou University），简称广大（GU），是由广东省广州市人民政府举办的全日制普通高等学校，实行省市共建、以市为主的办学体制，是国家“111计划”建设高校 、广东省和广州市高水平大学重点建设高校\n广州大学网络空间安全学院，由著名网络空间安全专家、中国工程院院士方滨兴教授任名誉院长，拥有网络空间安全一级学科博士、硕士学位授予权，为广东省重点学科建设点和广东省研究生联合培养基地建设点。师资主要来自哈尔滨工业大学、清华大学、中科院、北京邮电大学和国防科技大学等高校和科研院所。",
+    "computer_rank": "第四轮评级：计算机无评级，软件无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与网络工程学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "C语言程序设计",
+            "enrollment_24": 38,
+            "tuition_duration": "学费：8000元；学制：3年；住宿：提供住宿；",
+            "score_lines": {
+              "2024": "280",
+              "2023": null
+            },
+            "admission_info_23": "273/38/57",
+            "admission_info_24": "复试名单：https://yjsy.gzhu.edu.cn/info/1084/4720.htm\n拟录取名单：https://yjsy.gzhu.edu.cn/info/1084/4782.htm\n\n计算机科学与网络工程学院复试公示：https://jsj.gzhu.edu.cn/info/1252/3677.htm\n\n网络空间安全学院复试公示：https://wyy.gzhu.edu.cn/info/1066/2006.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "浙江理工大学",
+    "name": "浙江理工大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "浙江理工大学（Zhejiang Sci-Tech University），简称“浙理工”，坐落于浙江省杭州市，是一所以工为主，理、工、文、经、管、法、艺术、教育等多学科协调发展的省属重点建设大学，入选教育部“卓越工程师教育培养计划“、中国政府奖学金来华留学生接收院校。",
+    "computer_rank": "第四轮评级：计算机C+，软件工程C+。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与技术学院\n(人工智能学院)",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "C语言程序设计",
+            "enrollment_24": null,
+            "tuition_duration": "学制：3年\n学费：8000/年",
+            "score_lines": {
+              "2024": "281",
+              "2023": null
+            },
+            "admission_info_23": "273/38/57",
+            "admission_info_24": "拟录取名单：https://scst.zstu.edu.cn/info/1122/5360.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "浙江工业大学",
+    "name": "浙江工业大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "浙江工业大学（Zhejiang University of Technology），简称浙工大，主校区位于杭州市，是教育部与浙江省人民政府共建的浙江省首批重点建设高校、国家“2011计划”首批牵头高校。",
+    "computer_rank": "第四轮评级：计算机B，软件工程B。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与技术学院\n(软件学院)",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "综合面试和C++上机",
+            "enrollment_24": null,
+            "tuition_duration": "学制：3年\n学费：招收全日制硕士研究生的专业，学费一般为8000元/年；招收非全日制研究生的专业，学费一般为2.5万元（全程）",
+            "score_lines": {
+              "2024": "318",
+              "2023": null
+            },
+            "admission_info_23": "303/38/57",
+            "admission_info_24": "一志愿成绩：https://www.cs.zjut.edu.cn/jsp/news.jsp?neId=8248"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "中国科学院大学信息工程研究所",
+    "name": "中国科学院大学信息工程研究所",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": null,
+    "computer_rank": "计算机A+，软件工程A-",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "信息工程研究所",
+        "majors": [
+          {
+            "major_code": "计算机系统结构(081201)",
+            "major_name": "未知专业",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "初复试占比5：5",
+            "enrollment_24": 3,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": null,
+              "2023": null
+            },
+            "admission_info_23": "284/40/40/60/70",
+            "admission_info_24": null
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "中国民航大学",
+    "name": "中国民航大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": null,
+    "computer_rank": "第四轮评级：计算机C+，软件工程无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与技术学院",
+        "majors": [
+          {
+            "major_code": "电子信息(085404)-计算机技术",
+            "major_name": "计算机技术",
+            "exam_subjects": "① 101 思想政治理论\n② 202英语（二）\n③ 302数学（二）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "计算机专业基础、信息安全专业基础",
+            "enrollment_24": 12,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": null,
+              "2023": null
+            },
+            "admission_info_23": "273/38/57",
+            "admission_info_24": null
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "浙江师范大学",
+    "name": "浙江师范大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "\n浙江师范大学（Zhejiang Normal University），位于浙江省金华市，是一所以教师教育为特色的综合性省属重点大学，是浙江省首批重点建设高校，入选国家“111计划”、“卓越教师培养计划”、“新工科研究与实践项目”、教育部“教育援外基地",
+    "computer_rank": "第四轮评级：计算机C+，软件工程B-。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与技术学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "C语言程序设计，初复试占比6：4",
+            "enrollment_24": null,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": "274/38/57",
+              "2023": null
+            },
+            "admission_info_23": "273/38/57",
+            "admission_info_24": "一志愿复试名单：https://cs.zjnu.edu.cn/2024/0327/c16776a462798/page.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "浙江工商大学",
+    "name": "浙江工商大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "浙江工商大学（Zhejiang Gongshang University），简称“浙商大”（ZJSU），坐落于浙江省杭州市，是中华人民共和国教育部、中华人民共和国商务部和浙江省人民政府共建的浙江省重点建设高校，入选“卓越法律人才教育培养计划”、“卓越农林人才教育培养计划”，是全国深化创新创业教育改革示范高校。",
+    "computer_rank": "第四轮评级：计算机B-，软件工程无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与技术学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "C语言程序设计，初复试占比6：4",
+            "enrollment_24": 29,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": "273",
+              "2023": null
+            },
+            "admission_info_23": "273/38/57",
+            "admission_info_24": "https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fyjszs.zjgsu.edu.cn%2F_upload%2Farticle%2Ffiles%2F62%2F73%2F3f33ec9e4a848ba5d5b0f0df63df%2F8de7fb2e-917e-4d69-9ceb-80b4f0cdac3d.xls&wdOrigin=BROWSELINK"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "杭州电子科技大学",
+    "name": "杭州电子科技大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "四大电子之一的杭州电子科技大学，浙江省人民政府与国防科技工业局共建高校，是一所电子信息特色突出，经管学科优势明显，工、理、经、管、文、法、艺等多学科相互渗透的教学研究型大学，是浙江省首批重点建设的5所高校之一，是省属高校中唯一拥有国防特色重点专业的高校。最近几年杭电的计算机考研出现了【逆向考研】的趋势。",
+    "computer_rank": "第四轮评级：计算机B+，软件工程C+。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "网络空间安全学院",
+        "majors": [
+          {
+            "major_code": "083900网络空间安全",
+            "major_name": "网络空间安全",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "程序设计综合能力测试(C或C++)，初复试占比6：4",
+            "enrollment_24": 19,
+            "tuition_duration": "学制：学术型硕士研究生学制3年，专业学位型硕士研究生学制2.5年。\n\n学费：全日制学术型硕士研究生每生每年学费8000元（不含中外合作办学招生专业）。全日制专业学位硕士研究生每生每年学费10000元。\n计算机/软件专硕非全日制-电子信息\n第1学年14000，第2学年14000，全程28000",
+            "score_lines": {
+              "2024": "275",
+              "2023": null
+            },
+            "admission_info_23": "282/38/57",
+            "admission_info_24": "所有专业拟录取名单：https://grs.hdu.edu.cn/2024/0407/c1721a263080/page.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "北京工业大学",
+    "name": "北京工业大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "北京工业大学（Beijing University Of Technology），简称北工大（BJUT），位于中国北京市，由北京市人民政府教育行政部门主管，是一所以工为主，工、理、经、管、文、法、艺术、教育相结合的多科性市属重点大学，是国家“双一流”建设高校”、国家“211工程”建设高校。",
+    "computer_rank": "计算机为B+，软件工程B+",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "信息学部计算机科学与技术系",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "编程能力测试、离散\n数学、数据库原理\n",
+            "enrollment_24": null,
+            "tuition_duration": "学制：3年\n学费：信息学部计算机科学与技术系，8000/年/生\n信息学部软件系，学硕8000/年/生/生\n专：三学年分别为16000元、16000元、8000元。",
+            "score_lines": {
+              "2024": "328",
+              "2023": null
+            },
+            "admission_info_23": "311/45/70",
+            "admission_info_24": "一志愿拟录取名单：https://yanzhao.bjut.edu.cn/info/1019/15768.htm\n信息学部拟录取：https://xxxb.bjut.edu.cn/info/1216/3208.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "北京交通大学",
+    "name": "北京交通大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "北京交通大学（Beijing Jiaotong University），位于北京市，是中华人民共和国教育部直属，教育部、交通运输部、北京市人民政府、中国国家铁路集团有限公司共建的全国重点大学，是国家“双一流”建设高校、 [53]“211工程”建设高校、先后入选“985工程优势学科创新平台”、高等学校创新能力提升计划、“111计划”、卓越工程师教育培养计划。",
+    "computer_rank": "计算机A-，软件工程B+。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机与信息技术学院\n25改考",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "复试由专业课笔试和综合面试(含外语听力口语测试)组成。",
+            "enrollment_24": null,
+            "tuition_duration": "学制：3年\n学费：学硕8000元/生学年\n专硕(软件工程)20000元/生·学年；其他专业学位：8000元/生学年",
+            "score_lines": {
+              "2024": "之前考数据结构+操作系统，没有参考意义，可以参考同类型其他211院校的成绩",
+              "2023": null
+            },
+            "admission_info_23": null,
+            "admission_info_24": "一志愿拟录取名单（网页已经打不开了）：https://scit.bjtu.edu.cn/cms/item/5364.html"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "华南农业大学",
+    "name": "华南农业大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "华南农业大学（华农，South China Agricultural University），创建于1909年，坐落于广东省广州市，是广东省人民政府和农业农村部共建的省部共建大学，也是广东省“211工程”、广东省高水平大学建设高校。",
+    "computer_rank": "第四轮评级：计算机C，软件工程无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "数学与信息学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "上机测试方式,编程可以使C/C++主要内容包括C语言程序设计、数据结构、算法设计与分析；初复试占比5：5\n",
+            "enrollment_24": null,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": "273",
+              "2023": null
+            },
+            "admission_info_23": "273/38/57",
+            "admission_info_24": "https://info.scau.edu.cn/2024/0402/c3773a370416/page.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "南京理工大学",
+    "name": "南京理工大学",
+    "level": "211",
+    "region": "A区",
+    "province": null,
+    "intro": "南京理工大学，位于江苏省南京市，北依紫金山，西临明城墙，是隶属于工业和信息化部，由工信部、教育部与江苏省人民政府共建的全国重点大学，是国家“世界一流学科建设高校“，是国家“211工程”、“985工程优势学科创新平台”重点建设高校。",
+    "computer_rank": "第四轮评级：计算机B+，软件B。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与工程学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "1、程序设计(C++上机操作)\n2、编译原理与算法设计",
+            "enrollment_24": 8,
+            "tuition_duration": "学制：学术学位2.5年，专业学位2.5年\n\n学费：全日制学术学位硕士研究生：8000元/学年\n\n全日制专业学位硕士研究生：10000元/学年",
+            "score_lines": {
+              "2024": "325",
+              "2023": null
+            },
+            "admission_info_23": "38/57/350",
+            "admission_info_24": "复试名单：https://cs.njust.edu.cn/0d/54/c1754a331092/page.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "南京邮电大学",
+    "name": "南京邮电大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "南京邮电是教育部、工业和信息化部、国家邮政局与江苏省共建高校。南京邮电大学尽管不是“211工程”大学，但成功入选双一流世界一流学科建设高校的行列当中",
+    "computer_rank": "在第四轮学科评估中，计算机B-，软件工程B。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机学院/软件学院/网络空间安全学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 811数据结构",
+            "reference_books": null,
+            "retrial_subjects": "微机原理及应用、操作系统 2选1\n【不招收同等学力】\n",
+            "enrollment_24": 33,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": "341",
+              "2023": null
+            },
+            "admission_info_23": "323",
+            "admission_info_24": "复试成绩：https://cs.njupt.edu.cn/2024/0403/c9375a258986/page.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "重庆邮电大学",
+    "name": "重庆邮电大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "重庆邮电大学（Chongqing University of Posts and Telecommunications）简称“重邮”，坐落于直辖市——重庆市，是中华人民共和国工业和信息化部与重庆市人民政府共建的教学研究型大学，入选国家“中西部高校基础能力建设工程”、国家“卓越工程师教育培养计划”，是国家“2011计划”核心协同高校、中国政府奖学金来华留学生接收院校、国家大学生文化素质教育基地、国家布点设立并重点建设的四所邮电高校之一，重庆市一流学科建设高校，CDIO工程教育联盟成员单位",
+    "computer_rank": "在第四轮学科评估中，计算机B+，软件B-。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机学院/科大讯飞人工智能学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 802数据结构",
+            "reference_books": null,
+            "retrial_subjects": "程序设计(C或C++)\n同等学力加试科目:1软件工程、2数据库原理",
+            "enrollment_24": 169,
+            "tuition_duration": "我校硕士研究生标准学制均为3年。全日制学术型硕士学费7000元/学年；全日制专业型硕士学费10000元/学年；非全日制工程管理类专业型硕士学费16000元/学年",
+            "score_lines": {
+              "2024": "313",
+              "2023": null
+            },
+            "admission_info_23": "312",
+            "admission_info_24": "拟录取名单：https://yjs.cqupt.edu.cn/info/1180/7864.htm\n复试名单：https://yjs.cqupt.edu.cn/info/1180/7754.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "上海理工大学",
+    "name": "上海理工大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "上海理工大学，位于上海市，是一所以工学为主，工学、理学、经济学、管理学、文学、法学、艺术学等多学科协调发展的应用研究型大学；是上海市属重点建设大学，上海市高水平地方高校建设试点单位。",
+    "computer_rank": "第四轮评级：计算机C+，软件工程C。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "光电信息与计算机工程学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 848数据结构与操作系统",
+            "reference_books": null,
+            "retrial_subjects": "\n数据库+计算机网络\n",
+            "enrollment_24": null,
+            "tuition_duration": "学制：2.5年\n学费：8000元/年",
+            "score_lines": {
+              "2024": "307",
+              "2023": null
+            },
+            "admission_info_23": "311",
+            "admission_info_24": "一志愿复试名单：https://oece.usst.edu.cn/2024/0325/c9003a317255/page.htm\n拟录取名单：https://yz.usst.edu.cn/2024/0430/c3394a319614/page.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "上海大学",
+    "name": "上海大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "上海大学（Shanghai University），简称“上大”，位于上海市，是上海市属的综合性大学，国家“双一流”建设高校、国家“211工程”建设高校，教育部与上海市人民政府共建高校，入选国家“111计划”、卓越工程师教育培养计划、卓越新闻传播人才教育培养计划、国家建设高水平大学公派研究生项目、教育部来华留学示范基地、上海市首批高水平地方高校建设试点、上海市首批深化创新创业教育改革示范高校",
+    "computer_rank": "第四轮评级：计算机B，软件B-。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机工程与科学学院\n",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "C++程序设计、\n编译原理",
+            "enrollment_24": 40,
+            "tuition_duration": "学制：2.5年\n学费：全日制学术学位硕士研究生：收取学费8000元/人/年；全日制软件工程专业学位：收取学费15000元/人/年",
+            "score_lines": {
+              "2024": "331/50/80",
+              "2023": null
+            },
+            "admission_info_23": "293/50/70",
+            "admission_info_24": "一志愿复试名单：https://cs.shu.edu.cn/info/1202/21584.htm\n拟录取名单：https://yjszs.shu.edu.cn/info/1004/7144.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "南京航空航天大学",
+    "name": "南京航空航天大学",
+    "level": "211",
+    "region": "A区",
+    "province": null,
+    "intro": "南京航空航天大学，简称南航（NUAA），位于江苏省南京市，是中华人民共和国工业和信息化部直属的一所具有航空航天民航特色、以理工类为主的综合性全国重点大学，是国家“世界一流学科建设高校”，国家“211工程”、“985工程优势学科创新平台”重点建设高校。",
+    "computer_rank": "第四轮评级：计算机B，软件B。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与技术学院/\n人工智能学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础\n（24改考）",
+            "reference_books": null,
+            "retrial_subjects": "541离散数学与编译原理",
+            "enrollment_24": 60,
+            "tuition_duration": "\n学制：学术学位2.5年，专业学位2.5年\n\n学费：全日制硕士研究生收取学费8000元/人/年\n\n非全日制工程硕士研究生收取学费共计45000元",
+            "score_lines": {
+              "2024": "330/37/56",
+              "2023": null
+            },
+            "admission_info_23": "这没有意义，不写了",
+            "admission_info_24": "复试名单：http://cs.nuaa.edu.cn/2024/0323/c10851a333892/page.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "河海大学",
+    "name": "河海大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "河海大学，简称“河海（HHU）”，是以水利为特色，工科为主，多学科协调发展的教育部直属，教育部、水利部、国家海洋局与江苏省人民政府共建的全国重点大学，是国家首批具有博士、硕士、学士三级学位授予权的单位，是国家“世界一流学科建设高校”，国家“211工程”重点建设、“985工程优势学科创新平台”建设以及设立研究生院的高校。",
+    "computer_rank": "第四轮评级：计算机B，软件B。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "信息学部(计算机与软件学院)",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 838计算机技术基础\n（数据结构+C语言+操作系统+计算机网络）",
+            "reference_books": null,
+            "retrial_subjects": "复试科目:1007001计算机科学与技术综合\n不招收同等学力",
+            "enrollment_24": null,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": "331",
+              "2023": null
+            },
+            "admission_info_23": "340",
+            "admission_info_24": "复试名单：https://cies.hhu.edu.cn/2024/0324/c4093a276579/page.htm（公示期已过）\n拟录取名单：https://gs.hhu.edu.cn/2024/0429/c17277a279016/page.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "华南师范大学",
+    "name": "华南师范大学",
+    "level": "211",
+    "region": "A区",
+    "province": null,
+    "intro": "华南师范大学（South China Normal University），简称“华南师大” ，校本部位于广州市，是广东省人民政府和教育部共建高校，是首批国家“世界一流学科建设高校” 、国家“211工程”重点建设大学。",
+    "computer_rank": "第四轮评级：计算机无评级，软件工程无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "数据库原理与C++程序\n设计\n",
+            "enrollment_24": null,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": "312-359",
+              "2023": null
+            },
+            "admission_info_23": "298/38/57",
+            "admission_info_24": "https://statics.scnu.edu.cn/pics/yz/2024/0415/1713176792459625.pdf"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "西南大学",
+    "name": "西南大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": null,
+    "computer_rank": "第四轮评级：计算机B，软件B-。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机与信息科学学院/软件学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 202英语（二）\n③ 302 数学（二）\n④ 808数据结构和操作系统",
+            "reference_books": null,
+            "retrial_subjects": "初复试占比6：4",
+            "enrollment_24": null,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": "333/37/56/81",
+              "2023": null
+            },
+            "admission_info_23": "310",
+            "admission_info_24": "拟录取名单：http://cis.swu.edu.cn/info/1146/4584.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "西南交通大学",
+    "name": "西南交通大学",
+    "level": "211",
+    "region": "A区",
+    "province": null,
+    "intro": "西南交通大学（Southwest Jiaotong University）简称“西南交大”，位于四川省成都市，是中华人民共和国教育部直属的全国重点大学，由教育部、中国铁路总公司、四川省和成都市共建，位列国家首批世界一流学科建设高校。",
+    "computer_rank": "第四轮评级：计算机B+，软件工程B-。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机与人工智能学院/\n唐山研究院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 840 数据结构与程序设计",
+            "reference_books": null,
+            "retrial_subjects": "初试复试比例是7：3",
+            "enrollment_24": null,
+            "tuition_duration": "学制：学制3年\n学费：\n全日制学术学位硕士研究生：8000元/学年\n全日制专业学位硕士研究生：8000元/学年",
+            "score_lines": {
+              "2024": "362/38/57",
+              "2023": null
+            },
+            "admission_info_23": "352/38/57",
+            "admission_info_24": "拟录取名单：http://yz.swjtu.edu.cn/vatuu/WebAction?setAction=newsDetail&viewType=web&newsId=0CB0EB0EA96DB72B"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "华侨大学",
+    "name": "华侨大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": null,
+    "computer_rank": "第四轮评级：计算机无评级，软件无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与技术学院(厦门校区)",
+        "majors": [
+          {
+            "major_code": "085400电子信息-计算机技术",
+            "major_name": "计算机技术",
+            "exam_subjects": "① 101 思想政治理论\n② 202英语（二）\n③ 302 数学（二）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "《C++程序设计》",
+            "enrollment_24": null,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": "290",
+              "2023": null
+            },
+            "admission_info_23": "300",
+            "admission_info_24": "一志愿拟录取名单：https://cst.hqu.edu.cn/info/1044/8881.htm\n一志愿复试名单：https://cst.hqu.edu.cn/info/1044/8681.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "厦门理工学院",
+    "name": "厦门理工学院",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": null,
+    "computer_rank": "第四轮评级：计算机无评级，软件无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机与信息工程学院",
+        "majors": [
+          {
+            "major_code": "085400电子信息-计算机技术",
+            "major_name": "计算机技术",
+            "exam_subjects": "① 101 思想政治理论\n② 202英语（二）\n③ 302 数学（二）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "初复试成绩占比6：4",
+            "enrollment_24": 58,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": "273/38/57",
+              "2023": null
+            },
+            "admission_info_23": null,
+            "admission_info_24": "拟录取名单：https://cs.xmut.edu.cn/info/1077/5265.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "中国石油大学",
+    "name": "中国石油大学",
+    "level": "211",
+    "region": "A区",
+    "province": null,
+    "intro": "中国石油大学（华东）（China University of Petroleum (East China) ） [8]，位于山东省青岛市，是中华人民共和国教育部直属全国重点大学，教育部和五大能源企业集团公司、教育部和山东省人民政府共建，为国家“双一流”、“211工程”重点建设高校，高水平行业特色大学优质资源共享联盟成员，入选985工程优势学科创新平台、111计划、卓越工程师教育培养计划、全国毕业生就业典型经验高校、全国深化创新创业教育改革示范高校、中俄工科大学联盟成员高校，是石油、石化高层次人才培养的重要基地，设有研究生院和国家大学科技园。",
+    "computer_rank": "计算机B-，软件A",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "信息科学与工程学院\n(北京)24改考",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 202英语（二）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "初复试占比6：4",
+            "enrollment_24": null,
+            "tuition_duration": "学制：3年\n学费：全日制学术学位硕士研究生学费标准：8000元/生·学年\n全日制工程类硕士（专业代码085开头）学费标准：8000元/生·学年",
+            "score_lines": {
+              "2024": "274/37/56",
+              "2023": null
+            },
+            "admission_info_23": "292/38/57",
+            "admission_info_24": "https://www.cup.edu.cn/cise/docs//2024-03/468aa2354f554795b47e6a6f8e996b8f.pdf"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "安徽大学",
+    "name": "安徽大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "安徽大学（Anhui University），简称安大，位于安徽省合肥市，是国家“双一流”和“211工程”建设首批入列高校，是安徽省人民政府与教育部共建高校，是安徽省属重点综合性大学。",
+    "computer_rank": "第四轮评级：计算机B，软件B-。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与技术学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "F67计算机专业综合\n(数据库原理、高级语言程序设计)",
+            "enrollment_24": 109,
+            "tuition_duration": "学制：3年\n学术学位硕士研究生（所有专业）8000元/（生·年）。\n专业学位硕士为11000元/（生·年）。",
+            "score_lines": {
+              "2024": "298/38/57",
+              "2023": null
+            },
+            "admission_info_23": "311/38/57",
+            "admission_info_24": "一志愿复试名单：https://graschool.ahu.edu.cn/2024/0328/c9537a332150/page.htm\n拟录取名单：https://graschool.ahu.edu.cn/2024/0426/c9539a338074/page.htm\n最后一列给你放了一志愿复试名单的分数段"
+          },
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "F67计算机专业综合\n(数据库原理、高级语言程序设计)",
+            "enrollment_24": 109,
+            "tuition_duration": "学制：3年\n学术学位硕士研究生（所有专业）8000元/（生·年）。\n专业学位硕士为11000元/（生·年）。",
+            "score_lines": {
+              "2024": "298/38/57",
+              "2023": "311/38/57"
+            },
+            "admission_info_23": "无参考意义，原来考数据结构和操作系统",
+            "admission_info_24": "323-389"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "合肥工业大学",
+    "name": "合肥工业大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "合肥工业大学（Hefei University of Technology），是中华人民共和国教育部直属的全国重点大学，由教育部、安徽省人民政府、工业和信息化部和国家国防科技工业局共建，是国家“世界一流学科建设高校”，国家“211工程”建设高校，国家“985工程优势学科创新平台”建设高校。",
+    "computer_rank": "第四轮评级：计算机B+，软件工程B。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机与信息学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "复试：计算机科学与技术学科专业综合，覆盖范围程序设计+数据库系统",
+            "enrollment_24": 65,
+            "tuition_duration": "学制：3年\n学费：全日制学术学位硕士研究生：8000元/学年\n全日制电子信息硕士研究生：8000元/学年\n非全日制电子信息硕士研究生：12000元/学年",
+            "score_lines": {
+              "2024": "344/37/56",
+              "2023": null
+            },
+            "admission_info_23": "333/38/57",
+            "admission_info_24": "一志愿复试名单：https://yjszs.hfut.edu.cn/_upload/article/files/9f/fa/6f9c1f054a0da3360361fc21d72c/e62c225f-2fc2-4146-b839-8193cc6556ea.pdf\n一志愿复试结果：https://ci.hfut.edu.cn/info/1063/14738.htm"
+          },
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "复试：计算机科学与技术学科专业综合，覆盖范围程序设计+数据库系统",
+            "enrollment_24": 65,
+            "tuition_duration": "学制：3年\n学费：全日制学术学位硕士研究生：8000元/学年\n全日制电子信息硕士研究生：8000元/学年\n非全日制电子信息硕士研究生：12000元/学年",
+            "score_lines": {
+              "2024": "344/37/56",
+              "2023": "333/38/57"
+            },
+            "admission_info_23": "最高分：406\n最低分：330\n平均分：362",
+            "admission_info_24": null
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "南京师范大学",
+    "name": "南京师范大学",
+    "level": "211",
+    "region": "A区",
+    "province": null,
+    "intro": "南京师范大学（Nanjing Normal University），简称“南师”，坐落于六朝古都江苏省南京市，是教育部与江苏省人民政府共建的国家“世界一流学科建设高校”，国家“211工程”首批重点建设高校，江苏高水平大学建设高校。",
+    "computer_rank": "第四轮评级：计算机无评级，软件无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机与电子信息学院/人工智能学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④871数据结构+计算机网络",
+            "reference_books": null,
+            "retrial_subjects": "程序设计",
+            "enrollment_24": 32,
+            "tuition_duration": "学制：研究生实行弹性学制，学术型学制为3年，全日制专业学位学制2～3年，非全日制专业学位学制为2.5～3年。学术型硕士中特别优秀者，可按规定申请提前毕业，也可按硕博连读方式提前攻读博士学位。\n学费：全日制学术学位硕士研究生：8000元/学年；全日制专业学位硕士研究生：10000元/学年",
+            "score_lines": {
+              "2024": "327",
+              "2023": null
+            },
+            "admission_info_23": "352",
+            "admission_info_24": "拟录取名单：http://ceai.njnu.edu.cn/Item/Show.asp?m=1&d=19220"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "暨南大学",
+    "name": "暨南大学",
+    "level": "211",
+    "region": "A区",
+    "province": null,
+    "intro": "暨南大学（Jinan University）简称“暨大”，是中国第一所由国家创办的华侨高等学府，直属中央统战部领导，教育部、中央统战部、广东省三方共建大学；是国家“世界一流学科建设高校”，国家“211工程”、“985平台”重点建设高校",
+    "computer_rank": "第四轮评级：计算机B，软件工程无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "信息科学技术学院\n网络空间安全学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 848数据结构+操作系统",
+            "reference_books": null,
+            "retrial_subjects": "C语言程序设计\n同等学力加试:1离散数学 2计算机基础",
+            "enrollment_24": 21,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": "297/37/56",
+              "2023": null
+            },
+            "admission_info_23": "273/38/57",
+            "admission_info_24": "复试名单：https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fyz.jnu.edu.cn%2F_upload%2Farticle%2Ffiles%2F0a%2F31%2F038dc59a46ada4318d64063360be%2Fdffb4089-d060-473e-ad1d-64787bd2c1c5.xlsx&wdOrigin=BROWSELINK"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "安徽理工大学",
+    "name": "安徽理工大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "安徽理工大学，位于淮南市，是安徽省和应急管理部共建高校，安徽省高等教育振兴计划“地方特色高水平大学”建设高校，安徽省高峰学科建设计划特别支持高校",
+    "computer_rank": "第四轮评级：计算机无评级，软件工程无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与工程学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 842数据结构+C语言",
+            "reference_books": null,
+            "retrial_subjects": "数据库系统原理\n总成绩=(初试总成绩/5)×0.6+复试总成×0.4\n同等学力加试：计算机网络和操作系统",
+            "enrollment_24": 30,
+            "tuition_duration": "学制：全日制（学术学位、专业学位）硕士研究生基本修业年限均为3年，全脱产在校学习。非全日制（专业学位）硕士研究生在基本修业年限内（3年，可适当延长），根据学校安排进行非脱产学习。\n学费：全日制、非全日制硕士研究生的学费标准均为每生每学年8000元",
+            "score_lines": {
+              "2024": "307-362",
+              "2023": null
+            },
+            "admission_info_23": "273/38/57",
+            "admission_info_24": "一志愿拟录取名单：https://yjszs.aust.edu.cn/info/1013/1417.htm\n一志愿复试名单：https://yjszs.aust.edu.cn/info/1013/1413.htm"
+          },
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 842数据结构+C语言",
+            "reference_books": null,
+            "retrial_subjects": "数据库系统原理\n总成绩=(初试总成绩/5)×0.6+复试总成×0.4\n同等学力加试：计算机网络和操作系统",
+            "enrollment_24": 30,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": "307-362",
+              "2023": "273/38/57"
+            },
+            "admission_info_23": "最高分：348\n最低分：276\n平均分：305",
+            "admission_info_24": "一志愿拟录取名单：https://yjszs.aust.edu.cn/info/1013/1417.htm\n一志愿复试名单：https://yjszs.aust.edu.cn/info/1013/1413.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "南京工业大学",
+    "name": "南京工业大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "南京工业大学，创建于1902年，坐落于江苏省南京市，由国家国防科技工业局、住房和城乡建设部与江苏省人民政府共建。该校入选国家“2011计划”“111计划”、教育部“卓越工程师教育培养计划”、国家建设高水平大学公派研究生项目、国家特色重点学科项目，是全国首批深化创新创业教育改革示范高校，全国高校实践育人创新创业基地，江苏省重点建设高校，江苏省人才强校试点高校。",
+    "computer_rank": "第四轮学科评级：计算机C-。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与技术学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 828数据结构+操作系统",
+            "reference_books": null,
+            "retrial_subjects": "C/C++程序设计",
+            "enrollment_24": 13,
+            "tuition_duration": "学制:3年 \n学费：7000/年",
+            "score_lines": {
+              "2024": "307",
+              "2023": null
+            },
+            "admission_info_23": "281/39/57",
+            "admission_info_24": "一志愿拟录取名单：https://gra.njtech.edu.cn/zsw/info/1021/1406.htm\n一志愿复试名单：https://gra.njtech.edu.cn/zsw/info/1021/1405.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "安徽农业大学",
+    "name": "安徽农业大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "安徽农业大学，简称“安农大“，坐落于安徽省合肥市，是中华人民共和国农业农村部、国家林业和草原局与安徽省人民政府共建的省属重点大学、安徽省高等教育振兴计划首批“特色高水平大学”建设高校。",
+    "computer_rank": "第四轮评级：计算机无评级，软件工程无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "信息与计算机学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 829数据结构",
+            "reference_books": null,
+            "retrial_subjects": "初复试占比7：3",
+            "enrollment_24": 33,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": "284",
+              "2023": null
+            },
+            "admission_info_23": "292",
+            "admission_info_24": "拟录取名单（含推免）：http://yjs.ahau.edu.cn/info/1005/31364.htm"
+          },
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 829数据结构",
+            "reference_books": null,
+            "retrial_subjects": "初复试占比7：3",
+            "enrollment_24": 33,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": "284",
+              "2023": "292"
+            },
+            "admission_info_23": "最高分：369\n最低分：292\n平均分：316",
+            "admission_info_24": "拟录取名单（含推免）：http://yjs.ahau.edu.cn/info/1005/31364.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "安徽工业大学",
+    "name": "安徽工业大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "安徽工业大学（Anhui University of Technology），坐落于安徽省马鞍山市，是一所具有行业特色、以工为主的多科性大学，由科学技术部与安徽省人民政府联动支持建设，是安徽省地方特色高水平大学建设高校、国家“中西部高校基础能力建设工程”实施高校、教育部首批高等学校科技成果转化和技术转移基地。",
+    "computer_rank": "第四轮评级：计算机C，软件工程无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与技术学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术\n24改考",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "程序设计综合（C语言）\n初复试占比6：4",
+            "enrollment_24": null,
+            "tuition_duration": "学制：全日制学术学位硕士研究生学制为 3 年；全日制专业学位硕士研究生（工程硕士）学制为 2.5 年\n学费：全日制学术学位硕士研究生学费为人民币 6000 元/学年\n全日制专业学位硕士 研究生（工程硕士）学费为人民币 6000 元/学年",
+            "score_lines": {
+              "2024": "273/37/56",
+              "2023": null
+            },
+            "admission_info_23": "273/38/57",
+            "admission_info_24": "拟录取名单：https://graduate.ahut.edu.cn/info/1132/8345.htm"
+          },
+          {
+            "major_code": "081200计算机科学与技术\n24改考",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "程序设计综合（C语言）\n初复试占比6：4",
+            "enrollment_24": null,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": "273/37/56",
+              "2023": "273/38/57"
+            },
+            "admission_info_23": "最高分：346\n最低分：277\n平均分：304",
+            "admission_info_24": "拟录取名单：https://graduate.ahut.edu.cn/info/1132/8345.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "武汉理工大学",
+    "name": "武汉理工大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "武汉理工大学是中华人民共和国教育部直属全国重点大学，首批国家世界一流学科建设高校，首批国家“211工程”建设高校，由教育部和交通运输部、国家国防科技工业局共建，入选985工程优势学科创新平台、“111计划”、卓越工程师教育培养计划、国家建设高水平大学公派研究生项目、新工科研究与实践项目、中国政府奖学金来华留学生接收院校、国家大学生文化素质教育基地",
+    "computer_rank": "第四轮评级：计算机B，软件B-。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机与人工智能学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "程序设计+算法设计与分析+离散数学",
+            "enrollment_24": 17,
+            "tuition_duration": "学制：学制3年\n学费：全日制非定向硕士研究生：8000元/学年。",
+            "score_lines": {
+              "2024": "354/55/85",
+              "2023": null
+            },
+            "admission_info_23": "308/45/80",
+            "admission_info_24": "拟录取名单1：http://gd.whut.edu.cn/zs/tzgg/202404/t20240409_582986.shtml\n拟录取名单2：http://gd.whut.edu.cn/zs/tzgg/202404/t20240422_584617.shtml\n一志愿复试名单：http://hnsy.whut.edu.cn/yjsjy/tzgg/202403/t20240326_987940.shtml"
+          },
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "程序设计+算法设计与分析+离散数学",
+            "enrollment_24": 17,
+            "tuition_duration": "学制：学制3年\n学费：全日制非定向硕士研究生：8000元/学年。",
+            "score_lines": {
+              "2024": "354/55/85",
+              "2023": "308/45/80"
+            },
+            "admission_info_23": "最高分：375\n最低分：302\n平均分：328",
+            "admission_info_24": null
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "华东理工大学",
+    "name": "华东理工大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "华东理工大学，简称华理（ECUST），坐落于上海市，是中华人民共和国教育部直属的一所学科设置涵盖理、工、农、医、经、管、文、法、艺术、哲学、教育等11个学科门类的全国重点大学，位列“世界一流学科建设高校”。",
+    "computer_rank": "第四轮评级：计算机B，软件工程无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "信息科学与工程学院\n25改考",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④  408 计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "计算机网络和数据库原理",
+            "enrollment_24": 17,
+            "tuition_duration": "学制：3年\n学费：8000元/学年\n专硕电子信息-计算机学费暴涨至25000/年\n专硕电子信息-其他学费暴涨至20000/年",
+            "score_lines": {
+              "2024": "340/50/80",
+              "2023": null
+            },
+            "admission_info_23": "351/38/57",
+            "admission_info_24": "复试名单：https://cise.ecust.edu.cn/2024/0327/c7692a165851/page.htm\n综合成绩单：https://cise.ecust.edu.cn/2024/0401/c7692a165989/page.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "东华大学",
+    "name": "东华大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "东华大学（Donghua University）地处中国上海，是教育部直属的全国重点大学，国家“世界一流学科建设高校”、“211工程”建设高校，入选国家“2011计划”牵头高校。",
+    "computer_rank": "第四轮评级：计算机B；软件B-。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与技术学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 854 数据结构+数据库",
+            "reference_books": null,
+            "retrial_subjects": "C/C++与数据结构算法上机",
+            "enrollment_24": 5,
+            "tuition_duration": "学制：学硕 3年；电子信息 2年。\n\n学费：学硕 8000/年；全日制电子信息【计算机】 20000/年。",
+            "score_lines": {
+              "2024": "312/37/56",
+              "2023": null
+            },
+            "admission_info_23": "301/38/57",
+            "admission_info_24": "拟录取名单：https://yjszs.dhu.edu.cn/2024/0412/c7128a342517/page.htm\n"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "长安大学",
+    "name": "长安大学",
+    "level": "211",
+    "region": "A区",
+    "province": null,
+    "intro": "长安大学（Chang’an University）座落于陕西省会西安，直属中华人民共和国教育部，是教育部和交通运输部、自然资源部、住房和城乡建设部、陕西省人民政府共建的国家“世界一流学科建设高校”，国家“211工程”重点建设大学",
+    "computer_rank": "第四轮评级：计算机C+，软件C-。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "信息工程学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 846 数据结构与组成原理",
+            "reference_books": null,
+            "retrial_subjects": "计算机网络",
+            "enrollment_24": 23,
+            "tuition_duration": "学制：3年\n\n学费：全日制学术学位硕士研究生：8000元/学年；全日制专业学位硕士研究生：8000元/学年。",
+            "score_lines": {
+              "2024": "303",
+              "2023": null
+            },
+            "admission_info_23": "339",
+            "admission_info_24": "https://yzb.chd.edu.cn/_upload/article/files/26/81/3a99d1dd41b381516654fa4cb601/27ac6f19-56ca-460e-8d1b-4c2ace4e9648.pdf"
+          },
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 846 数据结构与组成原理",
+            "reference_books": null,
+            "retrial_subjects": "计算机网络",
+            "enrollment_24": 23,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": "303",
+              "2023": "339"
+            },
+            "admission_info_23": "最高分：391\n最低分：339\n平均分：356",
+            "admission_info_24": "https://yzb.chd.edu.cn/_upload/article/files/26/81/3a99d1dd41b381516654fa4cb601/27ac6f19-56ca-460e-8d1b-4c2ace4e9648.pdf"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "郑州大学",
+    "name": "郑州大学",
+    "level": "211",
+    "region": "A区",
+    "province": null,
+    "intro": "郑州大学，简称“郑大”，位于郑州市，是教育部与河南省人民政府合建高校；是世界一流大学建设高校，国家“211工程”。",
+    "computer_rank": "第四轮评级：计算机C+，软件B。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机与人工智能学院、软件学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "计算机:数据库\n软件:软件工程基础\n报考要求:全日制计算机与软件及相关专业毕\n业并获得学士学位",
+            "enrollment_24": 16,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": "315-376",
+              "2023": null
+            },
+            "admission_info_23": "321/45/60",
+            "admission_info_24": "一志愿复试名单：http://www7.zzu.edu.cn/csai/info/1074/1782.htm\n复试成绩单：http://www7.zzu.edu.cn/csai/info/1074/1810.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "河南大学",
+    "name": "河南大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "河南大学，简称“河大”，是河南省人民政府与中华人民共和国教育部“省部共建高校”，国家首批“双一流”世界一流学科建设高校",
+    "computer_rank": "第四轮评级：计算机C-，软件无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机与信息工程学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础\n23改考",
+            "reference_books": null,
+            "retrial_subjects": "面对对象程序设计",
+            "enrollment_24": 15,
+            "tuition_duration": "全日制学术学位硕士研究生的学制为三年，全日制专业学位硕士研究生的学制为二到三年，非全日制专业学位硕士研究生的学制依据国家和我校相关政策确定。\n学费：全日制研究生8000元/生、年",
+            "score_lines": {
+              "2024": "296/37/56",
+              "2023": null
+            },
+            "admission_info_23": "279/38/57",
+            "admission_info_24": "一志愿复试名单：https://cs.henu.edu.cn/info/1018/6018.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "西北大学",
+    "name": "西北大学",
+    "level": "211",
+    "region": "A区",
+    "province": null,
+    "intro": "西北大学简称“西大”，坐落于陕西省会西安，是中华人民共和国教育部与陕西省人民政府共建的综合性全国重点大学，位列首批国家“世界一流学科建设高校”、国家“211工程”重点建设高校。",
+    "computer_rank": "第四轮评级：计算机B-，软件B+。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "信息科学与技术学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 844数据结构+操作系统+计算机网络",
+            "reference_books": null,
+            "retrial_subjects": "(数据库、计算机组成原理、面向对象程序设计)",
+            "enrollment_24": 20,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": "297/37/56",
+              "2023": null
+            },
+            "admission_info_23": "273/38/57",
+            "admission_info_24": "拟录取名单：https://ist.nwu.edu.cn/info/1067/2522.htm"
+          },
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 844数据结构+操作系统+计算机网络",
+            "reference_books": null,
+            "retrial_subjects": "(数据库、计算机组成原理、面向对象程序设计)",
+            "enrollment_24": 20,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": "297/37/56",
+              "2023": "273/38/57"
+            },
+            "admission_info_23": "最高分：348\n最低分：273\n平均分：304",
+            "admission_info_24": "拟录取名单：https://ist.nwu.edu.cn/info/1067/2522.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "中国科学技术大学",
+    "name": "中国科学技术大学",
+    "level": "985",
+    "region": "A区",
+    "province": null,
+    "intro": "中国科学技术大学（University of Science and Technology of China），位于安徽省合肥市，是中国科学院直属的一所以前沿科学和高新技术为主，兼有医学、特色管理和人文学科的全国重点大学，中央直管副部级建制，由中科院、教育部和安徽省三方重点共建；位列“双一流”、“985工程”、“211工程”",
+    "computer_rank": "第四轮评级：计算机A-，软件A-",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "软件学院\n学硕24考研停招了",
+        "majors": [
+          {
+            "major_code": "085400电子信息",
+            "major_name": "计算机技术",
+            "exam_subjects": "① 101 思想政治理论\n② 202英语（二）\n③ 302 数学（二）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "上机；上机语言为C语言或C++",
+            "enrollment_24": 500,
+            "tuition_duration": "软件工程常规班学费总额人民币6万元。学费分次缴清：第一学年初缴费3万元，第二学年初缴费3万元",
+            "score_lines": {
+              "2024": "376/60/100",
+              "2023": null
+            },
+            "admission_info_23": "367/55/100",
+            "admission_info_24": "拟录取名单：https://yz.ustc.edu.cn/article/2709/182?num=-1"
+          },
+          {
+            "major_code": "085400电子信息",
+            "major_name": "计算机技术",
+            "exam_subjects": "① 101 思想政治理论\n② 202英语（二）\n③ 302 数学（二）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "上机；上机语言为C语言或C++",
+            "enrollment_24": 500,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": "376/60/100",
+              "2023": "367/55/100"
+            },
+            "admission_info_23": "最高分：456\n最低分：397\n平均分：367",
+            "admission_info_24": "拟录取名单：https://yz.ustc.edu.cn/article/2709/182?num=-1"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "南京大学",
+    "name": "南京大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "南京大学（Nanjing University），简称“南大”，是中华人民共和国教育部直属的全国重点大学，中央直管高校 ，位列“双一流”A类、“211工程”、“985工程”重点建设高校。",
+    "computer_rank": "第四轮评级：计算机A，软件A。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与技术系",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "机试:C++/JAVA编程语言",
+            "enrollment_24": 13,
+            "tuition_duration": "学制：学硕3年\n电子信息-计算机专硕3年，电子信息-软件工程专硕2年\n学费：学硕8000/年\n电子信息-计算机专硕10000/年，电子信息-软件工程专硕20000/年",
+            "score_lines": {
+              "2024": "373/50/75",
+              "2023": null
+            },
+            "admission_info_23": "350/50/75",
+            "admission_info_24": "总拟录取名单：https://yzb.nju.edu.cn/59/4f/c47863a678223/page.htm\n计算机系拟录取：https://cs.nju.edu.cn/4e/35/c1702a675381/page.htm\n软件系：https://software.nju.edu.cn//tzgg/20240402/i263424.html"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "西南财经大学",
+    "name": "西南财经大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": null,
+    "computer_rank": "第四轮评级：计算机C-，软件无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机与人工智能学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 408 计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "程序设计(C语言)",
+            "enrollment_24": 40,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": "306/37/56",
+              "2023": null
+            },
+            "admission_info_23": "308/38/57",
+            "admission_info_24": "复试名单：https://yz.swufe.edu.cn/__local/0/22/17/FA333763565F177F17BDA25F2FA_0803A0EC_E4B5.pdf?e=.pdf\n拟录取名单：https://it.swufe.edu.cn/info/1166/15788.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "沈阳航空航天大学",
+    "name": "沈阳航空航天大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "沈阳航空航天大学位于辽宁省沈阳市，简称“沈航”，是一所以航空宇航为特色，以工为主，包含工、理、文、经、管等多科性高等院校，是教育部、中国航空工业集团有限公司与辽宁省人民政府三方共建高校，国防科工局与辽宁省人民政府共建高校，空军依托培养后备军官的全国18所地方院校之一，入选教育部“卓越工程师教育培养计划”试点",
+    "computer_rank": "计算机B-，软件工程无评级",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机学院",
+        "majors": [
+          {
+            "major_code": "085400电子信息",
+            "major_name": "计算机技术",
+            "exam_subjects": "① 101 思想政治理论\n② 202英语（二）\n③ 302 数学（二）\n④ 844程序设计与数据结构",
+            "reference_books": null,
+            "retrial_subjects": "专业笔试，复试科目为《微机原理》、《操作系统》、《程序设计》三门科\n目任选一门,需避开初试科目",
+            "enrollment_24": 94,
+            "tuition_duration": "学制：3年\n学费：全日制硕士研究生8000元/生/年",
+            "score_lines": {
+              "2024": "273/37/56",
+              "2023": null
+            },
+            "admission_info_23": "273/38/57",
+            "admission_info_24": "拟录取名单：https://yjs.sau.edu.cn/info/1002/4035.htm"
+          },
+          {
+            "major_code": "085400电子信息",
+            "major_name": "计算机技术",
+            "exam_subjects": "① 101 思想政治理论\n② 202英语（二）\n③ 302 数学（二）\n④ 844程序设计与数据结构",
+            "reference_books": null,
+            "retrial_subjects": "专业笔试，复试科目为《微机原理》、《操作系统》、《程序设计》三门科\n目任选一门,需避开初试科目",
+            "enrollment_24": 94,
+            "tuition_duration": "学制：3年\n学费：全日制硕士研究生8000元/生/年",
+            "score_lines": {
+              "2024": "273/37/56",
+              "2023": "273/38/57"
+            },
+            "admission_info_23": "未公布成绩",
+            "admission_info_24": "拟录取名单：https://yjs.sau.edu.cn/info/1002/4035.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "长春理工大学",
+    "name": "长春理工大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "长春理工大学，位于吉林长春，是吉林省、国家国防科技工业局、长春市共建高校，教育部批准的卓越工程师教育培养计划实施学校，国家级大学生创新创业训练计划实施学校，吉林省重点大学，吉林省首批“三全育人”综合改革试点高校，上海合作组织大学院校，中俄综合性大学联盟、中俄工科大学联盟院校；入选“中西部高校基础能力建设工程”院校，首批教育部、国家外专局“高等学校学科创新引智计划”，“吉林省特色高水平应用研究型大学”建设项目A类；具有硕士研究生单独招生考试权、优秀应届本科毕业生免试攻读硕士学位推荐权、接收中国政府奖学金留学生资格。",
+    "computer_rank": "计算机B，软件C。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与技术学院\n24改考",
+        "majors": [
+          {
+            "major_code": "085400电子信息-计算机技术",
+            "major_name": "计算机技术",
+            "exam_subjects": "① 101 思想政治理论\n② 202英语（二）\n③ 302 数学（二）\n④ 809数据结构+操作系统",
+            "reference_books": null,
+            "retrial_subjects": "复试:程序设计\n同等力学加试:组成原理+软件工程\n初复试占比：7：3",
+            "enrollment_24": 120,
+            "tuition_duration": "学制：3年\n学费:全日制/非全日制硕士研究生收取学费8000元/人/年",
+            "score_lines": {
+              "2024": "282/37/56",
+              "2023": null
+            },
+            "admission_info_23": "354",
+            "admission_info_24": "复试名单官网没有，只有查询入口，因为24考研的时候是第一年改考，可能咱25考的时候建议考到320以上会好一点"
+          },
+          {
+            "major_code": "085400电子信息-计算机技术",
+            "major_name": "计算机技术",
+            "exam_subjects": "① 101 思想政治理论\n② 202英语（二）\n③ 302 数学（二）\n④ 809数据结构+操作系统",
+            "reference_books": null,
+            "retrial_subjects": "复试:程序设计\n同等力学加试:组成原理+软件工程\n初复试占比：7：3",
+            "enrollment_24": 120,
+            "tuition_duration": "学制：3年\n学费:全日制/非全日制硕士研究生收取学费8000元/人/年",
+            "score_lines": {
+              "2024": "282/37/56",
+              "2023": "354"
+            },
+            "admission_info_23": "最高分：418\n最低分：354\n平均分：374",
+            "admission_info_24": "复试名单官网没有，只有查询入口，因为24考研的时候是第一年改考，可能咱25考的时候建议考到320以上会好一点"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "北京大学",
+    "name": "北京大学",
+    "level": "985",
+    "region": "A区",
+    "province": null,
+    "intro": "北京大学（Peking University），简称“北大”，是中华人民共和国教育部直属的全国重点大学，位列“双一流”、“211工程”、“985工程”",
+    "computer_rank": "第四轮评级：计算机A+，软件A。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "深圳研究生院",
+        "majors": [
+          {
+            "major_code": "081203计算机应用技术",
+            "major_name": "未知专业",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机专业学科基础",
+            "reference_books": null,
+            "retrial_subjects": null,
+            "enrollment_24": 30,
+            "tuition_duration": "390-424",
+            "score_lines": {
+              "2024": "378/55/90",
+              "2023": null
+            },
+            "admission_info_23": null,
+            "admission_info_24": "拟录取名单：https://admission.pkusz.edu.cn/article/view/id-226.html"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "西安电子科技大学",
+    "name": "西安电子科技大学",
+    "level": "211",
+    "region": "A区",
+    "province": null,
+    "intro": "西安电子科技大学，位于陕西西安。专业实力居于四大“电子科技”大学第二位，带有军工特色，也属于国内IT界“两电一邮”大学之一。由教育部与工信部、国防科技工业局、中国电子科技集团公司、陕西省、西安市共建，具备军工色彩。西电入选国家首批“211工程”、“985工程优势学科创新平台”、“2011计划”、“111计划”、“卓越工程师教育培养计划”、“世界一流学科建设高校”，''两电一邮''成员之一，是中国电子信息领域科学研究和人才培养的核心基地，中国雷达、信息论、密码学、电子对抗、微波天线等学科的发源地。",
+    "computer_rank": "第四轮学科评估中，计算机A-，软件工程B+。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "人工智能学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 833 数据结构、计算机组织与体系结构\n",
+            "reference_books": null,
+            "retrial_subjects": "机试内容:程序设计、数据结构",
+            "enrollment_24": 53,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": "335/45/65",
+              "2023": null
+            },
+            "admission_info_23": "305/45/65",
+            "admission_info_24": "复试名单：https://sai.xidian.edu.cn/info/1106/8970.htm"
+          },
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 833 数据结构、计算机组织与体系结构\n",
+            "reference_books": null,
+            "retrial_subjects": "机试内容:程序设计、数据结构",
+            "enrollment_24": 53,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": "335/45/65",
+              "2023": "305/45/65"
+            },
+            "admission_info_23": "一志愿进复试53人\n拟录取30人\n一志愿复试均分336",
+            "admission_info_24": "复试名单：https://sai.xidian.edu.cn/info/1106/8970.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "河南理工大学",
+    "name": "河南理工大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "河南理工大学，简称河南理工，位于河南省焦作市，是中央与地方共建、以地方管理为主的河南省特色骨干大学，是河南省人民政府与原国家安全生产监督管理总局共建高校，河南省属重点大学。",
+    "computer_rank": "第四轮评级：计算机C，软件工程C。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与技术学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 858 计算机专业基础综合\n（数据结构+计算机网络）",
+            "reference_books": null,
+            "retrial_subjects": "825C语言程序设计\n初复试占比5：5",
+            "enrollment_24": 14,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": "276/40/57",
+              "2023": null
+            },
+            "admission_info_23": "最低分279",
+            "admission_info_24": "一志愿复试名单：https://adge.hpu.edu.cn/info/1031/13288.htm\n拟录取名单：https://adge.hpu.edu.cn/info/1031/13306.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "华北电力大学（北京/保定校区都有）",
+    "name": "华北电力大学（北京/保定校区都有）",
+    "level": "211",
+    "region": "A区",
+    "province": null,
+    "intro": "华北电力大学，简称华电，校部位于北京，是中华人民共和国教育部直属、由国家电网有限公司等12家特大型电力集团和中国电力企业联合会组成的理事会与教育部共建的全国重点大学，国家“世界一流学科建设高校”，国家“211工程”。",
+    "computer_rank": "第四轮评级：计算机B-，软件B-。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "控制与计算机工程学院\n（北京）",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "复试科目:2选1\n数据库原理\n计算机组成与结构",
+            "enrollment_24": null,
+            "tuition_duration": "学制：3年\n学费：8000生/年",
+            "score_lines": {
+              "2024": "320-368",
+              "2023": null
+            },
+            "admission_info_23": "300/38/57",
+            "admission_info_24": "一志愿复试名单：https://cce.ncepu.edu.cn/yjspy/zsxx1/6bd15988d07845058c15aeaef7744105.htm\n复试成绩：https://cce.ncepu.edu.cn/yjspy/zsxx1/3dd1eae61bf9431c948c5871ca3ae4c6.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "华南理工大学",
+    "name": "华南理工大学",
+    "level": "985",
+    "region": "A区",
+    "province": null,
+    "intro": "华南理工大学，简称“华工”，位于广东省广州市，由中华人民共和国教育部直属，是教育部与广东省人民政府共建的全国重点大学，位列国家“双一流”（A类）、“211工程”、“985工程“。",
+    "computer_rank": "第四轮评级：计算机B+，软件B+。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与工程学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "962上机能力测试:高级语言程序设C++、数据结构、算法分析与设计",
+            "enrollment_24": null,
+            "tuition_duration": "学制：学/专硕均为3年\n学费：8000/年",
+            "score_lines": {
+              "2024": "362/50/70",
+              "2023": null
+            },
+            "admission_info_23": "337/50/70",
+            "admission_info_24": "复试名单：https://www2.scut.edu.cn/cs/2024/0317/c35337a538999/page.htm\n拟录取名单：https://www2.scut.edu.cn/cs/2024/0403/c35337a540894/page.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "深圳大学",
+    "name": "深圳大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "深圳大学（Shenzhen University），简称“深大”，位于广东省深圳市，是由广东省主管、深圳市人民政府主办的综合性大学；入选广东省高水平大学重点建设高校、国家级人才培养模式创新实验区、全国文明校园、全国首批深化创新创业教育改革示范高校，全国地方高校UOOC联盟发起单位，粤港澳高校联盟成员单位，具有推荐免试研究生资格高校",
+    "computer_rank": "第四轮评级：计算机A",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机与软件学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "[F110]专业综合知识考核\n(计算机与软件学院)",
+            "enrollment_24": 30,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": "325",
+              "2023": null
+            },
+            "admission_info_23": "311",
+            "admission_info_24": "一志愿复试名单：https://yz.szu.edu.cn/info/1041/12795.htm\n复试名单（可直接查看学院）：https://mp.weixin.qq.com/s/Banqns8Ka14OesfcoocjOw\n"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "成都理工大学",
+    "name": "成都理工大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "成都理工大学（Chengdu University of Technology），简称“成理”，位于四川省成都市，是教育部、自然资源部、四川省共建重点大学，国家“双一流”建设高校，入选“111计划”、卓越工程师教育培养计划、国家级大学生创新创业训练计划、中西部高校基础能力建设工程、国家建设高水平大学公派研究生项目、国家级新工科研究与实践项目、国家特色重点学科项目、全国深化创新创业教育改革示范高校、CDIO工程教育联盟成员",
+    "computer_rank": "软件工程无评级，计算机科学与技术无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机与网络空间安全学院\n(牛津布鲁克斯学院)",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 408 计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "计算机能力测试(上机):C语言编程",
+            "enrollment_24": 37,
+            "tuition_duration": "学费：8000元；\n学制：3年；",
+            "score_lines": {
+              "2024": "280",
+              "2023": null
+            },
+            "admission_info_23": "276",
+            "admission_info_24": "拟录取名单：https://cist.cdut.edu.cn/info/1145/6396.htm\n复试名单：https://cist.cdut.edu.cn/info/1145/6393.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "西南石油大学",
+    "name": "西南石油大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "西南石油大学是新中国创建的第二所石油本科院校，是一所中央与地方共建、以四川省人民政府管理为主的高等学校。2013年，学校入选\"国家中西部高校基础能力建设工程\"，成为入选该工程的100所高校之一。2017年9月，入选为国家首批“双一流”世界一流学科建设高校。",
+    "computer_rank": "第四轮学科评级：计算机C-，软工C。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学学院",
+        "majors": [
+          {
+            "major_code": "083500软件工程",
+            "major_name": "软件工程",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 302 数学（二）\n④ 925 数据结构+操作系统",
+            "reference_books": null,
+            "retrial_subjects": "复试采用线下复试:\n1、上机测试100分,考试科目C语言上机测试、时间:120分钟\n2、面试100分,重在考核考生的综合素质、专业素养和英语应用能力等。",
+            "enrollment_24": null,
+            "tuition_duration": "学制：3年\n学费：全8000/年",
+            "score_lines": {
+              "2024": "273/37/56",
+              "2023": null
+            },
+            "admission_info_23": "283/38/57",
+            "admission_info_24": "拟录取名单：https://www.swpu.edu.cn/gs/info/1074/4481.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "电子科技大学",
+    "name": "电子科技大学",
+    "level": "985",
+    "region": "A区",
+    "province": null,
+    "intro": "电子科技大学（University of Electronic Science and Technology of China），简称“电子科大”，坐落于四川省成都市，是中华人民共和国教育部直属高校，由教育部、工业和信息化部、四川省和成都市共建；位列国家“双一流”、“985工程”、“211工程”，入选“2011计划”、“111计划”、卓越工程师教育培养计划、国家建设高水平大学公派研究生项目、中国政府奖学金来华留学生接收院校、全国深化创新创业教育改革示范高校，为“两电一邮”成员；是一所完整覆盖整个电子类学科，以电子信息科学技术为核心，以工为主，理工渗透，理、工、管、文、医协调发展的多科性研究型全国重点大学。",
+    "computer_rank": "第四轮学科评估中，计算机A，软件工程B+。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与工程学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 820计算机专业基础（数据结构+操作系统）",
+            "reference_books": null,
+            "retrial_subjects": "笔试：C语言程序设计",
+            "enrollment_24": 79,
+            "tuition_duration": "总的拟录取名单：https://yz.uestc.edu.cn/info/1007/4885.htm\n\n\n学费：未公布；学制：3年",
+            "score_lines": {
+              "2024": "350/55/60/85/100",
+              "2023": null
+            },
+            "admission_info_23": "340/55/85/90",
+            "admission_info_24": "拟录取名单：https://www.scse.uestc.edu.cn/info/1015/15590.htm\n一志愿复试名单：https://www.scse.uestc.edu.cn/info/1015/15467.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "北京航空航天大学",
+    "name": "北京航空航天大学",
+    "level": "985",
+    "region": "A区",
+    "province": null,
+    "intro": "北京航空航天大学（Beihang University），简称“北航”，位于首都北京市，是中华人民共和国工业和信息化部直属的全国重点大学，中央直管高校，位列国家“双一流”、“985工程”、“211工程”重点建设高校，入选珠峰计划、2011计划、111计划、卓越工程师教育培养计划、国家建设高水平大学公派研究生项目、中国政府奖学金来华留学生接收院校、国家级新工科研究与实践项目、国家级大学生创新创业训练计划、国家大学生创新性实验计划、全国深化创新创业教育改革示范高校、强基计划试点高校",
+    "computer_rank": "第四轮评级：计算机A+，软件A+",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 961 计算机基础综合\n(组成原理、操作系统、计算机网络)",
+            "reference_books": null,
+            "retrial_subjects": "C语言上机编程，具有CCF-CSP测试\n成绩,其编程语言必须为\"C/C++\"累计排名50%以内的同学,可自愿选择是否参加本次C语言上机考试；如选择\"不参加的考生提交CCF-CSP 成绩和本人亲笔签名的协议书。",
+            "enrollment_24": 41,
+            "tuition_duration": "学费：8000元；学制：3年；住宿：提供住宿",
+            "score_lines": {
+              "2024": "340/40/60",
+              "2023": null
+            },
+            "admission_info_23": "310/40/60",
+            "admission_info_24": "拟录取名单：https://yzb.buaa.edu.cn/info/1003/3092.htm\n\n计算机学院一志愿名单：https://scse.buaa.edu.cn/info/1099/10987.htm\n\n网络空间安全一志愿复试名单：https://cst.buaa.edu.cn/info/1062/3503.htm\n\n网安一志愿拟录取：https://cst.buaa.edu.cn/info/1062/3516.htm#\n\n软件学院一志愿拟录取：https://soft.buaa.edu.cn/news_nry.jsp?urltype=news.NewsContentUrl&wbtreeid=1325&wbnewsid=11202"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "西北工业大学",
+    "name": "西北工业大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "西北工业大学简称“西工大”，位于陕西省会西安，直属中华人民共和国工业和信息化部，是中国唯一一所以同时发展航空、航天、航海（三航）工程教育和科学研究为特色的全国重点大学，位列国家“世界一流大学建设高校A类”、985工程、211工程。",
+    "computer_rank": "第四轮评级：计算机A-；软件B+。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 801 计算机专业基础\n(数据结构+组成原理)各占75",
+            "reference_books": null,
+            "retrial_subjects": "C语言上机考试\n同等学力加试科目:操作系统/计算机网络",
+            "enrollment_24": null,
+            "tuition_duration": "硕士研究生学制为3年\n全日制硕士研究生8000元/生·年",
+            "score_lines": {
+              "2024": "310/50/70",
+              "2023": null
+            },
+            "admission_info_23": "310/50/70",
+            "admission_info_24": "拟录取名单：https://jsj.nwpu.edu.cn/info/1599/21715.htm\n一志愿复试名单：https://jsj.nwpu.edu.cn/info/1599/21585.htm"
+          },
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 801 计算机专业基础\n(数据结构+组成原理)各占75",
+            "reference_books": null,
+            "retrial_subjects": "C语言上机考试\n同等学力加试科目:操作系统/计算机网络",
+            "enrollment_24": null,
+            "tuition_duration": "硕士研究生学制为3年\n全日制硕士研究生8000元/生·年",
+            "score_lines": {
+              "2024": "310/50/70",
+              "2023": "310/50/70"
+            },
+            "admission_info_23": "一志愿进复试13人,拟录取11人\n一志愿复试均分382\n高分431,最低分311",
+            "admission_info_24": "拟录取名单：https://jsj.nwpu.edu.cn/info/1599/21715.htm\n一志愿复试名单：https://jsj.nwpu.edu.cn/info/1599/21585.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "西安交通大学",
+    "name": "西安交通大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "西安交通大学（Xi’an Jiaotong University）简称“西安交大”，是中华人民共和国教育部直属的综合性研究型全国重点大学，由教育部与国家国防科技工业局共建，位列世界一流大学建设高校A类、国家“七五”“八五”重点建设高校、国家“211工程”和“985工程”首批重点建设高校",
+    "computer_rank": "第四轮评级：计算机A-，软件B。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "电子与信息学部\n-计算机科学与技术学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 814 计算机基础综合\n（数据结构+组成原理）",
+            "reference_books": null,
+            "retrial_subjects": "复试科目及范围：（1）以下六门科目中任选二门：操作系统、离散数学、算机网络、编译原理、数据库原理、软件工程。（2）必须参加机试并取得合格成绩，但是CCF CSP认证成绩在350分（含）以上者可免机试，直接认定机试合格。",
+            "enrollment_24": 8,
+            "tuition_duration": "学制：3年\n学费：学硕8000/年；\n专硕13200/年",
+            "score_lines": {
+              "2024": "350/50/90",
+              "2023": null
+            },
+            "admission_info_23": "335/50/90",
+            "admission_info_24": "一志愿复试名单：http://www.cs.xjtu.edu.cn/info/1233/3336.htm"
+          },
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 814 计算机基础综合\n（数据结构+组成原理）",
+            "reference_books": null,
+            "retrial_subjects": "复试科目及范围：（1）以下六门科目中任选二门：操作系统、离散数学、算机网络、编译原理、数据库原理、软件工程。（2）必须参加机试并取得合格成绩，但是CCF CSP认证成绩在350分（含）以上者可免机试，直接认定机试合格。",
+            "enrollment_24": 8,
+            "tuition_duration": "学制：3年\n学费：学硕8000/年；\n专硕13200/年",
+            "score_lines": {
+              "2024": "350/50/90",
+              "2023": "335/50/90"
+            },
+            "admission_info_23": "一志愿复试23人,拟录取15人,复录比:1.5:1\n一志愿均分360\n最高分415,最低分335\n拟录取均分372\n最高分415,最低分343",
+            "admission_info_24": "一志愿复试名单：http://www.cs.xjtu.edu.cn/info/1233/3336.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "河北工业大学",
+    "name": "河北工业大学",
+    "level": "211",
+    "region": "A区",
+    "province": null,
+    "intro": "河北工业大学（Hebei University of Technology）坐落于天津市，由中华人民共和国教育部与河北省人民政府、天津市人民政府共建，隶属于河北省，是国家“世界一流学科建设高校“、国家“211工程”重点建设高校",
+    "computer_rank": "第四轮评级：计算机C+，软件无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "人工智能与数据科学学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "F2803离散数学\n与程序设计",
+            "enrollment_24": null,
+            "tuition_duration": "学制：3年\n学费：全日制学术学位硕士研究生：8000元/学年\n全日制专业学位硕士研究生：7000元/学年；",
+            "score_lines": {
+              "2024": "301/37/56",
+              "2023": null
+            },
+            "admission_info_23": "302",
+            "admission_info_24": "最高分：390\n最低分：302\n平均分：330"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "燕山大学",
+    "name": "燕山大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "燕山大学（Yanshan University），简称“燕大”，坐落于河北省秦皇岛市，是河北省人民政府、教育部、工业和信息化部、国家国防科技工业局四方共建的全国重点大学，河北省重点支持的”双一流“学科建设高校 ，北京高科大学联盟 、中俄工科大学联盟观察员单位",
+    "computer_rank": "第四轮评级：计算机B，软件工程B-。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "信息科学与工程学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "M10C语言程序设计\nM11数据库系统教程\nM12软件工程导论\nM13面向对象程序设计",
+            "enrollment_24": 69,
+            "tuition_duration": "学制：3年\n学费：全日制学术学位硕士研究生：8000元/学年；全日制专业学位硕士研究生：7000元/学年；非全日制工程硕士研究生学费：1.2万元/人/年",
+            "score_lines": {
+              "2024": "274/37/56",
+              "2023": null
+            },
+            "admission_info_23": "273/38/57",
+            "admission_info_24": "一志愿拟录取名单：https://zsjyc.ysu.edu.cn/info/1254/5598.htm\n一志愿复试名单：https://zsjyc.ysu.edu.cn/info/1254/5527.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "复旦大学",
+    "name": "复旦大学",
+    "level": "985",
+    "region": "A区",
+    "province": null,
+    "intro": "复旦大学（Fudan University），位于上海市，是中华人民共和国教育部直属、中央直管副部级建制的全国重点大学，世界一流大学建设高校（A类），国家“985工程”、“211工程”重点建设高校，入选国家“珠峰计划”、“强基计划”、“111计划”、“2011计划”、卓越医生教育培养计划、卓越法律人才教育培养计划、国家建设高水平大学公派研究生项目、新工科研究与实践项目、中国政府奖学金来华留学生接收院校、全国首批深化创新创业教育改革示范高校、首批学位授权自主审核单位，九校联盟、环太平洋大学联盟、中国大学校长联谊会、东亚研究型大学协会、新工科教育国际联盟、医学“双一流”建设联盟、长三角研究型大学联盟、 长三角高校智库联盟创始成员，中国大学智库论坛秘书处单位，是一所国内顶尖的综合性研究型大学",
+    "computer_rank": "第四轮评级：计算机B+  ；软件工程B+。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学技术院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "1>024001计算机专业知识\n2>024002计算机编程考核\n机试不计入成绩,但作为重要考核标准,老师根据编程能力提问问题。\n考生的总成绩包括初试成绩和复试成绩,初试成绩占50%、复试成绩占50%。",
+            "enrollment_24": null,
+            "tuition_duration": "学制：学硕3年；专硕2.5年。\n学费：学硕8000年，一共24000元计算机专硕学费6万【共计】，不提供住宿软件专硕学费6万【全共计】、8万【非全共计】，均不提供住宿",
+            "score_lines": {
+              "2024": "最高441，最低考了345，详情可以看拟录取名单",
+              "2023": null
+            },
+            "admission_info_23": "320/50/75",
+            "admission_info_24": "一志愿进复试名单：https://cs.fudan.edu.cn/2a/df/c24257a666335/page.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "东北大学",
+    "name": "东北大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "东北大学（Northeastern University），坐落于辽宁省沈阳市，是中华人民共和国教育部直属的全国重点大学，由教育部、辽宁省、沈阳市三方重点共建，是世界一流大学建设高校，国家首批“211工程”和“985工程”重点建设高校。",
+    "computer_rank": "第四轮评级：计算机A-，软件A-。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与工程学院含秦皇岛分校/佛山\n25改考",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 408 计算机学科专业基础",
+            "reference_books": "[1]《数据库系统概论》(第五版)王珊、萨师煊编著,高等教育出版社\n[2]《软件工程及应用》张斌、郭军,东北大学出版社,2007年\n[3]《计算机网络》(第七版)谢希仁编著,电子工业出版社\n[4]《Java编程思想》(第四版)(美)埃克尔著,陈昊鹏译,机械工业出版社,2007年;《C++语言程序设计》(第四版)\n郑莉,董渊,何江舟著,清华大\n学出版社,2018年",
+            "retrial_subjects": "【1】数据库原理\n【2】软件工程\n【3】计算机网络\n【4】面向对象程序设计(JAVA/C++二选一)",
+            "enrollment_24": 55,
+            "tuition_duration": "学制：3年\n学费：学硕8000/年\n专硕：10000/年\n\n\n中美联培：学费6万/年\n学制3年\n东北大学和美国双证\n",
+            "score_lines": {
+              "2024": "349",
+              "2023": null
+            },
+            "admission_info_23": "不整理了，没意义，之前考的是C语言，数据结构+操作系统",
+            "admission_info_24": "拟录取名单：http://www.cse.neu.edu.cn/2024/0407/c6274a245270/page.htm"
+          },
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 408 计算机学科专业基础",
+            "reference_books": "[1]《数据库系统概论》(第五版)王珊、萨师煊编著,高等教育出版社\n[2]《软件工程及应用》张斌、郭军,东北大学出版社,2007年\n[3]《计算机网络》(第七版)谢希仁编著,电子工业出版社\n[4]《Java编程思想》(第四版)(美)埃克尔著,陈昊鹏译,机械工业出版社,2007年;《C++语言程序设计》(第四版)\n郑莉,董渊,何江舟著,清华大\n学出版社,2018年",
+            "retrial_subjects": "【1】数据库原理\n【2】软件工程\n【3】计算机网络\n【4】面向对象程序设计(JAVA/C++二选一)",
+            "enrollment_24": 55,
+            "tuition_duration": "学制：3年\n学费：学硕8000/年\n专硕：10000/年\n\n\n中美联培：学费6万/年\n学制3年\n东北大学和美国双证\n",
+            "score_lines": {
+              "2024": "349",
+              "2023": "不整理了，没意义，之前考的是C语言，数据结构+操作系统"
+            },
+            "admission_info_23": null,
+            "admission_info_24": "拟录取名单：http://www.cse.neu.edu.cn/2024/0407/c6274a245270/page.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "华东师范大学",
+    "name": "华东师范大学",
+    "level": "985",
+    "region": "A区",
+    "province": null,
+    "intro": "华东师范大学，简称“华东师大”，位于上海市，由中华人民共和国教育部直属，是教育部和上海市人民政府重点共建的综合性研究型全国重点大学；位列“世界一流大学建设高校A类”、“985工程”、“211工程”。",
+    "computer_rank": "第四轮评级：计算机B+，软件A。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与技术学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "上机考试:主要考查学生运用计算机编程解决问题的能力,上机语言为C,C++,Java,Python(3)",
+            "enrollment_24": null,
+            "tuition_duration": "学制：学硕 3年\n电子信息 3年\n学费：\n学硕 8000/年\n全日制电子信息 1.2万/年\n非全日制电子信息 2万/年\n非全双休日集中授课",
+            "score_lines": {
+              "2024": "340",
+              "2023": null
+            },
+            "admission_info_23": "333",
+            "admission_info_24": "一志愿复试名单：http://www.cs.ecnu.edu.cn/d1/cd/c19867a577997/page.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "哈尔滨工程大学",
+    "name": "哈尔滨工程大学",
+    "level": "211",
+    "region": "A区",
+    "province": null,
+    "intro": "哈尔滨工程大学（Harbin Engineering University）简称“哈工程”，是中华人民共和国工业和信息化部直属并由工业和信息化部、教育部、黑龙江省、哈尔滨市、海军共建的全国重点大学，位列“世界一流学科建设高校”。",
+    "computer_rank": "第四轮评级：计算机B+，软件工程B。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与技术学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 811 数据结构+组成原理",
+            "reference_books": null,
+            "retrial_subjects": "采用上机编程方式,编程语言C语言。",
+            "enrollment_24": 19,
+            "tuition_duration": "学制：3年\n学费：全日制学术学位硕士研究生：8000元/学年；\n全日制专业学位硕士研究生：9000元/学年",
+            "score_lines": {
+              "2024": "350",
+              "2023": null
+            },
+            "admission_info_23": "350",
+            "admission_info_24": "拟录取名单：https://yzb.hrbeu.edu.cn/2024/0425/c3262a324583/page.htm"
+          },
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 811 数据结构+组成原理",
+            "reference_books": null,
+            "retrial_subjects": "采用上机编程方式,编程语言C语言。",
+            "enrollment_24": 19,
+            "tuition_duration": "学制：3年\n学费：全日制学术学位硕士研究生：8000元/学年；\n全日制专业学位硕士研究生：9000元/学年",
+            "score_lines": {
+              "2024": "350",
+              "2023": "350"
+            },
+            "admission_info_23": "进复试24人,拟录取14人\n一志愿复试均分368\n拟录取均分375\n最高392,最低353",
+            "admission_info_24": "拟录取名单：https://yzb.hrbeu.edu.cn/2024/0425/c3262a324583/page.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "内蒙古大学",
+    "name": "内蒙古大学",
+    "level": "211",
+    "region": "A区",
+    "province": null,
+    "intro": "内蒙古大学（Inner Mongolia University），简称“内大”（IMU），坐落于内蒙古呼和浩特市，是教育部与内蒙古自治区人民政府部区合建的全国重点大学，是国家“双一流”建设高校、国家“211工程”建设高校、内蒙古自治区一流大学建设支持高校、中西部“一省一校”国家重点建设大学",
+    "computer_rank": "第四轮评级：计算机B-，软件工程C-。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机学院\n24改考",
+        "majors": [
+          {
+            "major_code": "085400电子信息-计算机技术",
+            "major_name": "计算机技术",
+            "exam_subjects": "① 101 思想政治理论\n② 202英语（二）\n③ 302 数学（二）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "高级语言程序设计(C++或Java任选)\n初试成绩与复试成绩各占总成绩权重的50%。",
+            "enrollment_24": 57,
+            "tuition_duration": "学制：3年\n全日制学术学位，每生每年8000元。全日制专业学位，每生每年12000元。",
+            "score_lines": {
+              "2024": "264",
+              "2023": null
+            },
+            "admission_info_23": "这些信息就不整理了，没啥意义，24改考了408",
+            "admission_info_24": "拟录取名单：https://gs.imu.edu.cn/info/1020/1761.htm"
+          },
+          {
+            "major_code": "085400电子信息-计算机技术",
+            "major_name": "计算机技术",
+            "exam_subjects": "① 101 思想政治理论\n② 202英语（二）\n③ 302 数学（二）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "高级语言程序设计(C++或Java任选)\n初试成绩与复试成绩各占总成绩权重的50%。",
+            "enrollment_24": 57,
+            "tuition_duration": "学制：3年\n全日制学术学位，每生每年8000元。全日制专业学位，每生每年12000元。",
+            "score_lines": {
+              "2024": "264",
+              "2023": "这些信息就不整理了，没啥意义，24改考了408"
+            },
+            "admission_info_23": null,
+            "admission_info_24": "264-346"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "上海海洋大学",
+    "name": "上海海洋大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "位于上海市，是上海市人民政府与国家海洋局、农业农村部共建高校，是国家“世界一流学科建设高校”，入选教育部卓越农林人才教育培养计划、国家建设高水平大学公派研究生项目。",
+    "computer_rank": "第四轮评级：计算机C+，软件工程无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "信息学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 919 计算机基础综合\n（C语言+数据结构）",
+            "reference_books": null,
+            "retrial_subjects": "复试:F21数据库原理和面向对象程序设计语言(C++或Java)\n录取成绩=(初试成绩÷5)×70%+(笔试成绩X50%+面试成绩×50%)X30%",
+            "enrollment_24": 15,
+            "tuition_duration": "学制：学术型为3年，专业型为3年【电子信息】\n学费：\n全日制培养方式的硕士生各专业学费标准为6000～8000元/生/年",
+            "score_lines": {
+              "2024": "290/37/56",
+              "2023": null
+            },
+            "admission_info_23": "273/38/57",
+            "admission_info_24": "公示期已过"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "华中师范大学",
+    "name": "华中师范大学",
+    "level": "211",
+    "region": "A区",
+    "province": null,
+    "intro": "华中师范大学简称“华大”或”华中师大”，位于湖北省会武汉，是中华人民共和国教育部直属重点综合性师范大学，国家“211工程”、“985工程优势学科创新平台”重点建设院校，国家“双一流”世界一流学科建设高校。",
+    "computer_rank": "第四轮评级：计算机B-，软件C。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术\n23改考",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "最终成绩=(初试总分/5)*70%+复试成绩*30%\n笔试:C语言程序设计",
+            "enrollment_24": 21,
+            "tuition_duration": "学制：学术学位3年，专业学位3年\n学费：全日制学术学位硕士研究生：8000元/学年；全日制专业学位硕士研究生：10000元/学年。",
+            "score_lines": {
+              "2024": "325/37/56",
+              "2023": null
+            },
+            "admission_info_23": "302/38/57",
+            "admission_info_24": "拟录取名单：https://cs.ccnu.edu.cn/info/1115/4056.htm"
+          },
+          {
+            "major_code": "081200计算机科学与技术\n23改考",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "最终成绩=(初试总分/5)*70%+复试成绩*30%\n笔试:C语言程序设计",
+            "enrollment_24": 21,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": "325/37/56",
+              "2023": "302/38/57"
+            },
+            "admission_info_23": "最高分：375\n最低分：302\n平均分：328",
+            "admission_info_24": "拟录取名单：https://cs.ccnu.edu.cn/info/1115/4056.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "昆明理工大学",
+    "name": "昆明理工大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "昆明理工大学位于云南省昆明市，是云南省综合性重点大学，由国防科技工业局与云南省人民政府共建高校，入选“中西部高校基础能力建设工程”、国家建设高水平大学公派研究生项目、教育部“卓越工程师教育培养计划”、中国政府奖学金来华留学生接收院校、全国首批深化创新创业教育改革示范高校、高等学校科技成果转化和技术转移基地、数据中国“百校工程”、“高等学校学科创新引智计划”，国家创新人才培养示范基地，建立国家国际技术转移中心的高校，CDIO工程教育联盟成员单位",
+    "computer_rank": "计算机无评价，软件无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "信息工程与自动化学院",
+        "majors": [
+          {
+            "major_code": "085400电子信息-计算机技术",
+            "major_name": "计算机技术",
+            "exam_subjects": "① 101 思想政治理论\n② 202 英语（二）\n③ 302 数学（二）\n④ 891 计算机专业核心综合\n",
+            "reference_books": null,
+            "retrial_subjects": "1）F003计算机核心课程综合\n2）外语(口语、听力、翻译)\n3）综合面试\n初复试占比6：4",
+            "enrollment_24": 90,
+            "tuition_duration": "学制：全日制、非全日制学术硕士：8000元/生·学年；全日制专业硕士：资源与环境、电子信息、机械、材料与化工、能源动力、土木水利、生物与医药、交通运输8000元/生·学年。",
+            "score_lines": {
+              "2024": "最低分：263\n最高分：374",
+              "2023": null
+            },
+            "admission_info_23": "302/35/53",
+            "admission_info_24": "拟录取名单：https://www.kmust.edu.cn/info/1166/48574.htm\n\n一志愿复试名单：https://www.kmust.edu.cn/info/1166/48194.htm"
+          },
+          {
+            "major_code": "085400电子信息-计算机技术",
+            "major_name": "计算机技术",
+            "exam_subjects": "① 101 思想政治理论\n② 202 英语（二）\n③ 302 数学（二）\n④ 891 计算机专业核心综合\n",
+            "reference_books": null,
+            "retrial_subjects": "1）F003计算机核心课程综合\n2）外语(口语、听力、翻译)\n3）综合面试\n初复试占比6：4",
+            "enrollment_24": 90,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": "最低分：263\n最高分：374",
+              "2023": "302/35/53"
+            },
+            "admission_info_23": "一志愿进复试148+2专项,拟录取106+2专项\n一志愿进复试均分334\n最高分405,最低分305\n一志愿拟录取均分340\n最高分405,最低分306",
+            "admission_info_24": "拟录取名单：https://www.kmust.edu.cn/info/1166/48574.htm\n\n一志愿复试名单：https://www.kmust.edu.cn/info/1166/48194.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "云南大学",
+    "name": "云南大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "云南大学（Yunnan University）简称云大（YNU），位于昆明市，是教育部与云南省“以部为主、部省合建”的全国重点大学，世界一流大学建设高校，入选211工程、一省一校、中西部高校基础能力建设工程，云南省重点支持的国家一流大学建设高校。",
+    "computer_rank": "第四轮评级：计算机B-，软件工程B-。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "信息学院",
+        "majors": [
+          {
+            "major_code": "085404电子信息-计算机技术",
+            "major_name": "计算机技术",
+            "exam_subjects": "① 101 思想政治理论\n② 202 英语（二）\n③ 302 数学（二）\n④ 408 计算机学科专业基础  ",
+            "reference_books": null,
+            "retrial_subjects": "专业技能(C/C++、Java或Python上机编程)\n初复试占比6：4",
+            "enrollment_24": 23,
+            "tuition_duration": "学制：3年\n学费：全日制学术学位硕士研究生：8000元/学年\n全日制专业学位硕士研究生：8000元/学年（计算机）10000元/学年（软件）",
+            "score_lines": {
+              "2024": "286",
+              "2023": null
+            },
+            "admission_info_23": "300/35/53",
+            "admission_info_24": "一志愿复试名单：http://www.grs.ynu.edu.cn/info/1008/4633.htm\n拟录取名单：http://www.grs.ynu.edu.cn/info/1008/4714.htm"
+          },
+          {
+            "major_code": "085404电子信息-计算机技术",
+            "major_name": "计算机技术",
+            "exam_subjects": "① 101 思想政治理论\n② 202 英语（二）\n③ 302 数学（二）\n④ 408 计算机学科专业基础  ",
+            "reference_books": null,
+            "retrial_subjects": "专业技能(C/C++、Java或Python上机编程)\n初复试占比6：4",
+            "enrollment_24": 23,
+            "tuition_duration": "296-330",
+            "score_lines": {
+              "2024": "286",
+              "2023": "300/35/53"
+            },
+            "admission_info_23": "一志愿进复试68+1专项,计划招生45+1专项\n一志愿复试均分333",
+            "admission_info_24": "一志愿复试名单：http://www.grs.ynu.edu.cn/info/1008/4633.htm\n拟录取名单：http://www.grs.ynu.edu.cn/info/1008/4714.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "南通大学",
+    "name": "南通大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "南通大学（NantongUniversity）始建于1912年，源自近代著名实业家、教育家张謇先生创办的私立南通医学专门学校和南通纺织专门学校。",
+    "computer_rank": "第四轮评级：计算机无评级，软无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "信息科学技术学院",
+        "majors": [
+          {
+            "major_code": "085404电子信息-计算机技术",
+            "major_name": "计算机技术",
+            "exam_subjects": "① 101 思想政治理论\n② 202英语（二）\n③ 302 数学（二）\n④ 822 数据结构",
+            "reference_books": null,
+            "retrial_subjects": "C/C++程序设、人工智能(任选一门)\n不招收同等学力考生",
+            "enrollment_24": 27,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": "273",
+              "2023": null
+            },
+            "admission_info_23": "340",
+            "admission_info_24": "专硕拟录取名单：https://sist.ntu.edu.cn/2024/0402/c5029a230953/page.htm\n专硕一志愿复试名单：https://sist.ntu.edu.cn/2024/0327/c5029a230525/page.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "南京审计大学",
+    "name": "南京审计大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "南京审计大学（Nanjing Audit University），简称“南审”，位于江苏省南京市，是教育部、财政部、审计署和江苏省人民政府共建高校，教育部“高层次国际化人才培养创新实践项目”基地建设单位，长三角新商科教育联盟成员。学校起源于1983年创建的南京财贸学院；1987年更名为南京审计学院；2002年南京金融高等专科学校并入；2013年成为硕士学位授予单位；2015年经教育部批准更为南京审计大学；2021年获批博士学位授予单位（需加强建设）。",
+    "computer_rank": "第四轮评级：计算机无评级；软件无评级",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "信息工程学院",
+        "majors": [
+          {
+            "major_code": "085404电子信息-计算机技术",
+            "major_name": "计算机技术",
+            "exam_subjects": "① 101 思想政治理论\n② 202英语（二）\n③ 302 数学（二）\n④ 911 数据结构",
+            "reference_books": null,
+            "retrial_subjects": "复试笔试科目:C程序设计;\n同等学力加试科目:数据库系统、软件工程",
+            "enrollment_24": 37,
+            "tuition_duration": "学制：3年\n学费：3年3万",
+            "score_lines": {
+              "2024": "310/37/56",
+              "2023": null
+            },
+            "admission_info_23": "286/38/57",
+            "admission_info_24": "拟录取名单：https://gs.nau.edu.cn/2024/0402/c4394a127354/page.htm\n"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "大连海事大学",
+    "name": "大连海事大学",
+    "level": "211",
+    "region": "A区",
+    "province": null,
+    "intro": "大连海事大学是交通运输部所属的全国重点大学，是国家“双一流”世界一流学科建设高校、国家“211工程”建设高校，是交通运输部、教育部、原国家海洋局、辽宁省人民政府、大连市人民政府共建高校",
+    "computer_rank": "第四轮评级：计算机B，软件C。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "信息科学技术学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "笔试数据库",
+            "enrollment_24": 41,
+            "tuition_duration": "学制：3年\n学费：全日制学术学位硕士研究生：8000元/学年；\n全日制专业学位硕士研究生：12000元/学年",
+            "score_lines": {
+              "2024": "333",
+              "2023": null
+            },
+            "admission_info_23": "309/38/57",
+            "admission_info_24": "拟录取名单：https://www.dlmu.edu.cn/info/1060/68488.htm\n我这下载的是文档损坏了，看不了，你可以试试\n一志愿复试名单：https://www.dlmu.edu.cn/info/1060/67878.htm"
+          },
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "笔试数据库",
+            "enrollment_24": 41,
+            "tuition_duration": "学制：3年\n学费：全日制学术学位硕士研究生：8000元/学年；\n全日制专业学位硕士研究生：12000元/学年",
+            "score_lines": {
+              "2024": "333",
+              "2023": "309/38/57"
+            },
+            "admission_info_23": "一志愿复试50人,拟录取41人\n一志愿复试均分332\n拟录取均分335\n最高379,最低313",
+            "admission_info_24": "拟录取名单：https://www.dlmu.edu.cn/info/1060/68488.htm\n我这下载的是文档损坏了，看不了，你可以试试\n一志愿复试名单：https://www.dlmu.edu.cn/info/1060/67878.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "江苏大学",
+    "name": "江苏大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "江苏大学（Jiangsu University），位于江苏省镇江市，是江苏省人民政府与中华人民共和国教育部、农业农村部共建的综合性研究型全国重点大学  ，入选教育部首批“卓越工程师教育培养计划”高校、国家“特色重点学科项目”建设高校。",
+    "computer_rank": "第四轮评级：计算机B，软件C+。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与通信工程学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 851 数据结构与算法设计",
+            "reference_books": null,
+            "retrial_subjects": "学硕:953离散数学\n复试内容包括考生报考资格审查、复试科目考核、综合能力面试、外语听说能力测试等。复试总分为100分，包括复试科目考核（占30%）、综合能力面试（占60%）、外语听说能力测试（占10%），均实行百分制。",
+            "enrollment_24": 30,
+            "tuition_duration": "学制：学术学位3年，专业学位3年\n学费：全日制学术硕士研究生收取学费8000元/人/年；全/非全日制专业硕士研究生收取学费10000元/人/年。",
+            "score_lines": {
+              "2024": "277/37/56",
+              "2023": null
+            },
+            "admission_info_23": "280/38/57",
+            "admission_info_24": "公示的拟录取名单已过期\n一志愿复试名单也已经过期了"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "江南大学",
+    "name": "江南大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "江南大学（Jiangnan University），坐落于无锡市，是中华人民共和国教育部直属高校，国家世界一流学科建设高校，“211工程”、“985工程优势学科创新平台”重点建设高校。",
+    "computer_rank": "第四轮评级：计算机B-，软件B。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "人工智能与计算机学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 851算法与程序设计",
+            "reference_books": "复试参考书目：https://ai.jiangnan.edu.cn/info/1055/2785.htm",
+            "retrial_subjects": "计算机科学专业基础综合",
+            "enrollment_24": 40,
+            "tuition_duration": "学制：学制3年\n学费:全日制学术学位硕士研究生：8000元/学年；全日制专业学位硕士研究生：10000元/学年。",
+            "score_lines": {
+              "2024": "328/37/56",
+              "2023": null
+            },
+            "admission_info_23": "308/38/57",
+            "admission_info_24": "一志愿复试名单：https://ai.jiangnan.edu.cn/info/1031/3610.htm\n拟录取名单：https://yz.jiangnan.edu.cn/info/1073/3439.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "北京理工大学",
+    "name": "北京理工大学",
+    "level": "985",
+    "region": "A区",
+    "province": null,
+    "intro": "北京理工大学（Beijing Institute of Technology），简称“北理工”，是隶属于中华人民共和国工业和信息化部的全国重点大学，中管高校，位列国家“双一流”、“211工程”、“985工程”重点建设高校，入选高等学校学科创新引智计划、高等学校创新能力提升计划、卓越工程师教育培养计划、国家建设高水平大学公派研究生项目、国家大学生创新性实验计划、国家级大学生创新创业训练计划、新工科研究与实践项目、中国政府奖学金来华留学生接收院校、高等学校科技成果转化和技术转移基地，是工业和信息化部高校联盟、全国高等军工院校课程思政联盟、中国人工智能教育联席会、卓越联盟高校、延河高校人才培养联盟成员。",
+    "computer_rank": "计算机科学与技术为A-、软件工程为B+",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "网络空间安全学院",
+        "majors": [
+          {
+            "major_code": "085400电子信息-网络与信息安全",
+            "major_name": "计算机技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 302 数学（二）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "C/C++语言程序设计(上机)\n",
+            "enrollment_24": 22,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": "300",
+              "2023": null
+            },
+            "admission_info_23": "300",
+            "admission_info_24": "复试名单：https://cst.bit.edu.cn/xxfw/tzgg/2c231453fedc4e58b9f7113be9ee27be.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "南昌大学",
+    "name": "南昌大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "南昌大学（Nanchang University），简称“南大”，位于江西省会南昌市，是教育部与江西省人民政府合建高校，是“世界一流学科建设高校”，“211工程”建设高校。",
+    "computer_rank": "第四轮评级：计算机无评级，软件工程无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "信息工程学院",
+        "majors": [
+          {
+            "major_code": "085400电子信息-人工智能",
+            "major_name": "计算机技术",
+            "exam_subjects": "① 101 思想政治理论\n② 202英语（二）\n③ 302 数学（二）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "离散数学，初复试占比6：4",
+            "enrollment_24": 25,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": "1：1.3入复试  298",
+              "2023": null
+            },
+            "admission_info_23": "326",
+            "admission_info_24": "总：https://yjsy.ncu.edu.cn/docs/2024-03/4b9452ca800e412da414dacb9e3b8cdf.pdf\n软件学院：https://soft.ncu.edu.cn/xydt/tzgg/3b9df78167124048a834cecf499464a9.htm（软工）\nhttps://soft.ncu.edu.cn/xydt/tzgg/7245ad8b2afb4af7ae01bebab43238c4.htm（网安）\n数学与计算机学院：https://smcs.ncu.edu.cn/xydt/tzgg/723714964482448d983b0569a0b108dd.htm\n\n"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "华北水利水电大学",
+    "name": "华北水利水电大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "华北水利水电大学（North China University of Water Resources and Electric Power），简称“华水”，坐落于河南省郑州市，是水利部与河南省共建、以河南省管理为主的河南省特色骨干大学，是金砖国家网络大学中方高校牵头单位、金砖国家大学联盟成员、中俄交通大学联盟成员。",
+    "computer_rank": "第四轮评级：计算机无评级，软件工程无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "信息工程学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 967 数据结构",
+            "reference_books": null,
+            "retrial_subjects": "579数据库技术\n同等学力加试科目:\n1）计算机网络\n2）面向对象程序设计",
+            "enrollment_24": 11,
+            "tuition_duration": "学制：3年\n学费：8000/年",
+            "score_lines": {
+              "2024": "273/37/56",
+              "2023": null
+            },
+            "admission_info_23": "273",
+            "admission_info_24": null
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "新疆大学",
+    "name": "新疆大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "新疆大学（Xinjiang University），简称“新大”，位于新疆维吾尔自治区首府乌鲁木齐，是世界一流大学建设高校（B类）、综合性全国重点大学、教育部与新疆维吾尔自治区人民政府“部区合建”高校、国家“211工程”重点建设高校、国家西部大开发重点建设高校。",
+    "computer_rank": "第四轮评级：计算机B-，软件工程C+。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "信息科学与工程学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 826 数据结构",
+            "reference_books": null,
+            "retrial_subjects": "复试科目:许算机网络;\n同等学力加试科目:C语言程序设\n计,数据库系统",
+            "enrollment_24": 55,
+            "tuition_duration": "学制：3年\n学费：全日制学术学位硕士研究生：5800元/学年；\n全日制专业学位硕士研究生：5800元/学年",
+            "score_lines": {
+              "2024": "263/34/51",
+              "2023": null
+            },
+            "admission_info_23": "263/35/53",
+            "admission_info_24": "拟录取名单：https://it.xju.edu.cn/info/1101/3132.htm\n一志愿复试名单：https://it.xju.edu.cn/info/1101/3130.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "汕头大学",
+    "name": "汕头大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "汕头大学（简称汕大，Shantou University），于1981年8月26日始建，位于广东省汕头市，教育部、广东省、李嘉诚基金会三方共建的省部共建公立大学。",
+    "computer_rank": "第四轮评级：计算机无评级，软件工程无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "工学院",
+        "majors": [
+          {
+            "major_code": "计算机软件与理论\n(081202)",
+            "major_name": "未知专业",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "复试方案：https://eng.stu.edu.cn/info/1081/3901.htm\n",
+            "enrollment_24": null,
+            "tuition_duration": "学制、学费、奖学金\n学制：3年\n学费：8000/年",
+            "score_lines": {
+              "2024": "273/37/36",
+              "2023": null
+            },
+            "admission_info_23": "273/38/57",
+            "admission_info_24": "拟录取名单：http://www.gs.stu.edu.cn/list/81/post/803c2fd5-0571-4471-ad13-7fd3f031937d\n"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "郑州轻工业大学",
+    "name": "郑州轻工业大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "郑州轻工业大学（Zhengzhou University of Light Industry），位于河南省郑州市，是中央与地方共建、以地方管理为主的河南省特色骨干大学，是河南省人民政府和国家烟草专卖局共建高校，是博士学位授予单位；入选国家教育强国推进工程、卓越工程师教育培养计划、国家级新工科研究与实践项目、国家级大学生创新创业训练计划、全国毕业生就业典型经验高校。",
+    "computer_rank": "第四轮评级：计算机C，软件工程C。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与技术学院",
+        "majors": [
+          {
+            "major_code": "085400电子信息-计算机技术",
+            "major_name": "计算机技术",
+            "exam_subjects": "① 101 思想政治理论\n② 202 英语（二）\n③ 302 数学（二）\n④ 823 计算机专业综合\n（数据结构+计算机网络）",
+            "reference_books": null,
+            "retrial_subjects": "专业笔试:C语言程序设计；对跨专业考生、同等学力考生、成人教育应届本科毕业生及复试时尚未取得本科毕业证书的自考和网络教育考生,必须在复试阶段加式2门本科主\n干课程(笔试):计算机操作系统、数据库原理",
+            "enrollment_24": 26,
+            "tuition_duration": "学制：3年\n学费：学8000/年",
+            "score_lines": {
+              "2024": "305/37/56",
+              "2023": null
+            },
+            "admission_info_23": "294/38/57",
+            "admission_info_24": "一志愿复试名单：https://yjsc.zzuli.edu.cn/2024/0330/c2878a309078/page.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "湖北工业大学",
+    "name": "湖北工业大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "湖北工业大学（Hubei University of Technology），简称“湖工大”，坐落于湖北省武汉市，是一所以工学为特色，覆盖工、文、理、艺、经、管、法和教育等八大学科门类的多科性大学，是湖北省重点建设高校、“湖北省2011计划”牵头高校、湖北省国内一流学科建设高校。",
+    "computer_rank": "第四轮评级：计算机C-，软件工程无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 836 数据结构与算法",
+            "reference_books": null,
+            "retrial_subjects": "复试:笔试(程序综合设计及上机)+面试\n初复试占比7：3",
+            "enrollment_24": 52,
+            "tuition_duration": "学制、学费、奖学金\n学制：3年\n学费：硕士研究生生8000元/生/年",
+            "score_lines": {
+              "2024": "273/37/56",
+              "2023": null
+            },
+            "admission_info_23": "273/38/57",
+            "admission_info_24": "拟录取名单：https://yjs.hbut.edu.cn/info/1010/13436.htm"
+          },
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 836 数据结构与算法",
+            "reference_books": null,
+            "retrial_subjects": "复试:笔试(程序综合设计及上机)+面试\n初复试占比7：3",
+            "enrollment_24": 52,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": "273/37/56",
+              "2023": "273/38/57"
+            },
+            "admission_info_23": "一志愿复试37人,拟录取27人\n一志愿均分315\n最高分391,最低分282\n拟录取均分323\n最高分391，最低分297",
+            "admission_info_24": "拟录取名单：https://yjs.hbut.edu.cn/info/1010/13436.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "南京信息工程大学",
+    "name": "南京信息工程大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "南京信息工程大学（Nanjing University of Information Science and Technology），简称“南信大”，位于江苏省南京市，是一所以大气科学为特色的全国重点大学，由江苏省人民政府、中华人民共和国教育部、中国气象局、国家海洋局共建，是国家“双一流”建设高校。",
+    "computer_rank": "第四轮评级：计算机C，软件无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机学院\n网络空间安全学院\n25改考",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408 计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "F18C、C++程序设计\n(基础题+上机编程,编程环境为VC++2010)\n不招收同等学力考生",
+            "enrollment_24": 42,
+            "tuition_duration": "学制：3年\n学费：全日制学术学位硕士研究生：8000元/学年；全日制专业学位硕士研究生：10000元/学年",
+            "score_lines": {
+              "2024": "318",
+              "2023": null
+            },
+            "admission_info_23": "342",
+            "admission_info_24": "第一批拟录取名单：https://yzb.nuist.edu.cn/info/1006/2716.htm\n第二批拟录取名单：https://yzb.nuist.edu.cn/info/1006/2720.htm\n复试名单：https://yzb.nuist.edu.cn/info/1006/2707.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "沈阳工业大学",
+    "name": "沈阳工业大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "沈阳工业大学主校区位于辽宁省沈阳市，是一所以工为主，涵盖工、理、经、管、文、法、哲、艺术等八大学科门类的多科性研究应用型大学，入选国家“卓越工程师教育培养计划”、国家建设高水平大学公派研究生项目、国家”特色重点学科项目“建设高校、中国政府奖学金来华留学生接收院校、“全国首批深化创新创业教育改革示范高校”、教育部首批“新工科研究与实践项目”",
+    "computer_rank": "计算机B-，软件工程无评级",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "信息科学与工程学院",
+        "majors": [
+          {
+            "major_code": "085400电子信息-计算机技术",
+            "major_name": "计算机技术",
+            "exam_subjects": "① 101 思想政治理论\n② 202英语（二）\n③ 302 数学（二）\n④ 808 数据结构",
+            "reference_books": null,
+            "retrial_subjects": "5F584数据库系统原理",
+            "enrollment_24": 40,
+            "tuition_duration": "学制：3年\n学费：8000/年",
+            "score_lines": {
+              "2024": "317/37/56",
+              "2023": null
+            },
+            "admission_info_23": "273/38/57",
+            "admission_info_24": "一志愿拟录取名单：https://yjsxy.sut.edu.cn/info/1066/5512.htm\n一志愿复试名单（第一批）：https://yjsxy.sut.edu.cn/info/1066/5432.htm\n一志愿复试名单（第二批）：https://yjsxy.sut.edu.cn/info/1066/5472.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "华中科技大学",
+    "name": "华中科技大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "华中科技大学位于湖北省武汉市，是中华人民共和国教育部直属的综合性研究型全国重点大学、国家首批世界一流大学建设高校（A类），入选\"985工程\"、\"211工程\"。",
+    "computer_rank": "第四轮评级：计算机A，软件无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与技术学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "上机考核，在C/C++或DeVCpp环境下用C语言或C++编程",
+            "enrollment_24": 31,
+            "tuition_duration": "学制：计算机/网安学硕3年；计算机专硕3年软件专硕3年\n学费：学硕8000/年；电子信息-软件专硕20000/年，共40000！\n电子信息-计算机全日制专硕学费【13000/年】，共计39000！",
+            "score_lines": {
+              "2024": "370/60/90",
+              "2023": null
+            },
+            "admission_info_23": "345/60/90",
+            "admission_info_24": "研究生复试成绩：https://cs.hust.edu.cn/info/1439/3900.htm\n一志愿复试名单：https://cs.hust.edu.cn/info/1439/3880.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "武汉大学",
+    "name": "武汉大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "武汉大学（Wuhan University）简称“武大”，是中华人民共和国教育部直属的综合性全国重点大学；位列“世界一流大学和一流学科”、“985工程”、“211工程”。",
+    "computer_rank": "第四轮评级：计算机A-，软件A。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机学院",
+        "majors": [
+          {
+            "major_code": "085400电子信息-计算机技术",
+            "major_name": "计算机技术",
+            "exam_subjects": "① 101 思想政治理论\n② 202英语（二）\n③ 302数学（二）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "上机测试",
+            "enrollment_24": 7,
+            "tuition_duration": "学制：学硕3年、电子信息专硕2年\n学费：学硕8000/年，全日制专硕13000/年",
+            "score_lines": {
+              "2024": "335/55/90",
+              "2023": null
+            },
+            "admission_info_23": "360/55/60/100/90",
+            "admission_info_24": "拟录取名单：https://cs.whu.edu.cn/info/1055/41591.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "中国计量大学",
+    "name": "中国计量大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "中国计量大学（China Jiliang University），简称中量大（CJLU），坐落于浙江省杭州市，是国家市场监督管理总局与浙江省人民政府共建高校、浙江省教育厅与义乌市人民政府共建重点高校。",
+    "computer_rank": "第四轮评级：计算机无评级，软件工程无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "信息工程学院",
+        "majors": [
+          {
+            "major_code": "085400电子信息-计算机技术\n23改考",
+            "major_name": "计算机技术",
+            "exam_subjects": "① 101 思想政治理论\n② 202 英语（二）\n③ 302 数学（二）\n④ 806 数据结构+操作系统",
+            "reference_books": null,
+            "retrial_subjects": "9032 C语言程序设计",
+            "enrollment_24": 43,
+            "tuition_duration": "学制：硕士研究生基本学制为3年。\n学费：全日制学术硕士研究生8000元/生/年",
+            "score_lines": {
+              "2024": "305/37/56",
+              "2023": null
+            },
+            "admission_info_23": "315/38/57",
+            "admission_info_24": "一志愿复试名单：https://yjszs.cjlu.edu.cn/info/1016/3549.htm\n拟录取名单：https://yjszs.cjlu.edu.cn/info/1016/3699.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "浙江财经大学",
+    "name": "浙江财经大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "浙江财经大学（Zhejiang University of Finance & Economics），位于浙江省杭州市，是一所以经济、管理学科为主体，多学科协调发展的全日制普通高等学校，浙江省省属高校，第二批浙江省重点建设高校， 具有博士、硕士、学士学位授予权和外国留学生、港澳台学生招生权。毕业生薪酬水平位列全国第56位，浙江省省属高校第一。",
+    "computer_rank": "第四轮评级：计算机无评级，软件工程无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "信息技术与人工智能学院",
+        "majors": [
+          {
+            "major_code": "085400电子信息",
+            "major_name": "计算机技术",
+            "exam_subjects": "① 101 思想政治理论\n② 202 英语（二）\n③ 302 数学（二）\n④ 911 数据结构",
+            "reference_books": null,
+            "retrial_subjects": "程序设计上机",
+            "enrollment_24": 16,
+            "tuition_duration": "学制：3年\n学费：学术学位硕士研究生，8000元/年\n专业学位硕士研究生， \n10000元/年",
+            "score_lines": {
+              "2024": "273/37/56",
+              "2023": null
+            },
+            "admission_info_23": "335/38/57",
+            "admission_info_24": "拟录取名单https://info.zufe.edu.cn/info/1108/17066.htm\n一志愿进复试名单：https://gs.zufe.edu.cn/info/1048/8256.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "浙江大学",
+    "name": "浙江大学",
+    "level": "985",
+    "region": "A区",
+    "province": null,
+    "intro": "浙江大学（Zhejiang University），简称“浙大”，位于浙江省杭州市，是国家教育部直属的一所综合型、研究型、创新型的全国重点大学，中央直管高校， [135-136]位列国家“双一流”、“211工程”、“985工程”",
+    "computer_rank": "第四轮评级：计算机A+，软件A+",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与技术学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机专业学科基础",
+            "reference_books": null,
+            "retrial_subjects": "上机考试+面试",
+            "enrollment_24": 19,
+            "tuition_duration": "学制：3年\n学费：8000/年/生\n计算机学院全日制电子信息硕士专业学位类别计算机技术领域研究生学费为4万元/全程。\n\n软件学院是8000/年/生\n\n联合学院：1.本项目2024年实行项目制运营，由浙江大学国际校区（海宁）国际联合商学院负责项目日常运营和学生管理，数据科学研究中心负责专业培养和导师建设等。相关信息可参见数据科学研究中心网站：http://cds.zju.edu.cn \n\n计算机技术(04)：本项目学费为全程4万元，住宿收费按国际校区统一标准执行：约8000-10000元/学年。\n\n人工智能(10)：本项目学费为全程15万元，住宿收费按国际校区统一标准执行：约8000-10000元/学年。\n\n大数据技术与工程（数据科学与工程项目）(11)：本项目学费为8万元/全程，住宿收费按国际校区统一标准执行：约8000-10000元/学年。",
+            "score_lines": {
+              "2024": "381/55/80",
+              "2023": null
+            },
+            "admission_info_23": "383",
+            "admission_info_24": "最高分：440  \n最低分：381"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "北京邮电大学",
+    "name": "北京邮电大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "在我国四大邮电名校中，北京邮电大学当仁不让处于“头把交椅”的位置，该校是教育部直属、最早获批的全国性重点大学之一，入选“211工程”、“985工程优势学科平台”和双一流世界一流学科建设高校，拥有一级学科硕士点22个和一级学科博士点10个。计算机科学与技术专业入选第二轮“双一流”建设高校名单。",
+    "computer_rank": "计算机A，软件工程B+。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机学院\n(国家示范性软件学院)",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "计算机编程技能测试，初复试占比5：5",
+            "enrollment_24": 88,
+            "tuition_duration": "学制：3年\n学费：8000元/生学年\n\n备注：之前的复试名单/拟录取名单公示期已经过了",
+            "score_lines": {
+              "2024": "340",
+              "2023": null
+            },
+            "admission_info_23": "337/38/57",
+            "admission_info_24": "一志愿进复试136,最终录取106\n最高分：399\n最低分：340"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "北京林业大学",
+    "name": "北京林业大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "北京林业大学（Beijing Forestry University）简称”北林“，教育部直属、教育部与国家林业局共建的全国重点大学，国家“世界一流学科建设高校”、“211工程”建设高校。",
+    "computer_rank": null,
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "信息学部",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": "（1）陈志泊，《面向对象的程序设计语言----C++》（第二版），人民邮电出版社。（2）严蔚敏，李冬梅，吴伟民编著. 数据结构（C语言版）（第2版）,人民邮电出版社。\n（3）陈志泊，许福，韩慧等编著. 数据库原理及应用教程（第4版，微课版）,人民邮电出版社。（4）陈志泊主编，数据库原理及应用教程（MySQL版），人民邮电出版社",
+            "retrial_subjects": "程序设计语言、数据结构、数\n据库原理（上机操作）",
+            "enrollment_24": 19,
+            "tuition_duration": "学制：3年\n学费：全日制硕士研究生收取学费8000元/人/年；非全日制研究生工程硕士和林业硕士为10000元/年。",
+            "score_lines": {
+              "2024": "291/37/56",
+              "2023": null
+            },
+            "admission_info_23": "274/38/57",
+            "admission_info_24": "历年招生统计：https://graduate.bjfu.edu.cn/zsgl/lnzstj/index.html\n\n拟录取名单应该是公示期过了，找不到了"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "内蒙古工业大学",
+    "name": "内蒙古工业大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "内蒙古工业大学坐落于内蒙古自治区呼和浩特市，是经中华人民共和国教育部批准设立的、由内蒙古自治区人民政府举办的全日制普通本科高校；入选国家中西部高校基础能力建设工程、教育部卓越工程师教育培养计划、教育部首批新工科研究与实践项目实施高校、中国政府奖学金来华留学生接收院校。",
+    "computer_rank": "计算机无评级，软件无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "信息工程学院",
+        "majors": [
+          {
+            "major_code": "085400电子信息-计算机技术",
+            "major_name": "计算机技术",
+            "exam_subjects": "① 101 思想政治理论\n② 202英语（二）\n③ 302 数学（二）\n④ 815 计算机专业综合",
+            "reference_books": null,
+            "retrial_subjects": "复试成绩总分100分(复试成绩=专业课笔试成绩×20%+外语测试成绩×20%+综合面试成绩×60%)。\n各学科(专业)按照考生综合成绩(综合成绩=[初试成绩总分×0.2×50%]+[复试成绩×50%]排序,从高分到低分依次录取)。",
+            "enrollment_24": 34,
+            "tuition_duration": "学制：3年\n学费：8000元／学年。",
+            "score_lines": {
+              "2024": "263",
+              "2023": null
+            },
+            "admission_info_23": "314/35/53",
+            "admission_info_24": "一志愿复试名单：https://yjsch.imut.edu.cn/info/1006/6859.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "山西大学",
+    "name": "山西大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "山西大学位于山西省太原市，是中国办学历史最悠久的高等学府之一 ，是国家“双一流”建设高校 ，教育部和山西省人民政府共同建设的“部省合建高校” ，山西省重点建设大学，入选国家“中西部高校综合实力提升工程”、“中西部高校基础能力建设工程”、教育部基础学科拔尖学生培养计划2.0基地 、“111”学科创新引智基地（“111计划”） 、“英才计划”实施高校 、国家建设高水平大学公派研究生项目、全国创新创业典型经验高校 、国家理科基础科学研究和教学人才培养基地、教育部来华留学示范基地 、国家大学生文化素质教育基地、中华优秀传统文化传承基地 、首批“卓越法律人才教育培养计划”、全国首批深化创新创业教育改革示范高校、首批高等学校科技成果转化和技术转移基地，为中西部“一省一校”国家重点建设大学（Z14）联盟、全国九所地方综合性大学协作会成员。",
+    "computer_rank": "计算机B，软件C+。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机与信息技术学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301  数学（一）\n④ 876数据结构+C程序设计",
+            "reference_books": "《C语言程序设计》 谭浩强著，清华大学出版社；\n《数据结构》(C语言版)严蔚敏主编， 清华大学出版社",
+            "retrial_subjects": "上机考试(C语言+数据结构)加面试",
+            "enrollment_24": 72,
+            "tuition_duration": "学制：3年\n\n学费：8000元/人/年",
+            "score_lines": {
+              "2024": "最低分310",
+              "2023": null
+            },
+            "admission_info_23": "最低分275",
+            "admission_info_24": "拟录取：https://yjszsw.sxu.edu.cn/docs//2024-04/2191799f1a1149ec8695a9b6cba43e4a.pdf\n一志愿：https://yjszsw.sxu.edu.cn/docs/2024-03/efec0e4a789b4a3d8895bb48b01eea6d.pdf"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "太原理工大学",
+    "name": "太原理工大学",
+    "level": "211",
+    "region": "A区",
+    "province": null,
+    "intro": "太原理工大学（Taiyuan University of Technology），简称“太原理工”，位于山西省太原市，国家”世界一流学科建设高校“，国家“211工程”重点建设高校。",
+    "computer_rank": "第四轮评级：计算机B-，软件工程C-。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与技术学院(大数据学院)",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301  数学（一）\n④ 833数据结构与组成原理",
+            "reference_books": "《数据结构》(C语言版)严蔚敏主编，清华大学出版社；\n《计算机组成原理》(第二版)，唐朔飞主编，高等教育出版社",
+            "retrial_subjects": "006计算机科学与技术学科试题、\n数据库原理、离散数学、\n面向对象程序设计、软件工程、编译原理\n",
+            "enrollment_24": 11,
+            "tuition_duration": "学制：3年\n学费:\n全日制学术学位硕士研究生：8000元/学年\n全日制专业学位硕士研究生：8000元/学年",
+            "score_lines": {
+              "2024": "310/40/60",
+              "2023": null
+            },
+            "admission_info_23": "310/45/65",
+            "admission_info_24": "官网未公示，建议学硕备考350左右；专硕备考到360左右"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "中北大学",
+    "name": "中北大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "中北大学位于山西省太原市，是山西省人民政府与工业和信息化部、国家国防科技工业局共建高校，山西省重点建设大学，B8协同创新联盟、中国航天科技教育联盟、联合国教科文组织中国创业教育联盟、丝绸之路大学联盟、全国高等军工院校课程思政联盟单位，入选中西部高校基础能力建设工程、卓越工程师教育培养计划、国家级新工科研究与实践项目、国家级大学生创新创业训练计划、国家大学生文化素质教育基地、深化创新创业教育改革示范高校、山西省1331工程、山西省首批创新创业教育改革示范高校，国家二级保密单位，被誉为“人民兵工第一校”。",
+    "computer_rank": "计算机C，软件无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与技术学院\n大数据学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 811 数据结构",
+            "reference_books": null,
+            "retrial_subjects": "总成绩=初试成绩×70%+复试成绩X30%\n笔试《数据库原理及应用》\n和《算法分析与设计》两部\n分组成编程能力测试。上机实践操作,采用闭卷方式,考察考生Java(或C++)编程能为(两种语言由考生任选一种完成)",
+            "enrollment_24": 33,
+            "tuition_duration": "学制：3年\n\n学费：全日制硕士研究生学费8000元/年/生",
+            "score_lines": {
+              "2024": "335/37/56",
+              "2023": null
+            },
+            "admission_info_23": "273/38/57",
+            "admission_info_24": "一志愿拟录取名单：https://grs.nuc.edu.cn/info/1015/7825.htm\n\n一志愿复试名单：https://grs.nuc.edu.cn/info/1015/7804.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "太原科技大学",
+    "name": "太原科技大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "太原科技大学位于山西省太原市，是山西省人民政府举办的全日制普通高等学校，入选国家中西部高校基础能力建设工程、教育部数据中国“百校工程”，CDIO工程教育联盟成员单位，是教育部本科教学工作水平评估优秀高校，教育部首批新工科研究与实践项目实施高校。",
+    "computer_rank": "计算机无评级，软件无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与技术学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 828 数据结构",
+            "reference_books": null,
+            "retrial_subjects": "计算机笔试:C语言+操作系统+计算机网络\n软件笔试:C语言+软件工程\n初试成绩占总成\n绩权重的70%,复试成绩占总成\n绩权重的30%。",
+            "enrollment_24": 39,
+            "tuition_duration": "学制：3年\n\n学费：全8000/年",
+            "score_lines": {
+              "2024": "273/37/56",
+              "2023": null
+            },
+            "admission_info_23": "273/38/57",
+            "admission_info_24": "一志愿拟录取公示：https://yjsxy.tyust.edu.cn/info/1203/3369.htm\n\n一志愿复试名单：https://yjsxy.tyust.edu.cn/info/1203/3340.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "上海海事大学",
+    "name": "上海海事大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "上海海事大学是一所以航运、物流、海洋为特色学科，具有工学、管理学、经济学、法学、文学、理学和艺术学等学科门类的多科性大学。",
+    "computer_rank": "第四轮评级：计算机C-，软件无评级",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "信息工程学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 828 计算机基础\n【数据结构+C语言+操作系统】",
+            "reference_books": null,
+            "retrial_subjects": "523离散数学或524数库原理",
+            "enrollment_24": 68,
+            "tuition_duration": "学制：\n学3年，全专2年，非全专2.5年\n学费\n全日制学术型硕士研究生生8000元/生/年\n全日制专业学位硕士研究生10000元/生/年\n非全日制制专业学位总学费35000",
+            "score_lines": {
+              "2024": "273/37/56",
+              "2023": null
+            },
+            "admission_info_23": "273/38/57",
+            "admission_info_24": "官网无公示，专硕建议备考到320-330左右（方向不同，备考分数也会有差别），学硕建议备考到300左右"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "南京农业大学",
+    "name": "南京农业大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "南京农业大学（Nanjing Agricultural University）坐落于江苏省南京市，是中华人民共和国教育部直属的全国重点大学，位列世界一流学科建设高校。",
+    "computer_rank": "第四轮评级：计算机无评级，软件无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "人工智能学院\n25改考408",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 853 计算机专业基础\n【数据结构、组成原理、计算机网络】",
+            "reference_books": null,
+            "retrial_subjects": "1402数据库系统原理",
+            "enrollment_24": 4,
+            "tuition_duration": "学制：学术学位3年，专业学位2年\n学费:\n全日制学术硕士研究生收取学费8000元/人/年\n全日制工程硕士硕士研究生收取学费10000元/人/年",
+            "score_lines": {
+              "2024": "273/37/56",
+              "2023": null
+            },
+            "admission_info_23": "273/38/57",
+            "admission_info_24": "拟录取名单：https://zsgz.njau.edu.cn/info/1007/1526.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "河北大学",
+    "name": "河北大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "河北大学（Hebei University，HBU），坐落于河北省保定市，是教育部与河北省人民政府“部省合建”的重点综合性高校，也是河北省重点支持的国家一流大学建设一层次高校 [3] ，“教育部留学出国人员培训与研究中心”试点高校",
+    "computer_rank": "第四轮评级：计算机C+，软件工程C+。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "网络空间安全与计算机学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408 计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "笔试专业科《数据结构(C语言)》\n初试满分500分,总成绩=(初试总成绩÷5)×70%总成绩+30%×复试",
+            "enrollment_24": null,
+            "tuition_duration": "学制：3年\n\n学费：全日制学术学位研究生8000元/生/年；全日制专业学位研究生（工商管理、公共管理专业除外）7000元/生、年，非全10000/生/年",
+            "score_lines": {
+              "2024": "273/38/57",
+              "2023": null
+            },
+            "admission_info_23": "273/38/57",
+            "admission_info_24": "计算机科学与技术专业复试名单：https://cs.hbu.edu.cn/wzsy/yjsxx/details/1971\n网络空间安全专业复试名单：https://cs.hbu.edu.cn/wzsy/yjsxx/details/1972\n人工智能复试名单：https://cs.hbu.edu.cn/wzsy/yjsxx/details/1973\n网络与信息安全复试名单：https://cs.hbu.edu.cn/wzsy/yjsxx/details/1974"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "华北理工大学",
+    "name": "华北理工大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "华北理工大学（North China University of Science and Technology），简称华北理工，位于河北省唐山市，是一所省属重点骨干大学、省重点支持的国家一流大学建设高校 ；是中华人民共和国应急管理部、国家国防科技工业局与河北省人民政府共建高校，入选教育部卓越工程师教育培养计划、卓越医生教育培养计划、国家级大学生创新创业训练计划、新工科研究与实践项目、省部共建协同创新中心、国际中文教师奖学金接收院校 、国家专业综合改革试点。",
+    "computer_rank": "第四轮评级：计算机无评级，软件工程无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "理学院",
+        "majors": [
+          {
+            "major_code": "083900网络空间安全",
+            "major_name": "网络空间安全",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 827 数据结构",
+            "reference_books": null,
+            "retrial_subjects": "\n人工智能笔试科目:数据库原理 \n理学院复试:计算机基础综合学、C语言\n人工智能学院同等学力加试：\n①028操作系统\n②087计算机原理\n理学院同等学力加试：\n①135数据库原理\n②136操作系统",
+            "enrollment_24": 14,
+            "tuition_duration": "学制:2.5年\n学费：全日制学术型硕士研究生生8000元/生/年；全日制专业学位硕士研究生7000元/生/年",
+            "score_lines": {
+              "2024": "273/37/56",
+              "2023": null
+            },
+            "admission_info_23": "最低分360",
+            "admission_info_24": "一志愿复试拟录取名单：https://yjsxy.ncst.edu.cn/col/1695864352045/2024/04/04/1712210536700.html\n\n一志愿复试名单：https://yjsxy.ncst.edu.cn/col/1695864352045/2024/03/25/1711363759112.html"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "河北工程大学",
+    "name": "河北工程大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "河北工程大学（Hebei University of Engineering），坐落于河北省邯郸市，是河北省人民政府举办的培养高层次人才的全日制普通高等学校，由河北省人民政府与水利部共建，是河北省国家一流大学建设二层次高校、河北省重点骨干大学、应急管理学院建设首批试点学校、CDIO工程教育联盟成员单位",
+    "computer_rank": "第四轮评级：计算机C，软件工程无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "信息与电气工程学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 843计算机专业基础\n(数据结构和操作系统)",
+            "reference_books": null,
+            "retrial_subjects": "C语言程序设计\n加试：1.计算机网络\n2.数据库原理与应用",
+            "enrollment_24": null,
+            "tuition_duration": "学制：3年\n\n学费：7000/年",
+            "score_lines": {
+              "2024": "最低分288",
+              "2023": null
+            },
+            "admission_info_23": "最低分277",
+            "admission_info_24": "拟录取名单：https://yanjs.hebeu.edu.cn/info/1089/6700.htm\n一志愿复试名单：https://xindian.hebeu.edu.cn/info/1013/9632.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "湖南科技大学",
+    "name": "湖南科技大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "湖南科技大学坐落于湘潭市,是湖南省人民政府与国家国防科技工业局、原国家安全生产监督管理总局共建高校、国家\"中西部高校基础能力建设工程\"支持高校、湖南省\"国内一流大学建设高校\"、\"湖南省2011计划\"入选高校、教育部本科教学工作水平评估\"优秀\"高校、教育部\"卓越工程师教育培养计划\"高校、首批全国创新创业典型经验高校、全国毕业生就业典型经验高校;具有推荐优秀应届本科毕业生免试攻读研究生、\"硕士计划\"推免资格及港澳台和留学生招生权",
+    "computer_rank": "计算机C+,软件C-。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与工程学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 824 C语言程序设计与数据结构",
+            "reference_books": null,
+            "retrial_subjects": "复试:操作系统\n加试:计算机网络&离散数学",
+            "enrollment_24": 24,
+            "tuition_duration": "学制：3年\n\n学费：学8000/年",
+            "score_lines": {
+              "2024": "275/37/56",
+              "2023": null
+            },
+            "admission_info_23": "273/38/57",
+            "admission_info_24": "一志愿复试名单：https://graduate.hnust.edu.cn/zsgz/sszs/94842b8bff8a4c78a5d07eb2418fca99.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "广西科技大学",
+    "name": "广西科技大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "广西科技大学坐落在广西壮族自治区柳州市，是国务院学位委员会批准的学士、硕士学位授权单位、“卓越医生教育培养计划”试点高校、“新工科研究与实践项目”入选高校，直属于广西壮族自治区人民政府管理，是一所以工为主，包含工、管、理、经、文、法、艺术、教育、医学等9大学科门类的多科性高等学校。2013年经自治区学位委员会批准，学校成为博士学位授予权立项建设单位",
+    "computer_rank": "计算机无评级，软件无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与技术学院\n(软件学院)",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 817 数据结构与程序设计",
+            "reference_books": null,
+            "retrial_subjects": "计算机网络\n同等学力加试科目:\n1、703操作系统\n2、704计算机组成原理",
+            "enrollment_24": null,
+            "tuition_duration": "学制：3年\n\n学费：8000/年",
+            "score_lines": {
+              "2024": "263/34/51",
+              "2023": null
+            },
+            "admission_info_23": "最低分294",
+            "admission_info_24": "拟录取名单：https://www.gxust.edu.cn/yjs/info/1150/4282.htm\n一志愿复试名单：https://www.gxust.edu.cn/yjs/info/1150/4164.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "天津理工大学",
+    "name": "天津理工大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "天津理工大学（Tianjin University of Technology），位于天津市，是一所以工为主，工理结合，工、理、管、文、艺等多学科发展的多科性大学，天津市市属普通高等学校，入选教育部卓越工程师教育培养计划高校、高等学校学科创新引智计划（111计划）、中国政府奖学金来华留学生接收院校、教育部首批“新工科”研究与实践项目、首批高等学校科技成果转化和技术转移基地。",
+    "computer_rank": "计算机评级为B，软件评级为B-",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与工程学院\n24改考",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "高级程序语言设计",
+            "enrollment_24": null,
+            "tuition_duration": "学制：3年\n学费：8000元/年/生",
+            "score_lines": {
+              "2024": "290-322",
+              "2023": null
+            },
+            "admission_info_23": "295/38/57",
+            "admission_info_24": "计算机科学与工程学院一志愿复试名单：https://cs.tjut.edu.cn/info/1062/2352.htm\n一志愿拟录取名单：https://cs.tjut.edu.cn/info/1062/2355.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "东南大学",
+    "name": "东南大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "东南大学（Southeast University），简称东大 ，位于南京，是一所以工科为主要特色的综合性、研究型大学，是国家教育部直属并与江苏省共建的全国重点大学，也是国家“双一流”、“985工程”、“211工程”重点建设高校，亦是教育部首批“三全育人”综合改革试点高校。",
+    "computer_rank": "计算机B+,软件B+",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与工程学院\n25改考",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 935 计算机专业基础\n【数据结构、组成原理、操作系统】",
+            "reference_books": null,
+            "retrial_subjects": "复试科目:553  C++程序设计\n本专业招生计划内包含东南大学雷恩研究生学院合作办学项目招生名额(待定)。该项目不接收少数民族骨干项目、强军计划考生报考。",
+            "enrollment_24": 13,
+            "tuition_duration": "学制：3年\n学费：根据国家财政部、教育部的相关文件精神，所有纳入招生计划的硕士研究生都要缴纳学费，经江苏省物价部门核准，我校2024年硕士研究生学费标准另见“东南大学研究生招生网”公告。",
+            "score_lines": {
+              "2024": "320/50/70",
+              "2023": null
+            },
+            "admission_info_23": "345/50/70",
+            "admission_info_24": "一志愿复试名单：https://yzb.seu.edu.cn/2024/0323/c6689a484880/page.htm\n复试录取细则：https://yzb.seu.edu.cn/2024/0323/c6689a484879/page.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "哈尔滨理工大学",
+    "name": "哈尔滨理工大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "哈尔滨理工大学（Harbin University of Science and Technology），位于哈尔滨市，是黑龙江省人民政府与国家国防科技工业局共建高校，入选“中西部基础能力建设工程”高校、国家“特色重点学科项目”建设高校。",
+    "computer_rank": "第四轮评级：计算机B，软件工程C+。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与技术学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 809 数据结构+组成原理",
+            "reference_books": null,
+            "retrial_subjects": "C语言程序设计\n初复试占比6：4",
+            "enrollment_24": 40,
+            "tuition_duration": "学制：硕士研究生基本学制为2.5年。\n学费：全日制学术硕士研究生8000元/生/年；全日制专业硕士研究生9000元/生/年",
+            "score_lines": {
+              "2024": "273/37/56",
+              "2023": null
+            },
+            "admission_info_23": "273/38/57",
+            "admission_info_24": "一志愿复试名单：http://graduate.hrbust.edu.cn/2024/0323/c3907a92187/page.htm\n一志愿拟录取名单：http://graduate.hrbust.edu.cn/2024/0401/c3907a92377/page.htm"
+          },
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "①101 思想政治理论\n②201 英语（一）\n③301 数学（一）\n④809 数据结构与计算机组成原理",
+            "reference_books": null,
+            "retrial_subjects": "总成绩=初试总分/5*60%+复试总分/2*40%\n复试:C语言程序设计",
+            "enrollment_24": 40,
+            "tuition_duration": "学制：硕士研究生基本学制为2.5年。\n学费：全日制学术硕士研究生8000元/生/年；全日制专业硕士研究生9000元/生/年",
+            "score_lines": {
+              "2024": "273/37/56",
+              "2023": null
+            },
+            "admission_info_23": "273/38/57",
+            "admission_info_24": "一志愿拟录取名单：http://graduate.hrbust.edu.cn/2024/0401/c3907a92377/page.htm"
+          },
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "①101 思想政治理论\n②201 英语（一）\n③301 数学（一）\n④809 数据结构与计算机组成原理",
+            "reference_books": null,
+            "retrial_subjects": "总成绩=初试总分/5*60%+复试总分/2*40%\n复试:C语言程序设计",
+            "enrollment_24": 40,
+            "tuition_duration": "学制：硕士研究生基本学制为2.5年。\n学费：全日制学术硕士研究生8000元/生/年；全日制专业硕士研究生9000元/生/年",
+            "score_lines": {
+              "2024": "273/37/56",
+              "2023": "273/38/57"
+            },
+            "admission_info_23": "一志愿进复试16人,拟录取16人\n一志愿均分310\n拟录取均分310\n最高分371,最低分275",
+            "admission_info_24": "一志愿拟录取名单：http://graduate.hrbust.edu.cn/2024/0401/c3907a92377/page.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "重庆理工大学",
+    "name": "重庆理工大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "重庆理工大学简称重理工，坐落于中央直辖市重庆，是中国兵器协同创新联盟、全国高等军工院校课程思政联盟单位，中央与地方共建的市属普通本科高等院校、重庆市重点建设高校、国家级大学生创新创业训练计划实施高校、全国毕业生就业典型经验高校，首批高等学校科技成果转化和技术转移基地，教育部首批新工科研究与实践项目入选高校。",
+    "computer_rank": "计算机无评级，软件无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与工程学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n  ③ 301 数学（一）\n④ 809 数据结构",
+            "reference_books": null,
+            "retrial_subjects": "笔试科目:程序设计\n总成绩=(初试成绩/5)*60%+复试成绩*40%",
+            "enrollment_24": 27,
+            "tuition_duration": "学制：3年\n\n学费：学术学位研究生：7000元/生.年\n\n专业学位研究生：9000元/生.年",
+            "score_lines": {
+              "2024": "300/37/56",
+              "2023": null
+            },
+            "admission_info_23": "273/38/57",
+            "admission_info_24": "拟录取名单：https://cs.cqut.edu.cn/info/1036/6646.htm\n复试名单：https://cs.cqut.edu.cn/info/1036/6630.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "四川大学",
+    "name": "四川大学",
+    "level": "985",
+    "region": "A区",
+    "province": null,
+    "intro": "四川大学（Sichuan University），简称“川大”，位于四川省成都市，是中华人民共和国教育部直属、中央直管副部级的全国重点大学；位列国家“双一流”、“211工程”、“985工程”，入选“珠峰计划”、“2011计划”、“111计划”、“强基计划”、卓越工程师教育培养计划、卓越医生教育培养计划、卓越法律人才教育培养计划、国家建设高水平大学公派研究生项目、全国深化创新创业教育改革示范高校，为学位授权自主审核单位、中国研究生院院长联席会会员、医学“双一流”建设联盟成员、自主划线高校，是国家布局在中国西部重点建设的高水平研究型综合大学",
+    "computer_rank": "第四轮评级：计算机B+，软件A-。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机学院(软件学院、智能科学与技术学院)",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 874 计算机科学专业基础综合\n（数据结构+操作系统+计算机网络）",
+            "reference_books": null,
+            "retrial_subjects": "C语言与综合测试",
+            "enrollment_24": null,
+            "tuition_duration": "学制：\n均为3年\n学费：\n学硕8000/生.年\n全日制计算机专硕8000/生.年\n全日制软件专硕10667元/生.年",
+            "score_lines": {
+              "2024": "310/50/75",
+              "2023": null
+            },
+            "admission_info_23": "319/50/75",
+            "admission_info_24": "拟录取名单：https://cs.scu.edu.cn/info/1247/18310.htm\n一志愿复试名单：https://cs.scu.edu.cn/info/1247/18279.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "天津工业大学",
+    "name": "天津工业大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "天津工业大学（Tiangong University），简称“天工大”，位于天津市，是教育部与天津市共建高校、国家国防科技工业局和天津市共建的天津市重点建设高校、国家“双一流”建设高校。",
+    "computer_rank": "计算机评级为B-，软件评级为C+",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "机试:使用C语言或Java语言编程,考试课程《数据结构》\n笔试:考试课程《数据结构》和《数据库》",
+            "enrollment_24": 16,
+            "tuition_duration": "全日制硕士专业（类别或领域）学制为2年至3年",
+            "score_lines": {
+              "2024": null,
+              "2023": null
+            },
+            "admission_info_23": "280/38/57",
+            "admission_info_24": "计算机科学与技术学院拟录取名单：https://cs.tiangong.edu.cn/2024/0330/c1929a93012/page.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "武汉科技大学",
+    "name": "武汉科技大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "武汉科技大学，简称“武科大”，坐落于湖北省武汉市，是湖北省人民政府、教育部和六家国家特大型企业共建高校，是湖北省“双一流”建设高校，入选国家“中西部高校基础能力建设工程”、高等学校学科创新引智计划、国家级大学生创新创业训练计划。",
+    "computer_rank": "第四轮评级：计算机C+，软件C。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与技术学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术\n(01)计算机系统结构\n(02)计算机软件与理论\n(03)计算机应用技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408 计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "程序设计上机考试:根据考题,使用C、C++、Java语言,现场设计、上机编程、调试运行程序；\n编程环境:Windows下的CodeBlocks, Dev,Eclipse\n初复试占比6：4",
+            "enrollment_24": 18,
+            "tuition_duration": "学制：3年\n学费：\n全日制学术型：8000 元/生·年。全日制专业型：10000 元/生·年",
+            "score_lines": {
+              "2024": "273/37/56",
+              "2023": null
+            },
+            "admission_info_23": "304/38/57",
+            "admission_info_24": "复试结果公示：https://jsjkx.wust.edu.cn/info/1671/34342.htm\n复试名单：https://jsjkx.wust.edu.cn/info/1671/33822.htm"
+          },
+          {
+            "major_code": "081200计算机科学与技术\n(01)计算机系统结构\n(02)计算机软件与理论\n(03)计算机应用技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408 计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "程序设计上机考试:根据考题,使用C、C++、Java语言,现场设计、上机编程、调试运行程序；\n编程环境:Windows下的CodeBlocks, Dev,Eclipse\n初复试占比6：4",
+            "enrollment_24": 18,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": "273/37/56",
+              "2023": "304/38/57"
+            },
+            "admission_info_23": "一志愿复试34人,拟录取28人\n一志愿均分324\n拟录取均分327\n最高分372,最低分304",
+            "admission_info_24": "复试结果公示：https://jsjkx.wust.edu.cn/info/1671/34342.htm\n复试名单：https://jsjkx.wust.edu.cn/info/1671/33822.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "湖北大学",
+    "name": "湖北大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "湖北大学（Hubei University），简称“湖大” ，位于武汉市，是湖北省人民政府与教育部共建的省属重点综合性大学  ，位列湖北省“双一流”建设高校，入选国家“中西部高校基础能力建设工程”、“111计划”、湖北省2011计划、国家级大学生创新创业训练计划。",
+    "computer_rank": "第四轮评级：计算机无评级，软件工程无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机与信息工程学院",
+        "majors": [
+          {
+            "major_code": "083500软件工程",
+            "major_name": "软件工程",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 302 数学（二）\n④ 811 数据结构",
+            "reference_books": "复试参考书：《C++面向对象程序设计》，谭浩强，清华大学出版社\n《数据库系统概论》，萨师煊，高等教育出版社，第四版",
+            "retrial_subjects": "笔试科目:面向对象程序设计、数据库系统原理\n同等学力加试:计算机网络、操作系统\n初复试占比6：4",
+            "enrollment_24": 24,
+            "tuition_duration": "学制：3年\n学费：全8000/年，非全10000/年",
+            "score_lines": {
+              "2024": "320/37/56",
+              "2023": null
+            },
+            "admission_info_23": "302/38/57",
+            "admission_info_24": "一志愿复试成绩：https://csi.hubu.edu.cn/info/1091/7695.htm\n一志愿复试名单：https://csi.hubu.edu.cn/info/1091/7669.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "西安理工大学",
+    "name": "西安理工大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "西安理工大学（Xi’an University of Technology），位于西安市，是中央与陕西省共建高校，工业和信息化部、陕西省共建高校，中西部高校基础能力建设工程实施院校，陕西省“国内一流大学建设高校”。",
+    "computer_rank": "第四轮评级：计算机C，软件工程无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与工程学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 863数据结构",
+            "reference_books": null,
+            "retrial_subjects": "笔试操作系统、组成原理",
+            "enrollment_24": 40,
+            "tuition_duration": "学制：3年\n学费\n全日制研究生学费：8000 元/生·学年",
+            "score_lines": {
+              "2024": "288/37/56",
+              "2023": null
+            },
+            "admission_info_23": "286/38/57",
+            "admission_info_24": "一志愿复试名单：https://jsj.xaut.edu.cn/info/1096/3889.htm"
+          },
+          {
+            "major_code": "电子信息(085404)-计算机技术",
+            "major_name": "计算机技术",
+            "exam_subjects": "① 101 思想政治理论\n② 202英语（二）\n③ 302数学（二）\n④ 863数据结构",
+            "reference_books": null,
+            "retrial_subjects": "笔试操作习题、组成原理",
+            "enrollment_24": 85,
+            "tuition_duration": null,
+            "score_lines": {
+              "2024": "311",
+              "2023": "338/38/57"
+            },
+            "admission_info_23": "最高分：401\n最低分：338\n平均分：363",
+            "admission_info_24": "一志愿复试名单：https://jsj.xaut.edu.cn/info/1096/3889.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "陕西师范大学",
+    "name": "陕西师范大学",
+    "level": "211",
+    "region": "A区",
+    "province": null,
+    "intro": "陕西师范大学（Shaanxi Normal University），简称陕西师大、陕师大，位于陕西西安，是中华人民共和国教育部直属重点综合性师范大学，国家“211工程”重点建设大学，国家首批世界一流学科建设高校。",
+    "computer_rank": "第四轮评级：计算机无评级，软件工程无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 856 数据结构与程序设计",
+            "reference_books": null,
+            "retrial_subjects": "计算机专业综合【操作系统、python或C++、计算机网络、算法设计、数据库】\n初复试成绩5：5",
+            "enrollment_24": 28,
+            "tuition_duration": "学制：3年\n学费:\n全日制学术学位硕士研究生：8000元/学年",
+            "score_lines": {
+              "2024": "320/37/56",
+              "2023": null
+            },
+            "admission_info_23": "291/50/57",
+            "admission_info_24": "最低分320，最高分381"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "长沙理工大学",
+    "name": "长沙理工大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "长沙理工大学,位于湖南省长沙市,是国家交通运输部和湖南省人民政府共建高校,属于湖南省\"国内流一学建设高校\"(A类),入选中西部高校基础能力建设工程\"、教育部\"卓越工程师教育培养计划\"、教育部\"大学生创新性实验计划\",是中国电力高校联盟、绿色交通联盟、中俄交通大学联盟成员之一,是全国毕业生就业典型经验高校,全国深化创新创业教育改革示范高校。",
+    "computer_rank": "计算机C-,软件无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机与通信工程学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301  数学（一）\n④ 850 数据结构",
+            "reference_books": null,
+            "retrial_subjects": "F0804操作系统(A)",
+            "enrollment_24": 8,
+            "tuition_duration": "学制:3年\n学费:学8000/年,专12000/年",
+            "score_lines": {
+              "2024": "292/37/56",
+              "2023": null
+            },
+            "admission_info_23": "303/38/57",
+            "admission_info_24": "拟录取名单：https://www.csust.edu.cn/jtxy/info/1154/22624.htm\n一志愿复试名单：https://www.csust.edu.cn/yjsy/info/1121/10823.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "湘潭大学",
+    "name": "湘潭大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "湘潭大学（Xiangtan University），简称“湘大”，位于湖南省湘潭市，是毛泽东同志亲自倡办的综合性全国重点大学、国家“双一流”建设高校，是湖南省人民政府与教育部、与国家国防科技工业局共建高校， 教育部与湖南省重点共建的“双一流”建设高校。",
+    "computer_rank": "第四轮评级：计算机C，软件工程C。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机学院,网络空间安全学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408 计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "048004C语言程序设计(机试)\n同等学力加试科目学硕:\n1.048001离散数学\n2.048002编译原理\n同等学力加试科目学硕:\n1.048001离散数学\n2.048003操作系统",
+            "enrollment_24": 45,
+            "tuition_duration": "学制：3年\n学费：全日制学生由学校统一安排住宿。\n具体学费及住宿收费标准请参见湖南省物价局最新文件。",
+            "score_lines": {
+              "2024": "278/37/56",
+              "2023": null
+            },
+            "admission_info_23": "286/38/57",
+            "admission_info_24": "拟录取名单：https://yjsc.xtu.edu.cn/info/1028/4197.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "湖南大学",
+    "name": "湖南大学",
+    "level": "985",
+    "region": "A区",
+    "province": null,
+    "intro": "湖南大学，简称“湖大”，坐落于湖南省长沙市，是中华人民共和国教育部直属的全国重点大学，教育部、工业和信息化部、湖南省人民政府、国家国防科技工业局共建高校，位列国家“世界一流大学建设高校”、“985工程”、“211工程”。",
+    "computer_rank": "第四轮评级：计算机B+，软件无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "信息科学与工程学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 866 数据结构",
+            "reference_books": null,
+            "retrial_subjects": "F1022计算机专业综合一(含离散数学35%、操作系统35%、计算机系统30%)\n机试采用C/C++/JavaPython编程语言,机试成绩不计入复试成绩,机试未通过者不予录取。",
+            "enrollment_24": 28,
+            "tuition_duration": "学制：3年\n学费：学硕8000/年；全日制专硕12000/年；非全日制电子信息15000/年",
+            "score_lines": {
+              "2024": "319/50/70",
+              "2023": null
+            },
+            "admission_info_23": "310/50/80",
+            "admission_info_24": "一志愿复试名单：http://csee.hnu.edu.cn/info/1036/13032.htm\n拟录取名单：https://gra.hnu.edu.cn/info/1075/9572.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "北京信息科技大学",
+    "name": "北京信息科技大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "北京信息科技大学（Beijing Information Science and Technology University），简称信息科大，坐落在中国首都北京，是一所以工学为主，工、管、理、经、文、法6个学科门类协调发展的北京市重点支持建设高校",
+    "computer_rank": "第四轮评级：计算机C-，软件工程无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 408 计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "C语言【上机】",
+            "enrollment_24": 22,
+            "tuition_duration": "学制：3 年。\n学费：全日制学术学位硕士研究生：工学类 7000 元/生/学年；全日制专业学位硕士研究生：电子信息类、机械类和工程管理类7000 元/生/学年；非全日制专业学位研究生：电子信息类(计算机方向)35000 元/生，入学时一次性收取",
+            "score_lines": {
+              "2024": "273/37/56",
+              "2023": null
+            },
+            "admission_info_23": "273/38/57",
+            "admission_info_24": "最高分：348\n最低分：280"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "延边大学",
+    "name": "延边大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "延边大学（Yanbian University），地处吉林省延边朝鲜族自治州 ，是国家“双一流”建设高校 、国家“211工程”重点建设大学。",
+    "computer_rank": "第四轮评级：计算机无评级，软件工程无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "工学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 831 数据结构+操作系统",
+            "reference_books": "数据结构-C语言描述(第3版)耿国华高等教育出版社，2021年6月\n计算机操作系统（慕课版）汤小丹，王红玲，姜华，汤子瀛人民邮电出版社, 2021年5月",
+            "retrial_subjects": "复试:计算机组成原理+计算机网络\n跨学科考生需加试：C语言+离散数学\n初复试占比6：4",
+            "enrollment_24": 12,
+            "tuition_duration": "学制：3年 \n学费8000元/年",
+            "score_lines": {
+              "2024": "最低分274",
+              "2023": null
+            },
+            "admission_info_23": "最低分277",
+            "admission_info_24": "一志愿复试名单：https://grad.ybu.edu.cn/info/1066/3242.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "清华大学",
+    "name": "清华大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "清华大学（Tsinghua University），简称“清华”，是中华人民共和国教育部直属的全国重点大学，位列国家“双一流”A类、“985工程”、“211工程”。",
+    "computer_rank": "第四轮评级：计算机A+，软件A。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "清华大学深圳国际研究生院",
+        "majors": [
+          {
+            "major_code": "085400电子信息-计算机技术",
+            "major_name": "计算机技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 912 数据结构70+组成原理30+操作系统30+计算机网络20",
+            "reference_books": null,
+            "retrial_subjects": "计算机方向有上机\n数据科学方向全英文面试\n数据科学和信息技术:(本方向与伯克利加州大学联合培养,全英文授课)",
+            "enrollment_24": 38,
+            "tuition_duration": "学制:学硕3年，专硕2年，\n大数据专硕2.5年\n学费:\n所有学硕均为0.8万元/生学年；\n电子信息【软件工程】2万/年,共计4万；\n电子信息【互动媒体设计与技术】2.25万/年；\n电子信息【其他领域】1万/年\n【计算机技术】1万元/生·学年；\n",
+            "score_lines": {
+              "2024": "335/50/50/80/70",
+              "2023": null
+            },
+            "admission_info_23": "325/50/50/80/70",
+            "admission_info_24": "最高分400\n最低分335"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "重庆大学",
+    "name": "重庆大学",
+    "level": "985",
+    "region": "A区",
+    "province": null,
+    "intro": "重庆大学，简称重大，是中华人民共和国教育部直属，由教育部、重庆市、国家国防科技工业局共建的全国重点大学，位列“世界一流大学建设高校（A类）”、“211工程”、”985工程”。",
+    "computer_rank": "第四轮评级：计算机B+，软件B+。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机学院(A区)",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 917计算机组成原理、数据结构、操作系统、计算机网络",
+            "reference_books": null,
+            "retrial_subjects": "C++程序设计和C语言上机考试。\n同等学力等考生加试:\n1离散数学;\n2数据库原理",
+            "enrollment_24": null,
+            "tuition_duration": "学制：均为3年\n学费：学硕均为8000/年；全日制专硕9000/年",
+            "score_lines": {
+              "2024": "345/50/70",
+              "2023": null
+            },
+            "admission_info_23": "320/50/70",
+            "admission_info_24": "23考研的拟录取名单：https://yz.cqu.edu.cn/news/2023-05/2019.html\n24考研拟录取名单（下载里面）：https://yz.cqu.edu.cn/news/2024-05/2159.html"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "福州大学",
+    "name": "福州大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "福州大学（Fuzhou University），简称福大，创建于1958年，是国家“世界一流学科建设高校”，国家“211工程”重点建设高校，国家教育部、国家国防科技工业局与福建省人民政府共建高校，福建省三所重点建设的高水平大学之一，福建省一流大学建设高校。",
+    "computer_rank": "第四轮评级：计算机B-，软件工程B-。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机与大数据学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "面向对象分析与设计、计算机网络等\n不招收同等学力考生\n初复试占比7：3",
+            "enrollment_24": 23,
+            "tuition_duration": "学制：全日制3年\n学费：全日制非定向硕士研究生：8000元/学年\n非全日制电子信息：4.5万全程",
+            "score_lines": {
+              "2024": "328/37/56",
+              "2023": null
+            },
+            "admission_info_23": "最低分306",
+            "admission_info_24": "一志愿复试名单：https://ccds.fzu.edu.cn/info/1138/10360.htm\n拟录取情况公示：https://ccds.fzu.edu.cn/info/1138/10376.htm"
+          },
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301 数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "面向对象分析与设计、计算机网络等\n不招收同等学力考生\n初复试占比7：3",
+            "enrollment_24": 23,
+            "tuition_duration": "学制：全日制3年\n学费：全日制非定向硕士研究生：8000元/学年\n非全日制电子信息：4.5万全程",
+            "score_lines": {
+              "2024": "328/37/56",
+              "2023": "最低分306"
+            },
+            "admission_info_23": "一志愿复试50人,拟录取40人\n一志愿复试均分330\n最高分380,最低分306\n拟录取均分335\n最高分380,最低分306",
+            "admission_info_24": "最高分：381\n最低分：328"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "厦门大学",
+    "name": "厦门大学",
+    "level": "985",
+    "region": "A区",
+    "province": null,
+    "intro": "厦门大学（Xiamen University），简称厦大（XMU），是由中华人民共和国教育部直属副部级综合性研究型全国重点大学，教育部、国家国防科技工业局、福建省和厦门市重点共建高校。厦门大学先后入选世界一流大学建设高校（A类），国家“211工程“和“985工程”重点建设高校。",
+    "computer_rank": "第四轮评级：计算机B+，软件B。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "人工智能系",
+        "majors": [
+          {
+            "major_code": "085400电子信息-人工智能",
+            "major_name": "计算机技术",
+            "exam_subjects": "① 101 思想政治理论\n② 202英语（二）\n③ 302 数学（二）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "上机，使用C语言编程",
+            "enrollment_24": 17,
+            "tuition_duration": "学制：均为3年\n学费：全日制学术学位和全日制专业学位硕士研究生的学费标准为:全程3.3万元",
+            "score_lines": {
+              "2024": "315/50/70",
+              "2023": null
+            },
+            "admission_info_23": "373",
+            "admission_info_24": "拟录取名单：https://informatics.xmu.edu.cn/info/1050/36869.htm\n复试名单：https://cogsci.xmu.edu.cn/info/1331/5402.htm"
+          },
+          {
+            "major_code": "085400电子信息-人工智能",
+            "major_name": "计算机技术",
+            "exam_subjects": "① 101 思想政治理论\n② 202英语（二）\n③ 302 数学（二）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "上机，使用C语言编程",
+            "enrollment_24": 17,
+            "tuition_duration": "学制：均为3年\n学费：全日制学术学位和全日制专业学位硕士研究生的学费标准为:全程3.3万元",
+            "score_lines": {
+              "2024": "315/50/70",
+              "2023": "373"
+            },
+            "admission_info_23": "最高分：421\n最低分：375\n平均分：392",
+            "admission_info_24": "最高分：395\n最低分：352"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "成都信息工程大学",
+    "name": "成都信息工程大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "成都信息工程大学是四川省和中国气象局共建、四川省重点发展的省属普通本科院校。学校创建于1951年，1956年改制为中央气象局成都气象学校；1978年升格为本科院校——成都气象学院；2000年学校由中国气象局划转四川省，更名为成都信息工程学院；2001年原隶属国家统计局的四川统计学校整体并入；2015年更名为成都信息工程大学。",
+    "computer_rank": "第四轮评级：计算机C+，软件C+。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 807程序综合设计（C语言程序设计）",
+            "reference_books": null,
+            "retrial_subjects": "算法设计与分析",
+            "enrollment_24": 24,
+            "tuition_duration": "学制：三年\n学费：8000/年",
+            "score_lines": {
+              "2024": "273/37/56",
+              "2023": null
+            },
+            "admission_info_23": "最低290",
+            "admission_info_24": "计算机学院复试成绩公示：https://jsjxy.cuit.edu.cn/info/1062/2648.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "西华大学",
+    "name": "西华大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "西华大学（Xihua University），简称西华，位于四川省成都市，是国家中西部高校基础能力建设工程重点支持高校，入选教育部首批“新工科”研究与实践项目、教育部本科教学工作水平评估优秀高校，四川省首批深化创新创业教育改革示范高校。",
+    "computer_rank": "第四轮评级：计算机C-，软件工程C-。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机与软件工程学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术\n25改考",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 408 计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "专业课笔试:计算机相关专业复试科目:4选1,但应与初试科目不同，数据结构、高级程序设计语言、数据库原理、计算机网络",
+            "enrollment_24": 28,
+            "tuition_duration": "拟录取名单：https://cs.xhu.edu.cn/22/cd/c1742a205517/page.htm\n复试名单：https://cs.xhu.edu.cn/20/c9/c1742a205001/page.htm",
+            "score_lines": {
+              "2024": "25改考，在改考之前单考一科数据结构，这部分的数据没啥参考价值了；估计分数线是A区国家线",
+              "2023": null
+            },
+            "admission_info_23": null,
+            "admission_info_24": null
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "长春工业大学",
+    "name": "长春工业大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "长春工业大学（Changchun University of Technology），坐落于吉林省长春市，是一所以工为主，工、管、文、理、经、法、艺术等多学科相互支撑、协调发展的省属重点大学，入选国家“中西部高校基础能力建设工程（二期）”支持高校、国家级大学生创新创业训练计划项目实施高校、国家大学生文化素质教育基地、国家技术转移示范机构、教育部“卓越工程师教育培养计划”高校、教育部产学合作协同育人项目、教育部首批新工科研究与实践项目实施高校、CDIO工程教育联盟成员单位，吉林省“两所五校”成果转化基金试点单位，吉林省“特色高水平应用研究型大学”建设项目高校。",
+    "computer_rank": "计算机C，软件无评级",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与工程学院",
+        "majors": [
+          {
+            "major_code": "085404电子信息-计算机技术",
+            "major_name": "计算机技术",
+            "exam_subjects": "①101思想政治理论\n②204英语（二）\n③302数学（二）\n④808数据结构",
+            "reference_books": "808数据结构\n《数据结构——从概念到C实现》，王红梅编著，清华大学出版社，2023年3月出版，每章的扩展与提高不考。\n《程序设计基础—从问题到程序》（第3版），王红梅编著，清华大学出版社，2021年2月出版。",
+            "retrial_subjects": "1.复试笔试科目：\n高级语言程序设计\n2.不接收同等学力考生。",
+            "enrollment_24": 30,
+            "tuition_duration": "学制：3年\n学费：硕士研究生学费标准8000元/人·年。",
+            "score_lines": {
+              "2024": "310/37/56",
+              "2023": null
+            },
+            "admission_info_23": "290/38/57",
+            "admission_info_24": "一志愿复试名单(也可以看到往年的招生情况）:https://yjsy.ccut.edu.cn/info/1081/2474.htm\n一志愿拟录取名单：https://yjsy.ccut.edu.cn/info/1081/2476.htm"
+          },
+          {
+            "major_code": "085404电子信息-计算机技术",
+            "major_name": "计算机技术",
+            "exam_subjects": "①101思想政治理论\n②202英语（二）\n③302数学（二）\n④808数据结构",
+            "reference_books": "808数据结构\n《数据结构——从概念到C实现》，王红梅编著，清华大学出版社，2023年3月出版，每章的扩展与提高不考。\n《程序设计基础—从问题到程序》（第3版），王红梅编著，清华大学出版社，2021年2月出版。",
+            "retrial_subjects": "1.复试笔试科目：\n高级语言程序设计\n2.不接收同等学力考生。",
+            "enrollment_24": 30,
+            "tuition_duration": "学制：3年\n学费：硕士研究生学费标准8000元/人·年。",
+            "score_lines": {
+              "2024": "310/37/56",
+              "2023": "290/38/57"
+            },
+            "admission_info_23": "一志愿复试名单：https://yjsy.ccut.edu.cn/info/1016/2199.htm\n一志愿拟录取名单：https://yjsy.ccut.edu.cn/info/1016/2200.htm",
+            "admission_info_24": "一志愿复试名单(也可以看到往年的招生情况）:https://yjsy.ccut.edu.cn/info/1081/2474.htm\n一志愿拟录取名单：https://yjsy.ccut.edu.cn/info/1081/2476.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "辽宁工业大学",
+    "name": "辽宁工业大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "沈阳工业大学主校区位于辽宁省沈阳市，是一所以工为主，涵盖工、理、经、管、文、法、哲、艺术等八大学科门类的多科性研究应用型大学，入选国家“卓越工程师教育培养计划”、国家建设高水平大学公派研究生项目、国家”特色重点学科项目“建设高校、中国政府奖学金来华留学生接收院校、“全国首批深化创新创业教育改革示范高校”、教育部首批“新工科研究与实践项目”。",
+    "computer_rank": "计算机B-，软件工程无评级",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "信息科学与工程学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 808 数据结构",
+            "reference_books": null,
+            "retrial_subjects": "F584数据库系统原理",
+            "enrollment_24": 32,
+            "tuition_duration": "学制：3年\n学费：8000/年",
+            "score_lines": {
+              "2024": "273/37/56",
+              "2023": null
+            },
+            "admission_info_23": "273/38/57",
+            "admission_info_24": "一志愿复试名单（第一批）：https://yjsxy.sut.edu.cn/info/1066/5432.htm\n一志愿复试名单（第二批）：https://yjsxy.sut.edu.cn/info/1066/5472.htm\n建议备考到340左右叭"
+          },
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 808 数据结构",
+            "reference_books": null,
+            "retrial_subjects": "F584数据库系统原理",
+            "enrollment_24": 32,
+            "tuition_duration": "学制：3年\n学费：8000/年",
+            "score_lines": {
+              "2024": "273/37/56",
+              "2023": "273/38/57"
+            },
+            "admission_info_23": "一志愿复试32人,拟录取32人\n拟录取均分305\n最高分367,最低分274",
+            "admission_info_24": "一志愿复试名单（第一批）：https://yjsxy.sut.edu.cn/info/1066/5432.htm\n一志愿复试名单（第二批）：https://yjsxy.sut.edu.cn/info/1066/5472.htm\n建议备考到340左右叭"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "三峡大学",
+    "name": "三峡大学",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "三峡大学（China Three Gorges University），位于湖北省宜昌市，是经教育部批准由原武汉水利电力大学（宜昌）和原湖北三峡学院于2000年5月25日合并组建的，是国家水利部和湖北省共建大学",
+    "computer_rank": "第四轮评级：计算机C，软件工程无评级。",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机与信息学院",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201 英语（一）\n③ 301 数学（一）\n④ 836 数据结构",
+            "reference_books": null,
+            "retrial_subjects": "复试笔试科目(任选一门)\n学硕:C语言或数据库\n专硕:数据结构、数据库原理与应用、信号与系统、数字信号处理",
+            "enrollment_24": 32,
+            "tuition_duration": "学制：3年\n学费：全日制硕士研究生生8000元/生/年\n非全日制电子信息学费10000/年",
+            "score_lines": {
+              "2024": "290/37/56",
+              "2023": null
+            },
+            "admission_info_23": "273/38/57",
+            "admission_info_24": "一志愿复试名单和拟录取名单，官网公示的都已经没有了；建议备考330左右叭"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  },
+  {
+    "id": "中国矿业大学（北京/徐州校区都有）",
+    "name": "中国矿业大学（北京/徐州校区都有）",
+    "level": "一般",
+    "region": "A区",
+    "province": null,
+    "intro": "中国矿业大学（China University of Mining and Technology），位于江苏省徐州市，是教育部直属的全国重点大学，教育部与江苏省人民政府、应急管理部共建高校，国家“双一流”建设高校”",
+    "computer_rank": "计算机评级为B，软工C",
+    "self_vs_408": "待判断",
+    "departments": [
+      {
+        "department_name": "计算机科学与技术学院\n徐州",
+        "majors": [
+          {
+            "major_code": "081200计算机科学与技术",
+            "major_name": "计算机科学与技术",
+            "exam_subjects": "① 101 思想政治理论\n② 201英语（一）\n③ 301数学（一）\n④ 408计算机学科专业基础",
+            "reference_books": null,
+            "retrial_subjects": "上机，编程语言（C++，JAVA，PYTHON都可以）",
+            "enrollment_24": 11,
+            "tuition_duration": "学制：学术学位研究生基本学制为 3 年；全日制专业学位硕士研究生基本学制为 2 年或 3 年\n\n学费：学术学位：8000 元/学年。\n专业学位：10000 元/学年；",
+            "score_lines": {
+              "2024": "308/37/56",
+              "2023": null
+            },
+            "admission_info_23": "289/38/57",
+            "admission_info_24": "一志愿复试名单（已过期）：https://cs.cumt.edu.cn/info/1072/5647.htm"
+          }
+        ]
+      }
+    ],
+    "favorites_count": 0
+  }
+]

@@ -1,0 +1,92 @@
+/* styles.css 或新建 navbar.css */
+
+.navbar {
+    background-color: #333;
+    color: white;
+    padding: 10px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.nav-brand {
+    color: white;
+    text-decoration: none;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.nav-links,
+.nav-user-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.nav-links li,
+.nav-user-links li {
+    margin-left: 20px;
+}
+
+.nav-links a,
+.nav-user-links a {
+    color: white;
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.nav-links a:hover,
+.nav-user-links a:hover {
+    background-color: #555;
+}
+
+.nav-user-links span {
+    margin-right: 5px;
+}
+
+/* Flash Messages */
+.flash-messages {
+    padding: 0 20px; /* Match container padding */
+    max-width: 1200px;
+    margin: 15px auto;
+}
+
+.flash {
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    color: #fff;
+}
+
+.flash.success { background-color: #4CAF50; }
+.flash.error { background-color: #f44336; }
+.flash.info { background-color: #2196F3; }
+.flash.warning { background-color: #ff9800; }
+
+/* Main Content Padding */
+.main-content {
+    padding: 20px;
+    max-width: 1200px; /* Consistent max-width */
+    margin: 0 auto; /* Center content */
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    margin-top: 40px;
+    padding: 20px;
+    background-color: #eee;
+    color: #555;
+    font-size: 0.9em;
+} 

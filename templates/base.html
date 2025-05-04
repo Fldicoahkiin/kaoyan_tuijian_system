@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 使用 block title 允许子模板覆盖标题 -->
+    <title>{% block title %}计算机考研推荐系统{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- 导航栏 CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <!-- 表单 CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
+    <!-- ECharts 可以在需要的页面单独引入，或者放在 base 里 -->
+    {% block head_scripts %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a class="nav-brand" href="{{ url_for('index') }}">考研推荐系统</a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('index') }}">可视化面板</a></li>
+                <li><a href="{{ url_for('school_list') }}">院校库</a></li> {# 添加路由占位符 #}
+                <li><a href="{{ url_for('recommend') }}">智能推荐</a></li> {# 添加路由占位符 #}
+            </ul>
+            <ul class="nav-user-links">
+                {% if 'username' in session %}
+                    <li><span>欢迎, {{ session['username'] }}</span></li>
+                    <li><a href="{{ url_for('profile') }}">个人中心</a></li>
+                    <li><a href="{{ url_for('logout') }}">登出</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('login') }}">登录</a></li>
+                    <li><a href="{{ url_for('register') }}">注册</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        <!-- 显示 Flash 消息 -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- 主体内容由子模板填充 -->
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer>
+        <p>&copy; {{ now.year }} 计算机考研院校可视化推荐系统. All rights reserved.</p>
+         {# 可以在这里注入当前年份 #}
+         {% set now = namespace(year=2024) %}
+    </footer>
+
+    <!-- 全局 JS 或页脚 JS -->
+    {% block body_scripts %}{% endblock %}
+</body>
+</html> 
