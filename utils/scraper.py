@@ -18,6 +18,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, WebDriverException
 from selenium.webdriver.chrome.service import Service # 导入 Service
+from selenium.webdriver.support.ui import Select # 导入 Select
 
 # --- 目标计算机相关专业代码集合 ---
 TARGET_MAJOR_CODES = {
@@ -108,77 +109,107 @@ def fetch_page(url):
         return None
 
 # --- 新增：使用 Selenium 获取动态加载内容的页面 --- 
-def fetch_dynamic_page_with_selenium(url, wait_for_element_id=None, timeout=30):
+def fetch_dynamic_page_with_selenium(url, select_options=None, click_button_id=None, wait_after_click_selector=None, timeout=30):
     """
-    使用 Selenium WebDriver 加载页面，等待特定元素出现，并返回页面源码。
-    确保已安装 selenium 和对应的 WebDriver (如 chromedriver)。
+    使用 Selenium WebDriver 加载页面，可选地选择下拉框选项，点击按钮，
+    然后等待特定元素出现，并返回页面源码。
+    select_options: a list of dicts like [{"dropdown_id": "id", "option_value": "value"}]
     """
     html_source = None
-    driver = None # 初始化为 None
+    driver = None
     try:
-        # --- 配置 WebDriver --- 
+        # --- 配置 WebDriver (移除 Headless) --- 
         options = webdriver.ChromeOptions()
-        options.add_argument('--headless')
+        # options.add_argument('--headless') # 暂时禁用无头模式进行调试
         options.add_argument('--disable-gpu')
         options.add_argument('--no-sandbox')
         options.add_argument('--disable-dev-shm-usage')
         options.add_argument("user-agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'")
-        
-        # --- 构造 ChromeDriver 路径 (跨平台) --- 
+
+        # --- 构造 ChromeDriver 路径 (跨平台) ---
         script_dir = os.path.dirname(__file__)
         project_root = os.path.dirname(script_dir)
-        
-        # 根据操作系统确定 chromedriver 文件名
         chromedriver_filename = "chromedriver.exe" if platform.system() == "Windows" else "chromedriver"
-        
         chrome_driver_path = os.path.join(project_root, 'utils', chromedriver_filename)
         print(f"    [Selenium] 尝试使用 ChromeDriver 路径 ({platform.system()}): {chrome_driver_path}")
 
         # --- 初始化 WebDriver (使用 Service 对象) --- 
-        print(f"    [Selenium] 初始化 WebDriver (Chrome Headless - Selenium 4+ style)...")
+        print(f"    [Selenium] 初始化 WebDriver (非 Headless - 调试模式)...")
         try:
             service = Service(executable_path=chrome_driver_path)
             driver = webdriver.Chrome(service=service, options=options)
         except WebDriverException as e:
-            # 保持之前的错误处理逻辑
-            if "executable needs to be in PATH" in str(e) or "cannot be found" in str(e):
-                 print(f"    [Selenium] 错误：在路径 '{chrome_driver_path}' 找不到 chromedriver，或者权限不足。请确认文件存在且可执行。")
-            elif "'chromedriver' executable may have wrong permissions" in str(e):
-                  print(f"    [Selenium] 错误：'{chrome_driver_path}' 可能权限不足。请确保文件具有执行权限 (例如在 macOS/Linux 上运行 'chmod +x {chrome_driver_path}')。")
-            else:
+             # ... (error handling remains the same) ...
+             if "executable needs to be in PATH" in str(e) or "cannot be found" in str(e):
+                 print(f"    [Selenium] 错误：在路径 '{chrome_driver_path}' 找不到 chromedriver...")
+             elif "'chromedriver' executable may have wrong permissions" in str(e):
+                  print(f"    [Selenium] 错误：'{chrome_driver_path}' 可能权限不足...")
+             else:
                   print(f"    [Selenium] 初始化 WebDriver 时出错: {e}")
-            return None # 初始化失败，无法继续
+             return None
 
         print(f"    [Selenium] 正在访问: {url}")
         driver.get(url)
+        time.sleep(2)
 
-        # --- 等待动态内容加载 --- 
-        if wait_for_element_id:
-            print(f"    [Selenium] 等待元素 ID '{wait_for_element_id}' 加载 (最多 {timeout} 秒)...")
-            wait = WebDriverWait(driver, timeout)
-            wait.until(EC.presence_of_element_located((By.ID, wait_for_element_id)))
-            print(f"    [Selenium] 元素 '{wait_for_element_id}' 已加载。")
+        # --- 选择下拉框选项 (如果指定了) --- 
+        if select_options:
+            for selection in select_options:
+                dropdown_id = selection.get("dropdown_id")
+                option_value = selection.get("option_value")
+                if dropdown_id and option_value:
+                    try:
+                        print(f"    [Selenium] 尝试在下拉框 '{dropdown_id}' 中选择值 '{option_value}'...")
+                        select_element = Select(driver.find_element(By.ID, dropdown_id))
+                        select_element.select_by_value(option_value)
+                        print(f"      -> 已选择 '{dropdown_id}' 的值为 '{option_value}'")
+                        time.sleep(1) # Wait a moment for any potential JS triggered by selection
+                    except Exception as select_e:
+                        print(f"    [Selenium] 选择下拉框 '{dropdown_id}' 时出错: {select_e}")
+
+        # --- 点击按钮 (如果指定了 ID) --- 
+        if click_button_id:
+             try:
+                 print(f"    [Selenium] 尝试查找并点击按钮 ID: {click_button_id}")
+                 button = driver.find_element(By.ID, click_button_id)
+                 button.click()
+                 print(f"    [Selenium] 已点击按钮 ID: {click_button_id}")
+                 time.sleep(1)
+             except Exception as click_e:
+                 print(f"    [Selenium] 点击按钮 ID '{click_button_id}' 时出错: {click_e}")
+                 
+        # --- 等待点击后的动态内容加载 --- 
+        if wait_after_click_selector:
+             print(f"    [Selenium] 等待元素选择器 '{wait_after_click_selector}' 匹配 (最多 {timeout} 秒)...")
+             wait = WebDriverWait(driver, timeout)
+             wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, wait_after_click_selector)))
+             print(f"    [Selenium] 元素选择器 '{wait_after_click_selector}' 匹配成功。")
         else:
-            # 如果不指定等待元素，给一个默认的短暂等待时间
-            print(f"    [Selenium] 未指定等待元素，默认等待 5 秒...")
-            time.sleep(5)
-            
+              print(f"    [Selenium] 未指定等待元素(点击后)，默认等待 5 秒...")
+              time.sleep(5)
+              
         # --- 获取页面源码 --- 
         html_source = driver.page_source
         print(f"    [Selenium] 成功获取页面源码。")
         
     except TimeoutException:
-        print(f"    [Selenium] 错误：等待元素 '{wait_for_element_id}' 超时 ({timeout}秒)。页面可能未完全加载或元素不存在。")
-    except WebDriverException as e:
-        print(f"    [Selenium] WebDriver 发生错误: {e}")
-    except Exception as e:
-        print(f"    [Selenium] 获取动态页面时发生未知错误: {e}")
-    finally:
-        # --- 关闭 WebDriver --- 
+        print(f"    [Selenium] 错误：等待元素选择器 '{wait_after_click_selector}' 超时 ({timeout}秒)。页面可能未完全加载或元素不存在。")
         if driver:
-            print(f"    [Selenium] 关闭 WebDriver。")
-            driver.quit()
-            
+             try:
+                 screenshot_path = os.path.join(project_root, 'utils', 'selenium_timeout_screenshot.png')
+                 driver.save_screenshot(screenshot_path)
+                 print(f"    [Selenium] 已保存超时截图到: {screenshot_path}")
+             except Exception as screenshot_e:
+                 print(f"    [Selenium] 保存截图时出错: {screenshot_e}")
+    except WebDriverException as e:
+         print(f"    [Selenium] WebDriver 发生错误: {e}")
+    except Exception as e:
+         print(f"    [Selenium] 获取动态页面时发生未知错误: {e}")
+    finally:
+         if driver:
+             print(f"    [Selenium] 关闭 WebDriver。")
+             driver.quit()
+             
     return html_source
 
 # --- 新增：辅助函数 - 解析考试科目 ---
@@ -287,84 +318,178 @@ def parse_school_data(school_name, base_url):
         # 3. Parse Major Catalog using Selenium
         if major_catalog_url:
             print(f"  [{school_name}] 尝试使用 Selenium 访问专业目录页: {major_catalog_url}")
-            # --- Tell Selenium to wait for the table with id='datatabel' --- 
-            catalog_html = fetch_dynamic_page_with_selenium(major_catalog_url, wait_for_element_id='datatabel') 
+            # --- Select department, click search, then wait --- 
+            catalog_html = fetch_dynamic_page_with_selenium(
+                major_catalog_url, 
+                select_options=[{"dropdown_id": "yxslist", "option_value": "304"}], # Select Computer Science
+                click_button_id='searchbtn', 
+                wait_after_click_selector='#datatabel tbody tr'
+            ) 
             if catalog_html:
                 print(f"    [{school_name}] 使用 BeautifulSoup 解析 Selenium 获取的专业目录源码...")
                 catalog_soup = BeautifulSoup(catalog_html, 'html.parser')
-                
-                # --- Find the table --- 
                 major_table = catalog_soup.find('table', id='datatabel')
                 if major_table:
-                    # Corrected: find tbody first, then rows
-                    tbody = major_table.find('tbody') 
+                    tbody = major_table.find('tbody')
                     if tbody:
                         major_rows = tbody.find_all('tr')
                         print(f"      [{school_name}] 在专业目录页找到 ID='datatabel' 的表格，共 {len(major_rows)} 行。开始解析...")
                         
-                        for m_row in major_rows:
+                        # --- State variables for parsing context --- 
+                        current_dept_name = "未知院系" # Default if header not found before majors
+                        current_major_code = None
+                        current_major_name = None
+                        current_degree_type = None
+                        current_study_type = None
+                        current_exam_subjects = "信息待补充" # Carry forward due to rowspan
+                        current_remarks = "信息待补充" # Carry forward due to rowspan
+                        current_tuition_duration = ""
+                        
+                        for i, m_row in enumerate(major_rows):
                             m_cols = m_row.find_all('td')
-                            # Expected columns (verify based on actual table): 
-                            # 0: 院系所, 1: 专业代码, 2: 专业名称, 3: 学位类型, 4: 学习方式, 5: 拟招生人数, 6: 考试科目, 7: 备注
-                            if len(m_cols) >= 8: # Ensure enough columns exist
-                                try:
-                                    dept_name = m_cols[0].text.strip()
-                                    major_code = m_cols[1].text.strip()
-                                    major_name = m_cols[2].text.strip()
-                                    degree_type_raw = m_cols[3].text.strip() # 学术学位 / 专业学位
-                                    study_type = m_cols[4].text.strip() # 全日制 / 非全日制
-                                    enrollment_raw = m_cols[5].text.strip()
-                                    subjects_html = str(m_cols[6]) # Pass HTML to subject parser
-                                    remarks = m_cols[7].text.strip()
+                            num_cols = len(m_cols)
+                            # print(f"        [Row {i+1}] Found {num_cols} columns.") # Optional debug
+                            # print(f"        [Row {i+1}] HTML: {m_row.prettify()[:500]}...") # Optional debug
 
-                                    # --- Filter by Target Major Codes --- 
-                                    if major_code in TARGET_MAJOR_CODES:
-                                        print(f"        -> 找到目标专业: {dept_name} - {major_code} {major_name}")
-                                        
-                                        # --- Process extracted data --- 
-                                        # Map degree type
-                                        degree_type = "Academic" if "学术" in degree_type_raw else ("Professional" if "专业" in degree_type_raw else "Unknown")
-                                        # Parse enrollment (extract numbers)
-                                        enrollment_match = re.search(r'\d+', enrollment_raw)
-                                        enrollment = enrollment_match.group(0) if enrollment_match else enrollment_raw
-                                        # Parse subjects
-                                        exam_subjects = parse_exam_subjects(subjects_html)
-                                        
-                                        # --- Structure major data --- 
-                                        major_data = {
-                                            "major_code": major_code,
-                                            "major_name": major_name,
-                                            "degree_type": degree_type,
-                                            "study_type": study_type,
-                                            "enrollment": enrollment, 
-                                            "exam_subjects": exam_subjects,
-                                            "remarks": remarks,
-                                            # Add placeholders for other fields if needed later
-                                            "research_directions": [],
-                                            "reference_books": "",
-                                            "tuition_duration": "",
-                                            "score_lines": {} # Initialize score_lines here
-                                        }
-                                        
-                                        # --- Group by department --- 
-                                        if dept_name not in parsed_majors_by_dept:
-                                            parsed_majors_by_dept[dept_name] = []
-                                        parsed_majors_by_dept[dept_name].append(major_data)
-                                        
-                                except IndexError:
-                                    print(f"        [!] 解析专业目录某行时列数不足 (需要至少8列)。跳过此行。")
-                                except Exception as major_row_e:
-                                    print(f"        [!] 解析专业目录某行时发生未知错误: {major_row_e}。跳过此行。")
-                            # else: 
-                                # Optional: print rows skipped due to column count
-                                # if m_cols:
-                                #     print(f"        Skipping row (cols={len(m_cols)}): {m_cols[0].text.strip()}...")
+                            try:
+                                # --- Check for Department Header Row --- 
+                                if num_cols >= 1 and m_cols[0].find('h3'):
+                                    dept_name_raw = m_cols[0].find('h3').text.strip()
+                                    match = re.match(r'\d+\s+(.*)', dept_name_raw) # Extract name after code
+                                    current_dept_name = match.group(1) if match else dept_name_raw
+                                    print(f"        ---> Detected Department: '{current_dept_name}'")
+                                    continue # Move to next row
+
+                                # --- Check for Major Header Row --- 
+                                col0_h4 = m_cols[0].find('h4') if num_cols > 0 else None
+                                is_major_header = num_cols == 5 and col0_h4 and re.match(r'^\d{6}\s+', col0_h4.text.strip())
                                 
-                        print(f"      [{school_name}] 专业目录表格解析完成。共找到 {sum(len(majors) for majors in parsed_majors_by_dept.values())} 个目标专业，分布在 {len(parsed_majors_by_dept)} 个院系。")
-                    else:
-                         print(f"    [{school_name}] 在专业目录页 ID='datatabel' 的表格中未找到 <tbody>。")
-                else:
-                     print(f"    [{school_name}] 未能在专业目录页找到 ID='datatabel' 的表格。")
+                                if is_major_header:
+                                    col0_text = col0_h4.text.strip()
+                                    major_code_match = re.match(r'^(\d{6})\s+(.*)', col0_text)
+                                    if major_code_match:
+                                        current_major_code = major_code_match.group(1)
+                                        current_major_name = major_code_match.group(2)
+                                        # Reset direction-specific info for new major
+                                        current_exam_subjects = "信息待补充"
+                                        current_remarks = "信息待补充"
+                                        current_tuition_duration = ""
+                                        
+                                        degree_type_raw = m_cols[4].text.strip()
+                                        current_degree_type = "Academic" if "学术" in degree_type_raw else ("Professional" if "专业" in degree_type_raw else "Unknown")
+                                        study_type_text = m_cols[4].text.strip() # Also check col 4 for non-full-time
+                                        current_study_type = "非全日制" if "非全日制" in study_type_text else "全日制"
+
+                                        print(f"        ---> Detected Major: Code='{current_major_code}', Name='{current_major_name}', Type='{current_degree_type}', Study='{current_study_type}'")
+
+                                        if current_major_code in TARGET_MAJOR_CODES:
+                                            print(f"          -> MATCHED TARGET MAJOR! Initializing entry.")
+                                            if current_dept_name not in parsed_majors_by_dept:
+                                                parsed_majors_by_dept[current_dept_name] = {}
+                                            if current_major_code not in parsed_majors_by_dept[current_dept_name]:
+                                                enrollment_raw = m_cols[2].text.strip()
+                                                enrollment_match = re.search(r'\d+', enrollment_raw)
+                                                enrollment = enrollment_match.group(0) if enrollment_match else enrollment_raw
+                                                parsed_majors_by_dept[current_dept_name][current_major_code] = {
+                                                    "major_code": current_major_code,
+                                                    "major_name": current_major_name,
+                                                    "degree_type": current_degree_type,
+                                                    "study_type": current_study_type,
+                                                    "enrollment": enrollment,
+                                                    "exam_subjects": current_exam_subjects, # Use carried-forward value initially
+                                                    "remarks": current_remarks,           # Use carried-forward value initially
+                                                    "tuition_duration": current_tuition_duration,
+                                                    "research_directions": [],
+                                                    "score_lines": {}
+                                                }
+                                        else:
+                                            print(f"          -> Code '{current_major_code}' not in TARGET_MAJOR_CODES. Ignoring this major and its directions.")
+                                            current_major_code = None # Reset so subsequent direction rows are skipped
+                                else:
+                                    current_major_code = None # Match failed, reset
+                                continue # Processed major header, move to next row
+
+                                # --- Check for Direction Row --- 
+                                # Must be associated with a valid *target* major code found previously
+                                if num_cols == 5 and current_major_code:
+                                    direction_name = m_cols[0].text.strip()
+                                    advisors = m_cols[1].text.strip().replace('\n', ' ').strip()
+                                    
+                                    # Handle rowspan for subjects (col 3) and remarks (col 4)
+                                    subjects_col = m_cols[3]
+                                    remarks_col = m_cols[4]
+                                    
+                                    subjects_updated = False
+                                    if 'display: none;' not in subjects_col.get('style', '') and subjects_col.text.strip():
+                                        current_exam_subjects = parse_exam_subjects(str(subjects_col))
+                                        subjects_updated = True
+                                        
+                                    remarks_updated = False
+                                    if 'display: none;' not in remarks_col.get('style', '') and remarks_col.text.strip():
+                                         current_remarks_raw = remarks_col.text.strip().replace('\n', ' ')
+                                         # Try to extract tuition/duration from the full remarks
+                                         tuition_match = re.search(r'学费：\s*(\d+元/生\.年)', current_remarks_raw)
+                                         duration_match = re.search(r'学制：\s*(\d+\s*年)', current_remarks_raw)
+                                         tuition = tuition_match.group(1) if tuition_match else ""
+                                         duration = duration_match.group(1) if duration_match else ""
+                                         current_tuition_duration = f"{tuition}, {duration}".strip(', ') if (tuition or duration) else ""
+                                         # Store the potentially cleaned remarks text itself
+                                         current_remarks = current_remarks_raw 
+                                         remarks_updated = True
+
+                                    # --- Update the Major dictionary --- 
+                                    # Find the dict for the current target major
+                                    major_dict = parsed_majors_by_dept.get(current_dept_name, {}).get(current_major_code)
+                                    if major_dict:
+                                        # Update subjects/remarks/tuition if they were found in this row
+                                        if subjects_updated:
+                                            major_dict['exam_subjects'] = current_exam_subjects
+                                        if remarks_updated: # Update remarks and tuition based on this row's finding
+                                            major_dict['remarks'] = current_remarks
+                                            major_dict['tuition_duration'] = current_tuition_duration
+                                            
+                                        # Append the direction details
+                                        major_dict['research_directions'].append({
+                                            "direction_name": direction_name,
+                                            "advisors": advisors
+                                        })
+                                        print(f"          Added Direction: '{direction_name}' to Major '{current_major_code}'")
+                                    # else: Major code was target but somehow dict not initialized? Should not happen based on above logic.
+
+                            except Exception as e:
+                                print(f"        [Row {i+1}] Exception during processing: {e}")
+
+                        # --- End of Loop --- 
+                        
+                    else: 
+                        print(f"    [{school_name}] 在专业目录页 ID='datatabel' 的表格中未找到 <tbody>。")
+                else: 
+                    print(f"    [{school_name}] 未能在专业目录页找到 ID='datatabel' 的表格。")
+                
+                # --- Convert dict structure to list structure AFTER the loop (Rewritten) --- 
+                print(f"      [{school_name}] 专业目录表格解析完成。准备构建最终数据结构...")
+                final_departments_list = []
+                total_target_majors_found = 0
+                # parsed_majors_by_dept looks like {'CompSci': {'081200': {...}, '083500': {...}}}
+                for dept_key in parsed_majors_by_dept:
+                    majors_dict = parsed_majors_by_dept[dept_key] # Get the inner dict
+                    
+                    # Explicitly create the list of major dictionaries
+                    list_of_major_dicts = []
+                    for major_code_key in majors_dict:
+                        list_of_major_dicts.append(majors_dict[major_code_key]) # Append the dict value
+
+                    if list_of_major_dicts: # Only add department if it has target majors
+                        dept_entry = {
+                            "department_name": dept_key,
+                            "majors": list_of_major_dicts # Assign the created list
+                        }
+                        final_departments_list.append(dept_entry)
+                        total_target_majors_found += len(list_of_major_dicts)
+
+                print(f"      -> Processed. Found {total_target_majors_found} target majors in {len(final_departments_list)} departments.")
+                school_update_data['departments'] = final_departments_list
+                
             else:
                 print(f"  [{school_name}] Selenium 未能获取专业目录页面内容。")
                
@@ -468,19 +593,35 @@ def parse_school_data(school_name, base_url):
             time.sleep(1) 
             
     # --- 5. Populate school_update_data['departments'] from parsed_majors_by_dept --- 
-    print(f"  [{school_name}] 正在将解析到的专业信息构建为 departments 列表...")
-    school_update_data['departments'] = [
-        {"department_name": dept_name, "majors": majors_list}
-        for dept_name, majors_list in parsed_majors_by_dept.items()
-    ]
-    print(f"    -> 构建完成: {len(school_update_data['departments'])} 个院系条目。")
+    # This step is now done above, after parsing the catalog for SCU.
+    # We need to ensure it's also done if the SCU logic is skipped or for other universities.
+    # Let's move the conversion logic outside the SCU block but keep the print inside.
+    # The logic below will handle cases where parsed_majors_by_dept wasn't populated by SCU logic.
+    if not school_update_data.get('departments') and parsed_majors_by_dept:
+         print(f"  [{school_name}] (Non-SCU or SCU catalog failed) 构建 departments 列表...")
+         school_update_data['departments'] = [
+            {"department_name": dept_name, "majors": list(majors_dict.values())}
+            for dept_name, majors_dict in parsed_majors_by_dept.items()
+         ]
+         print(f"    -> 构建完成: {len(school_update_data['departments'])} 个院系条目。")
+    elif not school_update_data.get('departments'):
+         # Ensure it's an empty list if nothing was parsed
+         school_update_data['departments'] = [] 
+         print(f"  [{school_name}] 没有解析到专业信息，departments 列表为空。")
 
-    # --- 6. Merge temporary score data into parsed majors --- 
+    # --- 6. Merge temporary score data into parsed majors ---
     if temp_score_data and school_update_data.get('departments'):
         print(f"  [{school_name}] 尝试将【大类】分数线数据合并到已解析的专业中...")
         majors_updated_with_scores = 0
-        for dept in school_update_data['departments']:
-            for major in dept.get('majors', []):
+
+        # --- Remove previous DEBUG prints --- 
+
+        for dept_index, dept in enumerate(school_update_data['departments']): 
+            # dept should now correctly be a dictionary like {'department_name': ..., 'majors': [...]} 
+            majors_list = dept.get('majors', []) 
+            # majors_list should now correctly be a list of major dictionaries
+            for major_index, major in enumerate(majors_list): 
+                # major should now correctly be a dictionary
                 major_code = major.get('major_code')
                 if major_code:
                     score_key_prefix = ""
