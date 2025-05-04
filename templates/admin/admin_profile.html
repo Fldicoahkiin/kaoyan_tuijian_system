@@ -1,0 +1,36 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}管理员个人中心{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid">
+    <h1 class="mt-4">管理员个人中心</h1>
+    <p>当前管理员: {{ session['username'] }}</p>
+
+    <div class="card mb-4" style="max-width: 600px;">
+        <div class="card-header">
+            <i class="fas fa-key me-1"></i>
+            修改密码
+        </div>
+        <div class="card-body">
+            <form action="{{ url_for('admin_profile') }}" method="POST">
+                 {# 可以取消注释以要求输入当前密码 #}
+                {# <div class="mb-3">
+                    <label for="current_password" class="form-label">当前密码</label>
+                    <input type="password" class="form-control" id="current_password" name="current_password" required>
+                </div> #}
+                <div class="mb-3">
+                    <label for="new_password" class="form-label">新密码 <span class="text-danger">*</span></label>
+                    <input type="password" class="form-control" id="new_password" name="new_password" required>
+                </div>
+                <div class="mb-3">
+                    <label for="confirm_password" class="form-label">确认新密码 <span class="text-danger">*</span></label>
+                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">确认修改密码</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+{% endblock %} 

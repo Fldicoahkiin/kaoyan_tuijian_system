@@ -1,0 +1,60 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}公告管理{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid">
+    <h1 class="mt-4">公告管理</h1>
+
+    <!-- 新增公告表单 -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-plus me-1"></i>
+            新增公告
+        </div>
+        <div class="card-body">
+            <form action="{{ url_for('admin_announcements') }}" method="POST">
+                <div class="mb-3">
+                    <label for="title" class="form-label">公告标题 <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="title" name="title" required>
+                </div>
+                <div class="mb-3">
+                    <label for="url" class="form-label">链接 URL (可选)</label>
+                    <input type="url" class="form-control" id="url" name="url" placeholder="例如: http://example.com/notice">
+                </div>
+                <button type="submit" class="btn btn-primary">添加公告</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 公告列表 -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-list me-1"></i>
+            现有公告
+        </div>
+        <div class="card-body">
+            {% if announcements %}
+                <ul class="list-group">
+                    {% for announcement in announcements %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                {{ announcement.title }}
+                                {% if announcement.url and announcement.url != '#' %}
+                                    <a href="{{ announcement.url }}" target="_blank" class="ms-2 small text-muted">(链接)</a>
+                                {% endif %}
+                            </div>
+                            <form action="{{ url_for('delete_announcement', index=loop.index0) }}" method="POST" onsubmit="return confirm('确定要删除这条公告吗？');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">删除</button>
+                            </form>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-center text-muted">暂无公告。</p>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+{% endblock %} 

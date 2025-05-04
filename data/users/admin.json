@@ -1,0 +1,13 @@
+{
+    "is_admin": true,
+    "username": "admin",
+    "password_hash": "scrypt:32768:8:1$UH8uc0vw3KKId4MN$6f68a0bf789053d64005e784c3ff5cf5796c82cbd921ea9e8461076e9f8db0813781a8da14c5d7c8e830995ab73830623060c6d49f160ed62e6c0b44b667b605",
+    "profile": {
+        "education_background": "",
+        "major_area": "",
+        "target_location": "",
+        "target_level": "",
+        "expected_score": null
+    },
+    "favorites": []
+}

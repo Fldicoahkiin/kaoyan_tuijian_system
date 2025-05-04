@@ -3,15 +3,110 @@
 {% block title %}院校库{% endblock %}
 
 {% block content %}
-<div class="school-list-page">
+<div class="school-list-page container mt-4">
     <h2>院校库查询</h2>
-    <div class="search-filters">
-        {# TODO: 添加查询表单 (地区, 等级, 名称, 计算机等级) #}
-        <p>查询功能待实现</p>
-    </div>
-    <div class="results-container">
-        {# TODO: 显示查询结果列表 #}
-        <p>结果列表待实现</p>
+
+    <!-- 查询表单 -->
+    <form method="GET" action="{{ url_for('school_list') }}" class="search-filters card p-3 mb-4">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label for="province" class="form-label">地区/省份:</label>
+                {# 可以动态生成省份列表，或手动列出一些 #}
+                <input type="text" id="province" name="province" class="form-control" value="{{ request.args.get('province', '') }}">
+            </div>
+            <div class="col-md-3">
+                <label for="level" class="form-label">院校等级:</label>
+                <select id="level" name="level" class="form-select">
+                    <option value="" {% if not request.args.get('level') %}selected{% endif %}>全部</option>
+                    <option value="985" {% if request.args.get('level') == '985' %}selected{% endif %}>985</option>
+                    <option value="211" {% if request.args.get('level') == '211' %}selected{% endif %}>211</option>
+                    <option value="双一流" {% if request.args.get('level') == '双一流' %}selected{% endif %}>双一流</option>
+                    <option value="一般" {% if request.args.get('level') == '一般' %}selected{% endif %}>一般</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="name" class="form-label">院校名称:</label>
+                <input type="text" id="name" name="name" class="form-control" value="{{ request.args.get('name', '') }}">
+            </div>
+            <div class="col-md-3">
+                <label for="computer_rank" class="form-label">计算机等级:</label>
+                <select id="computer_rank" name="computer_rank" class="form-select">
+                    <option value="" {% if not request.args.get('computer_rank') %}selected{% endif %}>全部</option>
+                    {# 假设的等级，需要根据实际数据调整 #}
+                    <option value="A+" {% if request.args.get('computer_rank') == 'A+' %}selected{% endif %}>A+</option>
+                    <option value="A" {% if request.args.get('computer_rank') == 'A' %}selected{% endif %}>A</option>
+                    <option value="A-" {% if request.args.get('computer_rank') == 'A-' %}selected{% endif %}>A-</option>
+                    <option value="B+" {% if request.args.get('computer_rank') == 'B+' %}selected{% endif %}>B+</option>
+                    <option value="B" {% if request.args.get('computer_rank') == 'B' %}selected{% endif %}>B</option>
+                    <option value="B-" {% if request.args.get('computer_rank') == 'B-' %}selected{% endif %}>B-</option>
+                    <option value="C+" {% if request.args.get('computer_rank') == 'C+' %}selected{% endif %}>C+</option>
+                    <option value="C" {% if request.args.get('computer_rank') == 'C' %}selected{% endif %}>C</option>
+                    <option value="C-" {% if request.args.get('computer_rank') == 'C-' %}selected{% endif %}>C-</option>
+                    <option value="无" {% if request.args.get('computer_rank') == '无' %}selected{% endif %}>无</option>
+                </select>
+            </div>
+            <div class="col-md-12 text-end">
+                <button type="submit" class="btn btn-primary">查询</button>
+                <a href="{{ url_for('school_list') }}" class="btn btn-secondary">重置</a>
+            </div>
+        </div>
+    </form>
+
+    <!-- 结果列表 -->
+    <div class="results-container card">
+        <div class="card-header">
+            查询结果 (共 {{ schools|length }} 条)
+        </div>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>院校名称</th>
+                        <th>院校等级</th>
+                        <th>计算机等级</th>
+                        <th>地区</th>
+                        <th>收藏人数</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if schools %}
+                        {% for school in schools %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>
+                                    {# 使用 school.id 或 name 作为 school_id #}
+                                    <a href="{{ url_for('school_detail', school_id=(school.id or school.name)) }}">{{ school.name }}</a>
+                                </td>
+                                <td>{{ school.level }}</td>
+                                <td>{{ school.computer_rank }}</td>
+                                <td>{{ school.province }} ({{school.region}})</td>
+                                <td>{{ school.favorites_count | default(0) }}</td>
+                                <td>
+                                    <a href="{{ url_for('school_detail', school_id=(school.id or school.name)) }}" class="btn btn-sm btn-info">详情</a>
+                                    {# 收藏按钮可以放在详情页，这里简化 #}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center">未找到符合条件的院校。</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+         {# TODO: 添加分页逻辑 (如果需要) #}
     </div>
 </div>
+
+{# 引入 Bootstrap CSS/JS (如果决定使用) 或自定义样式 #}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    /* 可以在这里添加针对此页面的额外 CSS */
+    .search-filters .form-label { font-weight: bold; }
+    .results-container .card-header { font-size: 1.1em; }
+</style>
+
 {% endblock %} 

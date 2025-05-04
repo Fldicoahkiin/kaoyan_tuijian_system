@@ -1,0 +1,82 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}用户详情 - {{ user.username }}{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid">
+    <h1 class="mt-4">用户详情: {{ user.username }}</h1>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-user me-1"></i>
+            基本信息
+        </div>
+        <div class="card-body">
+            <p><strong>用户名:</strong> {{ user.username }}</p>
+            <p><strong>是否管理员:</strong>
+                {% if user.is_admin %}
+                    <span class="badge bg-success">是</span>
+                    <form action="{{ url_for('toggle_admin_status', username=user.username) }}" method="POST" style="display: inline;">
+                        <button type="submit" class="btn btn-sm btn-warning ms-2">设为普通用户</button>
+                    </form>
+                {% else %}
+                    <span class="badge bg-secondary">否</span>
+                     <form action="{{ url_for('toggle_admin_status', username=user.username) }}" method="POST" style="display: inline;">
+                        <button type="submit" class="btn btn-sm btn-success ms-2">设为管理员</button>
+                    </form>
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-id-card me-1"></i>
+            个人资料与偏好
+        </div>
+        <div class="card-body">
+            {% if user.profile %}
+                <p><strong>学历背景:</strong> {{ user.profile.education_background or '未设置' }}</p>
+                <p><strong>报考专业领域:</strong> {{ user.profile.major_area or '未设置' }}</p>
+                <p><strong>目标所在地:</strong> {{ user.profile.target_location or '未设置' }}</p>
+                <p><strong>期望院校层次:</strong> {{ user.profile.target_level or '未设置' }}</p>
+                <p><strong>预期初试分数:</strong> {{ user.profile.expected_score or '未设置' }}</p>
+            {% else %}
+                <p>用户尚未设置个人资料。</p>
+            {% endif %}
+            {# TODO: 添加编辑用户资料的功能? #}
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-heart me-1"></i>
+            收藏夹
+        </div>
+        <div class="card-body">
+            {% if user.favorites %}
+                <ul class="list-group">
+                    {% for fav_id in user.favorites %}
+                        {# 尝试查找学校名称，如果找不到只显示 ID #}
+                        {% set fav_school = namespace(name=fav_id) %}
+                        {% for s in schools_data %}
+                           {% if s.id == fav_id or s.name == fav_id %}
+                                {% set fav_school.name = s.name %}
+                                {% break %}
+                           {% endif %}
+                        {% endfor %}
+                        <li class="list-group-item">
+                           <a href="{{ url_for('school_detail', school_id=fav_id) }}" target="_blank">{{ fav_school.name }}</a> (ID: {{ fav_id }})
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>用户尚未收藏任何院校。</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <a href="{{ url_for('admin_users') }}" class="btn btn-secondary"><i class="fas fa-arrow-left me-1"></i> 返回用户列表</a>
+
+</div>
+{% endblock %} 

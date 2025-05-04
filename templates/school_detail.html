@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}{{ school.name }} - 详情{% endblock %}
+
+{% block head_scripts %}
+    {# 如果需要绘制分数线图表，在这里引入 ECharts #}
+    {# <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script> #}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .favorite-btn {
+            cursor: pointer;
+            color: #ccc; /* 默认灰色 */
+            font-size: 1.5em;
+            transition: color 0.3s ease;
+        }
+        .favorite-btn.favorited {
+            color: #ff4d4d; /* 收藏后红色 */
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+        .major-card .card-header {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        .list-group-item span {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4 school-detail-page">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h2>{{ school.name }}</h2>
+            {# 收藏按钮 - 需要用户登录才显示 #}
+            {% if 'username' in session %}
+                <span class="favorite-btn {% if school.id in user_favorites %}favorited{% endif %}"
+                      data-school-id="{{ school.id or school.name }}"
+                      title="点击收藏/取消收藏">
+                    <i class="fas fa-heart"></i>
+                </span>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            <p><strong>院校等级:</strong> {{ school.level }}</p>
+            <p><strong>地区:</strong> {{ school.province }} ({{ school.region }})</p>
+            <p><strong>计算机等级:</strong> {{ school.computer_rank }}</p>
+            <p><strong>考试类型:</strong> {{ school.self_vs_408 }}</p>
+            {% if school.intro %}
+                <p><strong>简介:</strong></p>
+                <p>{{ school.intro }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <h3>招生院系与专业</h3>
+    {% if school.departments %}
+        {% for dept in school.departments %}
+            <div class="card department-card">
+                <div class="card-header">
+                    {{ dept.department_name }}
+                </div>
+                <div class="card-body">
+                    {% if dept.majors %}
+                        {% for major in dept.majors %}
+                            <div class="card major-card mb-3">
+                                <div class="card-header">
+                                    {{ major.major_name }} ({{ major.major_code }})
+                                </div>
+                                <ul class="list-group list-group-flush">
+                                    {% if major.enrollment_24 is not none %}<li class="list-group-item"><span>24年招生人数:</span> {{ major.enrollment_24 }}</li>{% endif %}
+                                    {% if major.exam_subjects %}<li class="list-group-item"><span>初试科目:</span> <pre>{{ major.exam_subjects }}</pre></li>{% endif %}
+                                    {% if major.reference_books %}<li class="list-group-item"><span>参考书目:</span> <pre>{{ major.reference_books }}</pre></li>{% endif %}
+                                    {% if major.retrial_subjects %}<li class="list-group-item"><span>复试科目:</span> <pre>{{ major.retrial_subjects }}</pre></li>{% endif %}
+                                    {% if major.tuition_duration %}<li class="list-group-item"><span>学费学制:</span> <pre>{{ major.tuition_duration }}</pre></li>{% endif %}
+                                    {% if major.score_lines %}
+                                        <li class="list-group-item">
+                                            <span>复试线:</span>
+                                            <ul>
+                                                {% for year, score in major.score_lines.items() %}
+                                                    {% if score is not none %}<li>{{ year }}: {{ score }}</li>{% endif %}
+                                                {% endfor %}
+                                            </ul>
+                                            {# TODO: 如果是四川院校且有足够数据，可在此处加图表容器 #}
+                                        </li>
+                                    {% endif %}
+                                    {% if major.admission_info_23 %}<li class="list-group-item"><span>23拟录取情况:</span> <pre>{{ major.admission_info_23 }}</pre></li>{% endif %}
+                                    {% if major.admission_info_24 %}<li class="list-group-item"><span>24拟录取情况:</span> <pre>{{ major.admission_info_24 }}</pre></li>{% endif %}
+                                </ul>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p>该院系下暂无专业信息。</p>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>暂无院系信息。</p>
+    {% endif %}
+
+</div>
+{% endblock %}
+
+{% block body_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const favButton = document.querySelector('.favorite-btn');
+    if (favButton) {
+        favButton.addEventListener('click', function() {
+            const schoolId = this.dataset.schoolId;
+            const isFavorited = this.classList.contains('favorited');
+            const icon = this.querySelector('i');
+
+            // 发送 API 请求
+            fetch(`/api/school/favorite/${schoolId}`, {
+                method: 'POST',
+                headers: {
+                    // 如果后端需要 CSRF token，需要在这里添加
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ favorite: !isFavorited }) // 发送要执行的操作
+            })
+            .then(response => {
+                if (!response.ok) {
+                    // 如果是 401 (Unauthorized) 或 403 (Forbidden)，提示登录
+                    if (response.status === 401 || response.status === 403) {
+                         alert('请先登录才能收藏！');
+                         // 可以选择跳转到登录页面
+                         // window.location.href = "{{ url_for('login') }}";
+                         throw new Error('需要登录');
+                    }
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // 更新按钮状态
+                    this.classList.toggle('favorited', data.is_favorited);
+                    // 可以根据需要更新页面上显示的收藏数（如果存在）
+                } else {
+                    alert(data.message || '操作失败');
+                }
+            })
+            .catch(error => {
+                if (error.message !== '需要登录') {
+                    console.error('收藏操作失败:', error);
+                    alert('操作失败，请稍后重试。');
+                }
+            });
+        });
+    }
+
+    // TODO: ECharts 分数线图表初始化逻辑 (如果需要)
+});
+</script>
+{% endblock %} 

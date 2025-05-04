@@ -1,0 +1,80 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}用户管理{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid">
+    <h1 class="mt-4">用户管理</h1>
+
+    <!-- 新增用户表单 (管理员专用) -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-user-plus me-1"></i>
+            创建新用户
+        </div>
+        <div class="card-body">
+            <form action="{{ url_for('admin_create_user') }}" method="POST">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label for="new_username" class="form-label">新用户名 <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="new_username" name="username" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="new_password" class="form-label">密码 <span class="text-danger">*</span></label>
+                        <input type="password" class="form-control" id="new_password" name="password" required>
+                    </div>
+                    <div class="col-md-3 form-check align-self-end mb-3 ms-2"> {# 使用 form-check 和 align-self-end #}
+                        <input class="form-check-input" type="checkbox" value="true" id="is_admin" name="is_admin">
+                        <label class="form-check-label" for="is_admin">
+                            设为管理员
+                        </label>
+                    </div>
+                    <div class="col-md-12 text-end">
+                        <button type="submit" class="btn btn-success">创建用户</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 用户列表 -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            用户列表 (共 {{ users|length }} 个)
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>用户名</th>
+                        <th>是否管理员</th> {# 新增列 #}
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if users %}
+                        {% for user in users %}
+                            <tr>
+                                <td>{{ user.username }}</td>
+                                <td>{% if user.is_admin %}<span class="badge bg-success">是</span>{% else %}<span class="badge bg-secondary">否</span>{% endif %}</td>
+                                <td>
+                                    <a href="{{ url_for('admin_user_detail', username=user.username) }}" class="btn btn-sm btn-info">查看/编辑</a>
+                                    {# 删除按钮的 Form #}
+                                    <form action="{{ url_for('delete_user', username=user.username) }}" method="POST" style="display:inline;" onsubmit="return confirm('确定要删除用户 {{ user.username }} 吗？此操作不可恢复！');">
+                                        <button type="submit" class="btn btn-sm btn-danger">删除</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="3" class="text-center">没有找到任何用户。</td> {# 更新 colspan #}
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %} 

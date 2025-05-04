@@ -3,15 +3,118 @@
 {% block title %}智能推荐{% endblock %}
 
 {% block content %}
-<div class="recommendation-page">
+<div class="recommendation-page container mt-4">
     <h2>智能推荐</h2>
-    <div class="recommendation-inputs">
-        {# TODO: 添加推荐输入表单 (分数, 等级, 计算机等级, 地区) #}
-        <p>推荐输入功能待实现</p>
-    </div>
-    <div class="recommendation-results">
-        {# TODO: 显示推荐结果列表 #}
-        <p>推荐结果待实现</p>
-    </div>
+    <p>根据您在个人中心设置的偏好，或在下方表单中输入的条件，为您推荐合适的院校。</p>
+
+    {% if 'username' not in session %}
+        <div class="alert alert-warning" role="alert">
+            请先 <a href="{{ url_for('login') }}" class="alert-link">登录</a> 以使用智能推荐功能。
+        </div>
+    {% else %}
+        <!-- 推荐输入表单 -->
+        <form method="POST" action="{{ url_for('recommend') }}" class="recommendation-inputs card p-3 mb-4">
+            <h4>设置推荐条件</h4>
+             <p><small>如果留空，将优先使用您 <a href="{{ url_for('profile') }}">个人中心</a> 的设置。</small></p>
+            <div class="row g-3 align-items-end">
+                 <div class="col-md-3">
+                    <label for="target_score" class="form-label">目标分数:</label>
+                    <input type="number" id="target_score" name="target_score" class="form-control" placeholder="{{ user_profile.expected_score or '' }}" value="{{ request.form.get('target_score', '') }}">
+                </div>
+                <div class="col-md-3">
+                    <label for="target_level" class="form-label">期望院校等级:</label>
+                    <select id="target_level" name="target_level" class="form-select">
+                        <option value="" {% if not target_level %}selected{% endif %}>-- 使用个人偏好 ({{ user_profile.target_level or '未设置' }}) --</option>
+                        <option value="985" {% if target_level == '985' %}selected{% endif %}>985</option>
+                        <option value="211" {% if target_level == '211' %}selected{% endif %}>211</option>
+                        <option value="双一流" {% if target_level == '双一流' %}selected{% endif %}>双一流</option>
+                        <option value="一般" {% if target_level == '一般' %}selected{% endif %}>一般</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="target_rank" class="form-label">期望计算机等级:</label>
+                    <select id="target_rank" name="target_rank" class="form-select">
+                         <option value="" selected>-- 任意 --</option> {# 默认不限制 #}
+                         {# TODO: 动态填充选项或手动添加 #}
+                         <option value="A+" {% if target_rank == 'A+' %}selected{% endif %}>A+</option>
+                         <option value="A" {% if target_rank == 'A' %}selected{% endif %}>A</option>
+                         <option value="A-" {% if target_rank == 'A-' %}selected{% endif %}>A-</option>
+                         <option value="B+" {% if target_rank == 'B+' %}selected{% endif %}>B+</option>
+                         <option value="B" {% if target_rank == 'B' %}selected{% endif %}>B</option>
+                         <option value="B-" {% if target_rank == 'B-' %}selected{% endif %}>B-</option>
+                         <option value="C+" {% if target_rank == 'C+' %}selected{% endif %}>C+</option>
+                         <option value="C" {% if target_rank == 'C' %}selected{% endif %}>C</option>
+                         <option value="C-" {% if target_rank == 'C-' %}selected{% endif %}>C-</option>
+                         <option value="无" {% if target_rank == '无' %}selected{% endif %}>无</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="target_location" class="form-label">目标地区(省份):</label>
+                    <input type="text" id="target_location" name="target_location" class="form-control" placeholder="{{ user_profile.target_location or '' }}" value="{{ request.form.get('target_location', '') }}">
+                </div>
+                <div class="col-md-12 text-end">
+                    <button type="submit" class="btn btn-primary">获取推荐</button>
+                </div>
+            </div>
+        </form>
+
+        <!-- 推荐结果 -->
+        <div class="recommendation-results card">
+            <div class="card-header">
+                推荐结果 (Top {{ recommendations|length }})
+            </div>
+             {% if recommendations is defined %}
+                {% if recommendations %}
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>排名</th>
+                                    <th>院校名称</th>
+                                    <th>院校等级</th>
+                                    <th>计算机等级</th>
+                                    <th>地区</th>
+                                    <th>推荐分数</th> {# 可选显示 #}
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for school in recommendations %}
+                                    <tr>
+                                        <td>{{ loop.index }}</td>
+                                        <td><a href="{{ url_for('school_detail', school_id=(school.id or school.name)) }}">{{ school.name }}</a></td>
+                                        <td>{{ school.level }}</td>
+                                        <td>{{ school.computer_rank }}</td>
+                                        <td>{{ school.province }} ({{ school.region }})</td>
+                                        <td>{{ "%.2f"|format(school.recommend_score) }}</td> {# 格式化分数 #}
+                                        <td>
+                                            <a href="{{ url_for('school_detail', school_id=(school.id or school.name)) }}" class="btn btn-sm btn-info">详情</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                     <div class="card-body">
+                        <p class="text-center">没有找到合适的推荐结果，请尝试调整条件。</p>
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="card-body">
+                    <p class="text-center">请设置推荐条件并点击"获取推荐"。</p>
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
 </div>
+
+{# 引入 Bootstrap CSS/JS (如果决定使用) #}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<style>
+    .recommendation-inputs .form-label { font-weight: bold; }
+    .recommendation-results .card-header { font-size: 1.1em; }
+</style>
+
 {% endblock %} 
