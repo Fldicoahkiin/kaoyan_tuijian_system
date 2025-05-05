@@ -120,7 +120,7 @@ def fetch_dynamic_page_with_selenium(url, select_options=None, click_button_id=N
     try:
         # --- 配置 WebDriver (移除 Headless) --- 
         options = webdriver.ChromeOptions()
-        # options.add_argument('--headless') # 暂时禁用无头模式进行调试
+        # options.add_argument('--headless') # 移除无头模式，让浏览器可见
         options.add_argument('--disable-gpu')
         options.add_argument('--no-sandbox')
         options.add_argument('--disable-dev-shm-usage')
@@ -266,20 +266,23 @@ def parse_school_data(school_name, base_url):
         "departments": [] # Initialize empty, may not be filled for dynamic sites
     }
 
-    # --- Fetch main page --- 
+    # --- Fetch main page ---
+    print(f"  [{school_name}] 获取主页: {base_url}")
     main_page_html = fetch_page(base_url)
     if not main_page_html:
         print(f"-[{school_name}] 无法获取主页内容，跳过。")
         return None
-    
-    soup = BeautifulSoup(main_page_html, 'html.parser')
-    
-    # --- School-Specific Logic --- 
-    major_catalog_url = None
-    score_line_urls = {} # {year: url}
-    parsed_majors_by_dept = {} # {dept_name: [major_dict, ...]} # Changed name for clarity
 
-    # --- Sichuan University (SCU) Specific Logic --- 
+    soup = BeautifulSoup(main_page_html, 'html.parser')
+
+    # Variables to store found URLs and data
+    major_catalog_url = None
+    score_line_urls = {} # {year: url} - Primarily for SCU
+    parsed_majors_by_dept = {} # {dept_name: {major_code: major_dict}}
+    yearly_score_line_urls = {} # {year: url} - Primarily for UESTC
+    temp_score_data = {} # Initialize temp_score_data HERE, before school-specific blocks
+
+    # --- School-Specific Logic ---
     if school_name == "四川大学":
         print(f"  [{school_name}] 应用四川大学特定解析逻辑...")
         # 1. Find Major Catalog Link
@@ -493,11 +496,472 @@ def parse_school_data(school_name, base_url):
             else:
                 print(f"  [{school_name}] Selenium 未能获取专业目录页面内容。")
                
-    # --- Add elif blocks for other universities here --- 
+        # --- SCU Score Parsing (Moved INSIDE SCU block) ---
+        if score_line_urls:
+            print(f"  [{school_name}] (SCU) 开始解析分数线...")
+            for year, url in score_line_urls.items():
+                print(f"    [{school_name}] 尝试获取 {year} 分数线页面: {url}")
+                score_html = fetch_page(url)
+                if score_html:
+                    score_soup = BeautifulSoup(score_html, 'html.parser')
+                    try:
+                        # 优先尝试查找 class='Table' 的表格 (适配 2024)
+                        score_table = score_soup.find('table', class_='Table')
+
+                        # 如果找不到带 class 的表格，则查找 content-box 内的第一个 table (适配 2023, 2022)
+                        if not score_table:
+                            print(f"    [{school_name}] 未找到 class='Table' 的表格，尝试查找 content-box 内的第一个表格...")
+                            content_box_div = score_soup.find('div', class_='content-box')
+                            if content_box_div:
+                                score_table = content_box_div.find('table')
+
+                        if score_table:
+                            score_rows = score_table.find_all('tr')
+                            print(f"    [{school_name}] 在 {year} 分数线页找到表格，共 {len(score_rows)} 行(含表头/分隔)。开始解析...")
+
+                            is_academic_section = False
+                            is_professional_section = False
+
+                            for s_row in score_rows:
+                                s_cols = s_row.find_all('td')
+
+                                # 检查是否是分隔行或标题行 (列数不足5)
+                                if not s_cols or len(s_cols) < 5:
+                                    # 检查是否是切换区域的标题行
+                                    header_text = s_row.get_text(strip=True)
+                                    if "学术学位" in header_text:
+                                        is_academic_section = True
+                                        is_professional_section = False
+                                        continue
+                                    elif "专业学位" in header_text:
+                                        is_academic_section = False
+                                        is_professional_section = True
+                                        continue
+                                    elif "专项计划" in header_text or "其他" in header_text:
+                                        break
+                                    continue
+
+                                # --- 提取列数据 ---
+                                try:
+                                    category_code = s_cols[0].text.strip()
+                                    category_name = s_cols[1].text.strip()
+                                    total_score_raw = s_cols[4].text.strip()
+                                    total_score_match = re.search(r'\d+', total_score_raw)
+                                    total_score = total_score_match.group(0) if total_score_match else total_score_raw
+
+                                    if category_code in TARGET_CATEGORY_PREFIXES:
+                                        score_type = "学硕" if is_academic_section else ("专硕" if is_professional_section else "未知类型")
+                                        print(f"      [{school_name}] {year} 找到目标学科大类({score_type}): {category_code} {category_name} - 总分线: {total_score}")
+                                        if year not in temp_score_data: temp_score_data[year] = {}
+                                        temp_score_data[year][f"{category_code}_{score_type}"] = total_score
+
+                                except IndexError:
+                                    print(f"      [{school_name}] 解析 {year} 分数线某行时列数不足或格式错误 (需要至少5列)。跳过此行: {s_row.prettify()[:100]}...")
+                                except Exception as score_row_e:
+                                    print(f"      [{school_name}] 解析 {year} 分数线某行时发生未知错误: {score_row_e}。跳过此行。")
+
+                        else:
+                            print(f"  [{school_name}] 在 {year} 分数线页未找到可解析的分数线表格。")
+                    except Exception as score_e:
+                        print(f"  [{school_name}] 解析 {year} 分数线页面时出错: {score_e}")
+                else:
+                    print(f"  [{school_name}] 无法获取 {year} 分数线页面内容。")
+                time.sleep(1)
+        else:
+             print(f"  [{school_name}] 未找到分数线链接，跳过分数线解析。")
+
     elif school_name == "电子科技大学":
-        print(f"  [{school_name}] 需要添加电子科技大学的特定解析逻辑...")
-        # TODO: Find UESTC major catalog and score line links/parsing logic based on its HTML
-        pass 
+        print(f"  [{school_name}] 应用电子科技大学特定解析逻辑...")
+        uestc_major_catalog_page_url = None # Page listing different years/catalogs
+        uestc_score_line_page_url = None # Page listing links to scores per year
+        temp_score_data = {} # Initialize temp_score_data HERE, before school-specific blocks
+
+        # Find the main page links
+        try:
+            # Look for "专业目录" link - might be relative
+            catalog_link_tag = soup.find('a', string=re.compile(r'\s*专业目录\s*')) 
+            if catalog_link_tag and catalog_link_tag.has_attr('href'):
+                uestc_major_catalog_page_url = urljoin(base_url, catalog_link_tag['href'])
+                print(f"    [{school_name}] 找到专业目录主链接: {uestc_major_catalog_page_url}")
+            else:
+                 print(f"    [{school_name}] 未在主页找到'专业目录'链接。")
+
+            # Look for "历年分数" link - might be relative (trying broader search)
+            score_link_tag = soup.find('a', string=re.compile(r'(分数线|历年分数)')) # Broader search
+            if score_link_tag and score_link_tag.has_attr('href'):
+                 uestc_score_line_page_url = urljoin(base_url, score_link_tag['href'])
+                 print(f"    [{school_name}] 找到历年分数/分数线主链接: {uestc_score_line_page_url}")
+            else:
+                 print(f"    [{school_name}] 未在主页找到'历年分数'或'分数线'链接。")
+        except Exception as link_find_e:
+             print(f"    [{school_name}] 在主页查找链接时出错: {link_find_e}")
+
+        # --- NEW: Fetch and parse the Score Line Page to find links per year --- (Finding links part)
+        yearly_score_line_urls = {} # Initialized earlier
+        if uestc_score_line_page_url:
+            print(f"    [{school_name}] 尝试获取历年分数线入口页: {uestc_score_line_page_url}")
+            score_index_html = fetch_page(uestc_score_line_page_url)
+            if score_index_html:
+                score_index_soup = BeautifulSoup(score_index_html, 'html.parser')
+                # Find the relevant container for links (adjust selector if needed)
+                # Example: Look for a div with class 'winstyle56972', then links inside
+                # --- Updated Selector: Look for a specific div/ul structure --- 
+                # Try finding a common container ID or class first
+                link_container = score_index_soup.find('div', id='news_list') # Hypothesis 1: div with id='news_list'
+                if not link_container:
+                    # Fallback: Look for a common list class often used in these CMS
+                    link_container = score_index_soup.find('ul', class_='news_list') # Hypothesis 2: ul with class='news_list'
+                if not link_container:
+                    # Fallback: Look for the main content div
+                    link_container = score_index_soup.find('div', id=re.compile(r'vsb_content')) # Hypothesis 3: main content div
+                
+                if link_container:
+                    print(f"      [{school_name}] 在分数线入口页找到初步容器 (Selector: {link_container.name}#{link_container.get('id', '')}.{link_container.get('class', [])})...")
+
+                    # --- Refined: Try finding a UL inside the container first --- 
+                    actual_list_container = link_container.find('ul')
+                    if actual_list_container:
+                        print(f"        -> Found UL inside the container. Using UL as link source.")
+                        link_source = actual_list_container
+                    else:
+                        print(f"        -> Did not find UL inside the container. Using the container itself as link source.")
+                        link_source = link_container # Fallback to the original container
+
+                    # --- Find ALL links within the determined source ---
+                    all_links_in_source = link_source.find_all('a', href=True) # Find links within the UL or the container
+                    print(f"        -> Found {len(all_links_in_source)} total links with href within the source. Checking texts...")
+
+                    found_years = set()
+                    for link_tag in all_links_in_source:
+                        link_text = link_tag.text.strip()
+                        link_href = link_tag.get('href')
+
+                        # Check if link text EXACTLY matches the year
+                        for year in ["2024", "2023", "2022"]:
+                            if link_text == year:
+                                if year not in found_years: # Take the first match for each year
+                                    url = urljoin(uestc_score_line_page_url, link_href)
+                                    yearly_score_line_urls[year] = url
+                                    print(f"        [{school_name}] 找到 {year} 分数线链接: {url} (Text: '{link_text}')")
+                                    found_years.add(year)
+                                    break # Move to next link once a year is found
+
+                    # Check which years were not found
+                    for year in ["2024", "2023", "2022"]:
+                        if year not in found_years:
+                            print(f"        [{school_name}] 未在容器内的链接中找到匹配 {year} 和关键词（分数线/复试线/基本要求）的链接。")
+
+                else:
+                    print(f"      [{school_name}] 在分数线入口页未能找到初步链接容器 (尝试了多种选择器)。")
+            else:
+                print(f"    [{school_name}] 无法获取历年分数线入口页面内容。")
+
+        # --- UESTC Score Parsing (Moved INSIDE UESTC block) ---
+        if yearly_score_line_urls:
+            print(f"  [{school_name}] (UESTC) 开始解析分数线...")
+            for year, url in yearly_score_line_urls.items():
+                print(f"    [{school_name}] 尝试获取 {year} 分数线页面: {url}")
+                score_html = fetch_page(url)
+                if score_html:
+                    score_soup = BeautifulSoup(score_html, 'html.parser')
+                    try:
+                        # Find the main content area
+                        content_div = score_soup.find('div', id=re.compile(r'vsb_content'))
+                        if not content_div:
+                            content_div = score_soup.find('div', class_='v_news_content')
+                        if not content_div:
+                            content_div = score_soup.find('div', class_=re.compile(r'(content|main|article)'))
+
+                        if content_div:
+                            score_tables = content_div.find_all('table')
+                            print(f"      [{school_name}] 在 {year} 分数线页内容区域找到 {len(score_tables)} 个表格。尝试解析...")
+
+                            if not score_tables:
+                                print(f"        [{school_name}] 未在内容区域找到 <table>。尝试直接解析内容文本...")
+                                paragraphs = content_div.find_all('p')
+                                for p in paragraphs:
+                                    text = p.get_text(strip=True)
+                                    # Regex needs verification!
+                                    score_match = re.search(r'(工学)\s*\[?(08)?.*?不低于?(\d{3,})\s*分', text)
+                                    if score_match:
+                                        category_name, category_code, score = score_match.groups()
+                                        print(f"          [{school_name}] {year} 从文本找到目标({category_name}): {category_code} - 分数线: {score}")
+                                        if year not in temp_score_data: temp_score_data[year] = {}
+                                        temp_score_data[year][category_code] = score # Store by code
+
+                                    score_match_prof = re.search(r'(电子信息)\s*\[?(0854)?.*?不低于?(\d{3,})\s*分', text)
+                                    if score_match_prof:
+                                        category_name, category_code, score = score_match_prof.groups()
+                                        print(f"          [{school_name}] {year} 从文本找到目标({category_name}): {category_code} - 分数线: {score}")
+                                        if year not in temp_score_data: temp_score_data[year] = {}
+                                        temp_score_data[year][category_code] = score # Store by code
+                            else:
+                                # Parse the found table(s)
+                                # --- Refined Table Parsing for UESTC --- 
+                                score_table = content_div.find('table') # Find the first table
+                                if score_table:
+                                    print(f"      [{school_name}] 在 {year} 分数线页内容区域找到表格 1。开始解析...")
+                                    score_rows = score_table.find_all('tr')
+                                    current_degree_type = "未知" # Track 学术/专业
+                                    header_skipped = False
+
+                                    for r_idx, s_row in enumerate(score_rows):
+                                        cols = s_row.find_all('td')
+                                        if not cols: continue # Skip rows without <td> (likely header with <th>)
+
+                                        col_texts = [col.get_text(strip=True) for col in cols]
+
+                                        # Check and update degree type based on first column
+                                        first_data_col_idx = 0
+                                        if cols[0].has_attr('rowspan'):
+                                            first_col_text = col_texts[0]
+                                            if "学术学位" in first_col_text:
+                                                current_degree_type = "学硕"
+                                                continue 
+                                            elif "专业学位" in first_col_text:
+                                                current_degree_type = "专硕"
+                                                continue 
+                                            else:
+                                                continue
+                                        else:
+                                            first_data_col_idx = 0
+
+                                        # --- Extract Data from relevant columns ---
+                                        if len(col_texts) > first_data_col_idx + 1: 
+                                            subject_text = col_texts[first_data_col_idx] 
+                                            total_score_text = col_texts[-1] 
+
+                                            category_code = ""
+                                            code_match = re.match(r'^(0854|08)', subject_text) # Match 0854 first
+                                            if code_match:
+                                                category_code = code_match.group(1)
+
+                                            score_match = re.search(r'^(\d{3,})$', total_score_text)
+                                            score = score_match.group(1) if score_match else None
+
+                                            if category_code in TARGET_CATEGORY_PREFIXES and score:
+                                                print(f"            [{school_name}] {year} ({current_degree_type}) 从表格找到目标: {category_code} ({subject_text}) - 总分线: {score}")
+                                                if year not in temp_score_data: temp_score_data[year] = {}
+                                                temp_score_data[year][category_code] = score
+                                        # else: Not enough columns or other issue, skip row
+
+                                else:
+                                    # This else corresponds to the outer `if score_table:`
+                                    print(f"      [{school_name}] 在 {year} 分数线页内容区域未找到表格。")
+                            # --- End of Refined Table Parsing ---
+                        
+                        else:
+                            print(f"      [{school_name}] 在 {year} 分数线页未找到主要内容区域。")
+                    except Exception as score_e:
+                        print(f"    [{school_name}] 解析 {year} UESTC 分数线页面时出错: {score_e}")
+                else:
+                    print(f"    [{school_name}] 无法获取 {year} UESTC 分数线页面内容。")
+                time.sleep(1)
+
+        # --- Fetch and parse the Major Catalog Page (Keep this after score parsing attempt) ---
+        if uestc_major_catalog_page_url:
+            # ... existing UESTC Selenium logic to populate parsed_majors_by_dept ...
+            latest_major_catalog_url = uestc_major_catalog_page_url # Assign here if needed
+            print(f"    [{school_name}] 将找到的目录链接视为最新目录页: {latest_major_catalog_url}")
+            # UESTC uses ZTree and iframe, requires specific interaction
+            driver = None # Initialize driver variable
+            try:
+                # --- Configure WebDriver (copied from fetch_dynamic_page_with_selenium for direct use) ---
+                options = webdriver.ChromeOptions()
+                # options.add_argument('--headless') # Keep browser visible as requested
+                options.add_argument('--disable-gpu')
+                options.add_argument('--no-sandbox')
+                options.add_argument('--disable-dev-shm-usage')
+                options.add_argument("user-agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'")
+
+                script_dir = os.path.dirname(__file__)
+                project_root = os.path.dirname(script_dir)
+                chromedriver_filename = "chromedriver.exe" if platform.system() == "Windows" else "chromedriver"
+                chrome_driver_path = os.path.join(project_root, 'utils', chromedriver_filename)
+                service = Service(executable_path=chrome_driver_path)
+                print(f"      [Selenium] 初始化 WebDriver (目标: UESTC 专业目录)..." )
+                driver = webdriver.Chrome(service=service, options=options)
+
+                print(f"      [Selenium] 正在访问主目录页: {latest_major_catalog_url}")
+                driver.get(latest_major_catalog_url)
+
+                # 1. Wait for ZTree nodes to load
+                print(f"      [Selenium] 等待 ZTree 院系列表加载 ('#zsml-dept-tree li a')..." )
+                WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, "#zsml-dept-tree li a")))
+                print(f"      [Selenium] ZTree 加载完成。查找目标院系..." )
+
+                # 2. Find target department links
+                print(f"        --- Printing all found ZTree node links ---") # DEBUG
+                department_links_to_click = []
+                all_dept_links = driver.find_elements(By.CSS_SELECTOR, "#zsml-dept-tree li a")
+                for link in all_dept_links:
+                    link_text = link.text.strip()
+                    print(f"          - Found node: {link_text}") # DEBUG Print all links
+                    # Check if the link is likely a department (might have child `ul`)
+                    parent_li = link.find_element(By.XPATH, "./ancestor::li[1]")
+                    is_parent_node = len(parent_li.find_elements(By.XPATH, "./ul")) > 0
+                    if is_parent_node:
+                         print(f"            (Is department node: Yes)") # DEBUG
+                    else:
+                         print(f"            (Is department node: No - likely a major/direction)") # DEBUG
+
+                print(f"        --- End of ZTree node links ---") # DEBUG
+
+                # Define keywords AFTER printing, using exact names from log
+                target_dept_keywords = ["008 计算机科学与工程学院", "009 信息与软件工程学院"] # Use exact names from log
+                print(f"        --- Searching for keywords: {target_dept_keywords} ---")
+
+                # Re-iterate to find the actual targets based on keywords
+                for link in all_dept_links:
+                    link_text = link.text.strip()
+                    # Simpler check: Just check if link text contains keywords (removed unreliable is_parent_node check)
+                    if any(keyword in link_text for keyword in target_dept_keywords):
+                        print(f"        -> 找到目标院系链接: {link_text}" )
+                        department_links_to_click.append(link) # Store the WebElement
+
+                if not department_links_to_click:
+                     print(f"      [Selenium] 未找到包含关键字 {target_dept_keywords} 的院系链接。" )
+
+                # 3. Iterate through found departments, click, switch to iframe, parse
+                for dept_link_element in department_links_to_click:
+                    dept_name = dept_link_element.text.strip()
+                    # Extract name more robustly (remove code if present)
+                    dept_name_match = re.match(r'\d*\s*(.*)', dept_name)
+                    dept_name_clean = dept_name_match.group(1) if dept_name_match else dept_name
+                    print(f"      [Selenium] 点击院系: '{dept_name_clean}'" )
+                    try:
+                        dept_link_element.click()
+                        # Add a small delay for JS execution after click
+                        time.sleep(2)
+
+                        # 4. Wait for iframe and switch to it
+                        print(f"        [Selenium] 等待并切换到 iframe ('iframeContent')..." )
+                        WebDriverWait(driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.ID, "iframeContent")))
+                        print(f"        [Selenium] 已切换到 iframe。等待内容加载 (查找 table)..." )
+
+                        # 5. Wait for content inside iframe (e.g., a table)
+                        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "table")))
+                        print(f"        [Selenium] Iframe 内表格已加载。获取源码..." )
+
+                        # 6. Get iframe source and parse
+                        iframe_html = driver.page_source
+                        iframe_soup = BeautifulSoup(iframe_html, 'html.parser')
+
+                        # --- UESTC iframe parsing logic --- 
+                        major_table_in_iframe = iframe_soup.find('table') # Find table inside iframe
+                        if major_table_in_iframe:
+                            print(f"          [Parser] 在 '{dept_name_clean}' 的 iframe 中找到表格。开始解析行...")
+                            rows = major_table_in_iframe.find_all('tr') # Define rows HERE
+                            print(f"            -> 表格共 {len(rows)} 行。")
+
+                            # --- Corrected UESTC iframe parsing logic (inside the if block) --- 
+                            for r_idx, row in enumerate(rows):
+                                # Keep debug prints (commented out)
+                                # if r_idx < 5:
+                                #     print(f"              [Row {r_idx+1} Raw HTML]: {str(row)[:300]}...")
+                                #     cols_debug = row.find_all(['td', 'th'])
+                                #     col_texts = [col.get_text(strip=True) for col in cols_debug]
+                                #     print(f"              [Row {r_idx+1} Cells Text]: {col_texts}")
+
+                                cols = row.find_all('td')
+                                num_cols = len(cols)
+
+                                # Skip header rows
+                                if not cols or row.find('th'):
+                                    # print(f"            Skipping header row {r_idx+1}") # Optional debug
+                                    continue
+
+                                # Expecting: Code, Name, Enrollment in first 3 cols
+                                if num_cols >= 3:
+                                    major_code_raw = cols[0].text.strip()
+                                    major_code_match = re.match(r'^(\d{6})\s*', major_code_raw)
+                                    if major_code_match:
+                                        major_code = major_code_match.group(1) # Use this variable
+
+                                        if major_code in TARGET_MAJOR_CODES:
+                                            major_name = cols[1].text.strip() # Col 1: Name
+                                            enrollment = cols[2].text.strip() # Col 2: Enrollment
+
+                                            # --- Infer types (Educated Guess) ---
+                                            degree_type = "Professional" if major_code.startswith("0854") else "Academic"
+                                            study_type = "全日制" # Default assumption
+
+                                            # --- Fields not available in this table view ---
+                                            exam_subjects = "信息待补充 (需点击查看)"
+                                            remarks = "信息待补充 (需点击查看)"
+                                            tuition_duration = ""
+                                            research_directions = []
+
+                                            print(f"              MATCHED TARGET MAJOR: Code={major_code}, Name={major_name}, Dept={dept_name_clean}, Enrollment={enrollment}, Type={degree_type}/{study_type}" )
+
+                                            # Store major data
+                                            if dept_name_clean not in parsed_majors_by_dept:
+                                                parsed_majors_by_dept[dept_name_clean] = {}
+                                            if major_code not in parsed_majors_by_dept[dept_name_clean]:
+                                                parsed_majors_by_dept[dept_name_clean][major_code] = { # Use major_code as key
+                                                     "major_code": major_code,
+                                                     "major_name": major_name,
+                                                     "degree_type": degree_type, # Inferred
+                                                     "study_type": study_type,   # Inferred
+                                                     "enrollment": enrollment,
+                                                     "exam_subjects": exam_subjects,
+                                                     "remarks": remarks,
+                                                     "tuition_duration": tuition_duration, # Use correct placeholder
+                                                     "research_directions": research_directions,
+                                                     "score_lines": {}
+                                                 }
+                                        # else: Major already processed or code not target
+                                    # else: Row doesn't start with 6-digit code
+                                # else: Row has less than 3 columns
+
+                            # --- End of row processing loop ---
+                        else:
+                             print(f"          [Parser] 在 '{dept_name_clean}' 的 iframe 中未找到 <table> 元素。" )
+
+                        # 7. Switch back to default content
+                        print(f"        [Selenium] 处理完 iframe，切换回主页面。" )
+                        driver.switch_to.default_content()
+                        # Wait a bit before clicking the next department if any
+                        time.sleep(1)
+
+                    except TimeoutException:
+                         print(f"        [Selenium] 处理院系 '{dept_name_clean}' 时发生超时 (等待 iframe 或其内容)。" )
+                         driver.switch_to.default_content() # Ensure switch back on error
+                    except Exception as e_iframe:
+                         print(f"        [Selenium/Parser] 处理院系 '{dept_name_clean}' 时发生错误: {e_iframe}" )
+                         try: # Attempt to switch back even if error occurred
+                             driver.switch_to.default_content()
+                         except Exception as switch_err:
+                             print(f"          [!] Error switching back from iframe: {switch_err}" )
+
+            except WebDriverException as e_wd:
+                # Handle WebDriver specific errors (like chromedriver path)
+                print(f"    [Selenium] WebDriver 初始化或操作时出错: {e_wd}" )
+            except Exception as e_main:
+                print(f"    [Selenium] 获取或处理 UESTC 专业目录时发生未知错误: {e_main}" )
+            finally:
+                if driver:
+                    print(f"      [Selenium] 关闭 WebDriver。" )
+                    driver.quit()
+
+            # --- Convert parsed data to final structure --- 
+            if parsed_majors_by_dept:
+                print(f"      [{school_name}] UESTC 专业目录解析完成。准备构建最终数据结构..." )
+                # Build the final list structure for school_update_data['departments']
+                final_departments_list = []
+                total_target_majors_found = 0
+                for dept_key, majors_inner_dict in parsed_majors_by_dept.items():
+                    list_of_major_dicts = list(majors_inner_dict.values())
+                    if list_of_major_dicts: # Only add department if it has target majors
+                        dept_entry = {
+                            "department_name": dept_key,
+                            "majors": list_of_major_dicts
+                        }
+                        final_departments_list.append(dept_entry)
+                        total_target_majors_found += len(list_of_major_dicts)
+                print(f"        -> Processed. Found {total_target_majors_found} target majors in {len(final_departments_list)} departments for UESTC." )
+                school_update_data['departments'] = final_departments_list
+
     elif school_name == "西南交通大学":
         print(f"  [{school_name}] 需要添加西南交通大学的特定解析逻辑...")
         # TODO: Find SWJTU major catalog and score line links/parsing logic based on its HTML
@@ -510,111 +974,24 @@ def parse_school_data(school_name, base_url):
     else:
         print(f"  [{school_name}] 未实现该学校的特定解析逻辑。")
 
-    # --- 4. Parse Score Lines (if URLs were found) --- 
-    temp_score_data = {} # Store scores temporarily {year: {category_code_type: score}}
-    if score_line_urls:
-        for year, url in score_line_urls.items():
-            print(f"  [{school_name}] 尝试获取 {year} 分数线页面: {url}")
-            score_html = fetch_page(url)
-            if score_html:
-                score_soup = BeautifulSoup(score_html, 'html.parser')
-                try:
-                    # 优先尝试查找 class='Table' 的表格 (适配 2024)
-                    score_table = score_soup.find('table', class_='Table')
-                    
-                    # 如果找不到带 class 的表格，则查找 content-box 内的第一个 table (适配 2023, 2022)
-                    if not score_table:
-                        print(f"    [{school_name}] 未找到 class='Table' 的表格，尝试查找 content-box 内的第一个表格...")
-                        content_box_div = score_soup.find('div', class_='content-box')
-                        if content_box_div:
-                            score_table = content_box_div.find('table') 
-                        
-                    if score_table:
-                        score_rows = score_table.find_all('tr')
-                        print(f"    [{school_name}] 在 {year} 分数线页找到表格，共 {len(score_rows)} 行(含表头/分隔)。开始解析...")
-                        
-                        is_academic_section = False
-                        is_professional_section = False
-
-                        for s_row in score_rows:
-                            s_cols = s_row.find_all('td')
-                            
-                            # 检查是否是分隔行或标题行 (列数不足5)
-                            if not s_cols or len(s_cols) < 5: 
-                                # 检查是否是切换区域的标题行
-                                header_text = s_row.get_text(strip=True)
-                                if "学术学位" in header_text:
-                                     is_academic_section = True
-                                     is_professional_section = False
-                                     # print(f"        切换到 学术学位 section") # Optional debug
-                                     continue
-                                elif "专业学位" in header_text:
-                                     is_academic_section = False
-                                     is_professional_section = True
-                                     # print(f"        切换到 专业学位 section") # Optional debug
-                                     continue
-                                elif "专项计划" in header_text or "其他" in header_text: # 停止解析普通专业分数
-                                     # print(f"        遇到 专项计划/其他 section，停止解析") # Optional debug
-                                     break 
-                                # print(f"        跳过无效/标题行: {s_row.get_text(strip=True)[:50]}...") # Optional debug
-                                continue 
-
-                            # --- 提取列数据 ---
-                            # 列索引: 0-代码, 1-名称, 2-单科(<100), 3-单科(>100), 4-总分
-                            try:
-                                category_code = s_cols[0].text.strip()
-                                category_name = s_cols[1].text.strip()
-                                # 尝试提取总分，处理可能的格式问题（如包含非数字字符）
-                                total_score_raw = s_cols[4].text.strip() 
-                                total_score_match = re.search(r'\d+', total_score_raw) # 提取数字部分
-                                total_score = total_score_match.group(0) if total_score_match else total_score_raw # 保留原始字符串以防万一
-
-                                # 检查是否是我们关心的学科大类代码
-                                if category_code in TARGET_CATEGORY_PREFIXES:
-                                    # 根据当前区域判断是学硕还是专硕分数 
-                                    score_type = "学硕" if is_academic_section else ("专硕" if is_professional_section else "未知类型")
-                                    
-                                    print(f"      [{school_name}] {year} 找到目标学科大类({score_type}): {category_code} {category_name} - 总分线: {total_score}")
-                                    # Store temporarily by year and category code + type
-                                    if year not in temp_score_data: temp_score_data[year] = {}
-                                    temp_score_data[year][f"{category_code}_{score_type}"] = total_score 
-                                    
-                            except IndexError:
-                                 print(f"      [{school_name}] 解析 {year} 分数线某行时列数不足或格式错误 (需要至少5列)。跳过此行: {s_row.prettify()[:100]}...")
-                            except Exception as score_row_e:
-                                 print(f"      [{school_name}] 解析 {year} 分数线某行时发生未知错误: {score_row_e}。跳过此行。")
-                                 
-                    else:
-                         print(f"  [{school_name}] 在 {year} 分数线页未找到可解析的分数线表格 (尝试了 class='Table' 和 content-box 内的第一个 table)。")
-                except Exception as score_e:
-                    print(f"  [{school_name}] 解析 {year} 分数线页面时出错: {score_e}")
-            else:
-                print(f"  [{school_name}] 无法获取 {year} 分数线页面内容。")
-            time.sleep(1) 
-            
     # --- 5. Populate school_update_data['departments'] from parsed_majors_by_dept --- 
-    # This step is now done above, after parsing the catalog for SCU.
-    # We need to ensure it's also done if the SCU logic is skipped or for other universities.
-    # Let's move the conversion logic outside the SCU block but keep the print inside.
-    # The logic below will handle cases where parsed_majors_by_dept wasn't populated by SCU logic.
+    # This step needs to run AFTER school-specific logic might populate parsed_majors_by_dept
+    # Check if 'departments' key was already populated (e.g., by SCU logic)
     if not school_update_data.get('departments') and parsed_majors_by_dept:
-         print(f"  [{school_name}] (Non-SCU or SCU catalog failed) 构建 departments 列表...")
+         print(f"  [{school_name}] 构建 departments 列表 from parsed_majors_by_dept...")
          school_update_data['departments'] = [
             {"department_name": dept_name, "majors": list(majors_dict.values())}
             for dept_name, majors_dict in parsed_majors_by_dept.items()
          ]
          print(f"    -> 构建完成: {len(school_update_data['departments'])} 个院系条目。")
     elif not school_update_data.get('departments'):
-         # Ensure it's an empty list if nothing was parsed
-         school_update_data['departments'] = [] 
-         print(f"  [{school_name}] 没有解析到专业信息，departments 列表为空。")
+         # Ensure it's an empty list if nothing was parsed and it wasn't initialized
+         school_update_data['departments'] = []
 
     # --- 6. Merge temporary score data into parsed majors ---
     if temp_score_data and school_update_data.get('departments'):
         print(f"  [{school_name}] 尝试将【大类】分数线数据合并到已解析的专业中...")
         majors_updated_with_scores = 0
-
-        # --- Remove previous DEBUG prints --- 
 
         for dept_index, dept in enumerate(school_update_data['departments']): 
             # dept should now correctly be a dictionary like {'department_name': ..., 'majors': [...]} 
@@ -641,20 +1018,19 @@ def parse_school_data(school_name, base_url):
                                 if major['score_lines'].get(year) != scores_by_cat_type[score_key]:
                                      major['score_lines'][year] = scores_by_cat_type[score_key]
                                      updated_score_for_major = True
-                            # Fallback to prefix only if specific type not found and year not yet filled
+                            # UESTC stores by code only in temp_score_data, so direct key match needed
                             elif score_key_prefix in scores_by_cat_type and year not in major['score_lines']:
                                  major['score_lines'][year] = scores_by_cat_type[score_key_prefix]
                                  updated_score_for_major = True
                                  
                         if updated_score_for_major:
                             majors_updated_with_scores += 1
-                            # print(f"      -> 应用了分数线到 {dept['department_name']} - {major_code}") # Optional verbose print
         print(f"    -> 分数线合并尝试完成，共为 {majors_updated_with_scores} 个专业条目添加/更新了分数线信息。")
 
     # --- Final Step --- 
     print(f"-[{school_name}] 处理完成。提取到 {len(school_update_data.get('departments', []))} 个院系的数据 (含 {sum(len(d.get('majors',[])) for d in school_update_data.get('departments',[]))} 个目标专业)。")
     # Return data only if departments with target majors were found OR score lines were found
-    return school_update_data if school_update_data.get("departments") or score_line_urls else None
+    return school_update_data if school_update_data.get("departments") or temp_score_data else None
 
 def update_school_data(existing_schools_list, school_name, update_data):
     """
@@ -681,6 +1057,8 @@ def update_school_data(existing_schools_list, school_name, update_data):
     merged = False
     updated_majors_count = 0
     new_majors_count = 0
+    updated_fields_count = 0 # New counter for updated fields
+    new_dept_count = 0 # New counter for new departments
 
     # 合并院系和专业信息
     if 'departments' in update_data:
@@ -696,9 +1074,11 @@ def update_school_data(existing_schools_list, school_name, update_data):
                 # 如果院系不存在，直接添加整个新院系（包括其下的专业）
                 if 'departments' not in school_entry: school_entry['departments'] = []
                 school_entry['departments'].append(dept_update)
-                print(f"  + 添加新院系: {dept_name_update} (含 {len(dept_update.get('majors',[]))} 个专业)")
-                new_majors_count += len(dept_update.get('majors',[]))
-                merged = True
+                new_dept_majors = len(dept_update.get('majors',[]))
+                print(f"  + 添加新院系: {dept_name_update} (含 {new_dept_majors} 个专业)")
+                new_majors_count += new_dept_majors # Count majors in the new dept
+                new_dept_count += 1
+                merged = True # Set merged flag
             else:
                 # 如果院系存在，则遍历新院系下的专业，尝试更新或添加
                 if 'majors' in dept_update:
@@ -716,42 +1096,60 @@ def update_school_data(existing_schools_list, school_name, update_data):
                             existing_dept['majors'].append(major_update)
                             print(f"    + 添加新专业到 {dept_name_update}: {major_code_update} {major_update.get('major_name')}")
                             new_majors_count += 1
-                            merged = True
+                            merged = True # Set merged flag
                         else:
                             # 专业存在，更新字段 (选择性更新)
-                            print(f"    * 更新已存在专业: {dept_name_update} - {major_code_update} {major_update.get('major_name')}")
-                            update_occurred = False
+                            # print(f"    * 检查已存在专业: {dept_name_update} - {major_code_update} {major_update.get('major_name')}") # Change log level
+                            major_updated_flag = False # Flag for this specific major
                             for key, value in major_update.items():
+                                field_updated_flag = False # Flag for this specific field
                                 if key == 'score_lines': # 特殊处理分数线合并
                                     if isinstance(value, dict):
                                         if 'score_lines' not in existing_major: existing_major['score_lines'] = {}
                                         for year, score in value.items():
+                                            # Update if year not present or score is different
                                             if existing_major['score_lines'].get(year) != score:
                                                 existing_major['score_lines'][year] = score
-                                                print(f"      - 更新 {year} 分数线为: {score}")
-                                                update_occurred = True
+                                                print(f"      - 更新 {major_code_update} 的 {year} 分数线为: {score}")
+                                                field_updated_flag = True
                                 else:
-                                    # 其他字段直接覆盖 (如果值不同)
-                                    if existing_major.get(key) != value:
+                                    # 其他字段直接覆盖 (如果值不同 or 键不存在)
+                                    if key not in existing_major or existing_major.get(key) != value:
                                          existing_major[key] = value
-                                         print(f"      - 更新字段 '{key}' 为: {str(value)[:50]}...") # 打印部分值避免过长
-                                         update_occurred = True
-                            if update_occurred:
-                                updated_majors_count += 1
-                                merged = True
-                               
-    # 合并其他顶层字段 (如简介)
-    if update_data.get('intro') and school_entry.get('intro') != update_data['intro']:
-        school_entry['intro'] = update_data['intro']
-        print(f"  * 更新学校简介.")
-        merged = True
-        
+                                         # Avoid printing very long values like remarks or subjects entirely
+                                         value_str = str(value)
+                                         print(f"      - 更新 {major_code_update} 的字段 '{key}' 为: {value_str[:70]}{'...' if len(value_str) > 70 else ''}")
+                                         field_updated_flag = True
+
+                                if field_updated_flag:
+                                    updated_fields_count += 1
+                                    major_updated_flag = True
+                                    merged = True # Set merged flag if ANY field was updated
+
+                            if major_updated_flag:
+                                updated_majors_count += 1 # Count majors that had at least one field updated
+                                # print(f"      -> 专业 {major_code_update} 有字段被更新。") # Optional detail
+
+    # 合并其他顶层字段 (如简介) - 示例，当前未爬取简介
+    # if update_data.get('intro') and school_entry.get('intro') != update_data['intro']:
+    #     school_entry['intro'] = update_data['intro']
+    #     print(f"  * 更新学校简介.")
+    #     merged = True
+    #     updated_fields_count += 1 # Count top-level field updates too
+
     if merged:
-        print(f"-[{school_name}] 合并完成。更新了 {updated_majors_count} 个专业的字段，添加了 {new_majors_count} 个新专业。")
+        summary_parts = []
+        if new_dept_count > 0: summary_parts.append(f"添加 {new_dept_count} 个新院系")
+        if new_majors_count > 0: summary_parts.append(f"添加 {new_majors_count} 个新专业")
+        if updated_majors_count > 0: summary_parts.append(f"更新 {updated_majors_count} 个已有专业的 {updated_fields_count} 个字段")
+        elif updated_fields_count > 0: summary_parts.append(f"更新 {updated_fields_count} 个字段") # Handle case where only top-level fields updated
+
+        summary = ", ".join(summary_parts) if summary_parts else "数据已合并 (无明显变化)"
+        print(f"-[{school_name}] 合并完成。{summary}。")
         existing_schools_list[entry_index] = school_entry # 更新列表中的学校数据
         return True
     else:
-        print(f"-[{school_name}] 没有数据需要合并或更新。")
+        print(f"-[{school_name}] 检查完成，未发现需要合并或更新的数据。")
         return False
 
 def run_scraper():

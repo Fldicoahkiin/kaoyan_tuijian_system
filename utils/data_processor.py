@@ -42,79 +42,143 @@ def get_region(province):
 def process_excel_data(excel_path, output_json_path):
     """读取Excel文件，处理数据，并输出为JSON。"""
     try:
-        excel_file = pd.ExcelFile(excel_path)
+        xls = pd.ExcelFile(excel_path)
     except FileNotFoundError:
-        print(f"错误：未找到 Excel 文件: {excel_path}")
+        print(f"错误: Excel 文件未找到于 '{excel_path}'")
+        return
+    except Exception as e:
+        print(f"读取 Excel 文件时出错: {e}")
         return
 
-    all_schools_dict = {} # 使用字典存储学校，方便合并专业信息，key为学校名称
+    all_schools_data = {}
+    last_valid_school_name = None # Track last seen school name per sheet
 
-    sheet_names = excel_file.sheet_names
-    print(f"开始处理 Excel 文件，包含工作表: {sheet_names}")
-
-    for sheet_name in sheet_names:
-        print(f"\n--- 正在处理工作表: {sheet_name} ---")
+    print("开始处理 Excel 文件...")
+    for sheet_name in xls.sheet_names:
+        print(f"  正在处理工作表: {sheet_name}...")
+        last_valid_school_name = None # Reset for each new sheet
         try:
-            df = excel_file.parse(sheet_name)
+            # 尝试读取时跳过可能的空行或非数据行，假设表头在第5行 (0-based index 4)
+            df = pd.read_excel(xls, sheet_name=sheet_name, header=0)
             df = clean_column_names(df)
+
+            # 提取省份信息（优先从列获取，否则从工作表名获取）
+            current_province = sheet_name # 默认使用工作表名作为省份
+            if '省份' in df.columns:
+                # 如果有省份列，尝试用第一个有效值覆盖默认值
+                first_valid_province = df['省份'].dropna().iloc[0] if not df['省份'].dropna().empty else None
+                if first_valid_province:
+                    current_province = first_valid_province
+                    print(f"    从 '省份' 列获取到省份: {current_province}")
+                else:
+                    print(f"    '省份' 列为空或无效，使用工作表名称 '{current_province}' 作为省份。")
+            else:
+                print(f"    未找到 '省份' 列，使用工作表名称 '{current_province}' 作为省份。")
+
+            # 删除专业代码列完全为空的行，这些通常是无效数据或分隔行
+            if '专业代码' in df.columns:
+                df.dropna(subset=['专业代码'], how='all', inplace=True)
+                # 重置索引，防止因删除行导致 loc 索引错误
+                df.reset_index(drop=True, inplace=True)
+            else:
+                print(f"警告: 工作表 '{sheet_name}' 中缺少 '专业代码' 列，可能影响数据处理。")
+                continue # 如果没有专业代码，跳过这个工作表
 
             # 重命名列名中的 '.1' 等后缀 (例如 '23拟录取情况.1')
             df.columns = [re.sub(r'\.\d+$', '', col) for col in df.columns]
 
             # --- 数据清洗和转换 ---
-            # 1. 删除完全为空的行
+            # 移除专业代码和学校名称都为空的行，这些通常是完全的空行或分隔符
+            if '专业代码' in df.columns and '学校名称' in df.columns:
+                 df.dropna(subset=['专业代码', '学校名称'], how='all', inplace=True)
+                 df.reset_index(drop=True, inplace=True)
+            elif '专业代码' in df.columns: # 只有专业代码列
+                 df.dropna(subset=['专业代码'], how='all', inplace=True)
+                 df.reset_index(drop=True, inplace=True)
+            elif '学校名称' in df.columns: # 只有学校名称列 (不太可能有效，但以防万一)
+                 df.dropna(subset=['学校名称'], how='all', inplace=True)
+                 df.reset_index(drop=True, inplace=True)
+            else:
+                print(f"警告: 工作表 '{sheet_name}' 缺少 '专业代码' 和 '学校名称' 列，跳过处理。")
+                continue # If key columns missing, skip
+
+            # 重命名列名中的 '.1' 等后缀
+            df.columns = [re.sub(r'\.\d+$', '', col) for col in df.columns]
+
+            # 1. 删除完全为空的行 (再次检查，以防万一)
             df.dropna(how='all', inplace=True)
+            df.reset_index(drop=True, inplace=True) # Reset index again after potential drops
             if df.empty:
-                print(f"工作表 '{sheet_name}' 为空或只包含空行，跳过。")
+                print(f"    工作表 '{sheet_name}' 为空或只包含空行，跳过。")
                 continue
 
             # 2. 处理每一行数据
             for index, row in df.iterrows():
-                school_name_raw = row.get('院校名称') # Sheet1 用 '院校名称'，其他用 '院校'
-                if pd.isna(school_name_raw):
-                    school_name_raw = row.get('院校') # 尝试获取 '院校' 列
+                # --- 获取学校名称 ---
+                current_school_name_raw = row.get('学校名称')
+                current_school_name = str(current_school_name_raw).strip() if pd.notna(current_school_name_raw) else None
 
-                if pd.isna(school_name_raw):
-                    # 如果关键的学校名称为空，可能不是有效数据行，跳过
-                    # 或者，这行可能是属于上一行的某个专业的附加信息，需要后续处理
+                # 如果当前行有学校名称，则更新 last_valid_school_name
+                if current_school_name:
+                    last_valid_school_name = current_school_name
+                    # 清理名称，去除可能存在的换行符和等级信息
+                    last_valid_school_name = str(last_valid_school_name).split('\\n')[0].strip()
+
+                # 如果当前行没有学校名称，但我们已经记录了上一个有效的学校名称，则使用它
+                school_name_to_use = last_valid_school_name
+
+                if not school_name_to_use:
+                    # print(f"      跳过行 {index+1}，因为无法确定学校名称。")
+                    continue # 如果到这里还没有学校名称，无法处理，跳过
+
+                # --- 获取专业信息 ---
+                major_code_raw = row.get('专业代码', '')
+                major_code_str = str(major_code_raw).strip() if pd.notna(major_code_raw) else ''
+                major_name = row.get('专业名称', '').strip() if pd.notna(row.get('专业名称')) else ''
+
+                # 专业代码是核心，如果为空，也跳过这行（这行可能是学校名称行或无效行）
+                if not major_code_str:
+                    # print(f"      跳过行 {index+1} (学校: {school_name_to_use})，因为专业代码为空。")
                     continue
 
-                # 清理学校名称，去除可能存在的换行符和等级信息
-                school_name_cleaned = str(school_name_raw).split('\n')[0].strip()
-                school_level = extract_school_level(str(school_name_raw))
-                province = sheet_name # 以工作表名作为省份依据
-                region = get_region(province)
+                # --- 创建或更新学校条目 ---
+                school_level = extract_school_level(str(school_name_to_use)) # Use tracked name
+                region = get_region(current_province)
 
-                # 如果学校还不在字典中，创建学校基本信息
-                if school_name_cleaned not in all_schools_dict:
-                    all_schools_dict[school_name_cleaned] = {
-                        "id": school_name_cleaned, # 使用清理后的名称作为ID
-                        "name": school_name_cleaned,
+                if school_name_to_use not in all_schools_data:
+                    # print(f"    发现新学校: {school_name_to_use}")
+                    all_schools_data[school_name_to_use] = {
+                        "id": school_name_to_use, # 使用追踪到的名称作为ID
+                        "name": school_name_to_use,
                         "level": school_level,
                         "region": region,
-                        "province": province if province != 'Sheet1' else None, # Sheet1 的省份需要额外判断
-                        "intro": row.get('院校简介', ''), # 处理可能不存在的列
-                        "computer_rank": row.get('计算机评级', '无'),
-                        "self_vs_408": "待判断", # 需要逻辑来判断是自命题还是408
-                        "departments": {}, # 使用字典存储院系，方便合并专业, key为院系名称
+                        "province": current_province,
+                        "intro": None, # Intro likely on first row, handle later if needed
+                        "computer_rank": None, # Rank likely on first row
+                        "self_vs_408": "待判断",
+                        "departments": {},
                         "favorites_count": 0
                     }
-                
-                # 获取或创建院系信息
-                department_name = row.get('招生院系', '未知院系')
-                if pd.isna(department_name): department_name = '未知院系'
+                    # 尝试在创建时填充简介和等级 (只在第一次遇到学校时获取)
+                    all_schools_data[school_name_to_use]['intro'] = row.get('简介', '').strip() if pd.notna(row.get('简介')) else None
+                    all_schools_data[school_name_to_use]['computer_rank'] = row.get('计算机等级', '').strip() if pd.notna(row.get('计算机等级')) else None
 
-                school_entry = all_schools_dict[school_name_cleaned]
+                # --- 获取或创建院系 ---
+                department_name = row.get('招生院系', '未知院系')
+                if pd.isna(department_name) or str(department_name).strip() == '':
+                    department_name = '未知院系'
+                else:
+                     department_name = str(department_name).strip()
+
+
+                school_entry = all_schools_data[school_name_to_use]
                 if department_name not in school_entry['departments']:
                      school_entry['departments'][department_name] = {
                          "department_name": department_name,
                          "majors": [] # 专业列表
                      }
 
-                # 提取专业信息
-                major_code = row.get('专业代码')
-                if pd.isna(major_code): continue # 专业代码是核心信息，为空则跳过此行
-
+                # --- 提取专业详细信息 ---
                 # 处理多行文本字段
                 def get_multiline_str(value):
                     # 检查输入是否为 Series，如果是，取第一个元素
@@ -127,8 +191,8 @@ def process_excel_data(excel_path, output_json_path):
                 admission_24 = row.get('24拟录取情况') or row.get('24拟录取名单') or row.get('24复试名单')
 
                 major_info = {
-                    "major_code": str(major_code).strip(),
-                    "major_name": "待提取", # 需要从专业代码或其他列提取
+                    "major_code": major_code_str,
+                    "major_name": major_name,
                     "exam_subjects": get_multiline_str(row.get('初试科目')),
                     "reference_books": get_multiline_str(row.get('参考书')),
                     "retrial_subjects": get_multiline_str(row.get('复试科目')),
@@ -158,25 +222,27 @@ def process_excel_data(excel_path, output_json_path):
                 else:
                     major_info['major_name'] = '未知专业' # 可以留空或标记
 
-
                 # 将专业信息添加到对应院系的majors列表
                 school_entry['departments'][department_name]['majors'].append(major_info)
 
-            print(f"工作表 '{sheet_name}' 处理完成。")
+            print(f"    工作表 '{sheet_name}' 处理完成。找到 {len(df)} 有效行数据。") # Log count
 
         except Exception as e:
             print(f"处理工作表 '{sheet_name}' 时发生错误: {e}")
             import traceback
-            traceback.print_exc() # 打印详细错误堆栈
-
+            traceback.print_exc()
 
     # --- 后处理和输出 ---
-    # 将字典转换为最终的列表格式
-    final_school_list = []
-    for school_data in all_schools_dict.values():
-        # 将院系字典转换为列表
-        school_data['departments'] = list(school_data['departments'].values())
-        final_school_list.append(school_data)
+    if not all_schools_data:
+         print("\\n错误：未能从 Excel 文件中提取任何学校数据。输出文件将为空。")
+         # Write empty list to avoid stale data? Or keep old data? Let's write empty.
+         final_school_list = []
+    else:
+        print(f"\\n总共处理得到 {len(all_schools_data)} 所学校的数据。")
+        final_school_list = []
+        for school_data in all_schools_data.values():
+            school_data['departments'] = list(school_data['departments'].values())
+            final_school_list.append(school_data)
 
     # 递归函数：将 NaN 替换为 None
     def replace_nan_with_none(obj):
@@ -191,7 +257,6 @@ def process_excel_data(excel_path, output_json_path):
 
     # 清理最终列表中的 NaN 值
     cleaned_school_list = replace_nan_with_none(final_school_list)
-
 
     # 创建 data 目录（如果不存在）
     os.makedirs(DATA_DIR, exist_ok=True)

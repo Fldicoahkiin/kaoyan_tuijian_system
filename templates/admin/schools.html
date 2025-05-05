@@ -44,9 +44,8 @@
                                     <td>{{ school.province }}</td>
                                     <td>{{ school.region }}</td>
                                     <td>
-                                        <a href="{{ url_for('school_detail', school_id=(school.id or school.name)) }}" target="_blank" class="btn btn-sm btn-info">查看详情</a>
-                                        {# 编辑功能待定，直接编辑 JSON 不太可行 #}
-                                        {# <a href="#" class="btn btn-sm btn-warning">编辑</a> #}
+                                        <a href="{{ url_for('school_detail', school_id=school.id) }}" target="_blank" class="btn btn-sm btn-info">查看前台</a>
+                                        <a href="{{ url_for('admin_edit_school', school_id=school.id) }}" class="btn btn-sm btn-warning">编辑</a>
                                     </td>
                                 </tr>
                             {% endfor %}

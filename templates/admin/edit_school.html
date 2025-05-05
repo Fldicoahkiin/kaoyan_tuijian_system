@@ -1,0 +1,85 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}编辑院校信息 - {{ super() }}{% endblock %}
+
+{% block admin_content %}
+<div class="container mt-4">
+    <h2>编辑院校信息: {{ school.name }}</h2>
+    <hr>
+
+    <form method="POST" action="{{ url_for('admin_edit_school', school_id=school.id) }}">
+        {{ form.hidden_tag() }}
+
+        <div class="mb-3">
+            {{ form.name.label(class="form-label") }}
+            {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else "")) }}
+            {% if form.name.errors %}
+                <div class="invalid-feedback">
+                    {% for error in form.name.errors %}{{ error }}{% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-4">
+                {{ form.level.label(class="form-label") }}
+                {{ form.level(class="form-select" + (" is-invalid" if form.level.errors else "")) }}
+                 {% if form.level.errors %}
+                    <div class="invalid-feedback">
+                        {% for error in form.level.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+             <div class="col-md-4">
+                {{ form.province.label(class="form-label") }}
+                {{ form.province(class="form-control" + (" is-invalid" if form.province.errors else "")) }}
+                 {% if form.province.errors %}
+                    <div class="invalid-feedback">
+                        {% for error in form.province.errors %}{{ error }}{% endfor %}
+                    </div>
+                 {% endif %}
+             </div>
+            <div class="col-md-4">
+                {{ form.region.label(class="form-label") }}
+                {{ form.region(class="form-select" + (" is-invalid" if form.region.errors else "")) }}
+                 {% if form.region.errors %}
+                    <div class="invalid-feedback">
+                        {% for error in form.region.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+
+        <div class="mb-3">
+            {{ form.computer_rank.label(class="form-label") }}
+            {{ form.computer_rank(class="form-control" + (" is-invalid" if form.computer_rank.errors else "")) }}
+            {% if form.computer_rank.errors %}
+                <div class="invalid-feedback">
+                    {% for error in form.computer_rank.errors %}{{ error }}{% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            {{ form.intro.label(class="form-label") }}
+            {{ form.intro(class="form-control" + (" is-invalid" if form.intro.errors else ""), rows=5) }}
+             {% if form.intro.errors %}
+                <div class="invalid-feedback">
+                    {% for error in form.intro.errors %}{{ error }}{% endfor %}
+                </div>
+             {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <p class="text-muted">注意：目前仅支持修改学校顶层信息，院系和专业信息请通过修改源文件或重新运行数据处理脚本更新。</p>
+        </div>
+
+
+        <div class="d-flex justify-content-end">
+             <a href="{{ url_for('admin_schools') }}" class="btn btn-secondary me-2">取消</a>
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
+</div>
+{% endblock %} 

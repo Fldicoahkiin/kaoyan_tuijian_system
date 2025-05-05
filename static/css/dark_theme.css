@@ -1,0 +1,553 @@
+/* static/css/dark_theme.css */
+
+:root {
+    --dark-bg: #1a1a2e; /* 深蓝紫色背景 */
+    --dark-card-bg: #162447; /* 稍浅的卡片背景 */
+    --dark-border: #4b5d83; /* 边框和分隔线颜色 */
+    --dark-text: #e0e0e0; /* 主要文字颜色 */
+    --dark-text-muted: #bdbdbd; /* 次要文字颜色 (调亮) */
+    --dark-primary: #478eff; /* 主题亮色 (蓝色) */
+    --dark-primary-hover: #6aa0ff;
+    --dark-secondary: #6c757d;
+    --dark-success: #28a745;
+    --dark-info: #17a2b8;
+    --dark-warning: #ffc107;
+    --dark-danger: #dc3545;
+    --dark-link: #6aa0ff;
+}
+
+body.dark-theme {
+    background-color: var(--dark-bg);
+    /* 添加微妙的径向渐变背景 */
+    background-image: radial-gradient(circle at top left, rgba(71, 142, 255, 0.1), transparent 40%),
+                      radial-gradient(circle at bottom right, rgba(71, 142, 255, 0.05), transparent 50%);
+    color: var(--dark-text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; /* 更现代的字体栈 */
+}
+
+/* --- 重写 Bootstrap 组件 (确保所有规则带 .dark-theme 前缀) --- */
+.dark-theme .navbar-dark {
+    background-color: var(--dark-card-bg) !important;
+    border-bottom: 1px solid var(--dark-border);
+}
+
+.dark-theme .navbar-brand,
+.dark-theme .nav-link {
+    color: var(--dark-text) !important;
+}
+
+.dark-theme .nav-link.active,
+.dark-theme .nav-link:hover {
+    color: var(--dark-primary) !important;
+}
+
+/* Theme toggle switch adjustments */
+.dark-theme .form-switch .form-check-input {
+    background-color: rgba(255, 255, 255, 0.1); /* Slightly visible background */
+    border-color: var(--dark-border);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba(255,255,255,0.4)'/%3e%3c/svg%3e");
+}
+.dark-theme .form-switch .form-check-input:focus {
+     border-color: var(--dark-primary);
+     box-shadow: 0 0 0 .25rem rgba(71, 142, 255, .25);
+     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%236aa0ff'/%3e%3c/svg%3e");
+}
+.dark-theme .form-switch .form-check-input:checked {
+    background-color: var(--dark-primary);
+    border-color: var(--dark-primary);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
+}
+.dark-theme .form-check-label {
+     color: var(--dark-text-muted); /* Ensure label icon color is muted */
+     cursor: pointer;
+}
+
+
+.dark-theme .dropdown-menu {
+    background-color: var(--dark-card-bg);
+    border: 1px solid var(--dark-border);
+}
+
+.dark-theme .dropdown-item {
+    color: var(--dark-text);
+}
+
+.dark-theme .dropdown-item:hover,
+.dark-theme .dropdown-item:focus {
+    background-color: rgba(71, 142, 255, 0.2); /* 主题色半透明背景 */
+    color: var(--dark-primary);
+}
+
+.dark-theme .dropdown-divider {
+    border-top: 1px solid var(--dark-border);
+}
+
+.dark-theme .card {
+    background-color: var(--dark-card-bg);
+    border: 1px solid var(--dark-border);
+    color: var(--dark-text); /* Ensure card text is light */
+}
+
+.dark-theme .card-header {
+    background-color: rgba(71, 142, 255, 0.1); /* 主题色更淡的背景 */
+    border-bottom: 1px solid var(--dark-border);
+    color: var(--dark-primary);
+    padding: 0.75rem 1rem; /* Standard padding */
+    font-weight: 600; /* 标题加粗 */
+}
+
+.dark-theme .card-body {
+     color: var(--dark-text); /* Ensure card body text is light */
+}
+
+.dark-theme .list-group-item {
+    background-color: transparent;
+    border-color: var(--dark-border);
+    color: var(--dark-text);
+}
+
+.dark-theme .accordion-button {
+    background-color: rgba(71, 142, 255, 0.1);
+    color: var(--dark-primary);
+    border-bottom: 1px solid var(--dark-border);
+}
+
+.dark-theme .accordion-button:not(.collapsed) {
+     background-color: rgba(71, 142, 255, 0.2);
+     color: var(--dark-primary-hover);
+}
+
+.dark-theme .accordion-button::after {
+    /* Change accordion arrow color */
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%236aa0ff'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+
+
+.dark-theme .accordion-button:not(.collapsed)::after {
+     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%236aa0ff'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+     transform: rotate(-180deg);
+}
+
+
+.dark-theme .accordion-button:focus {
+    box-shadow: none;
+    border-color: var(--dark-border);
+}
+
+.dark-theme .accordion-body {
+    background-color: var(--dark-card-bg);
+}
+
+/* General table styling adjustments */
+.dark-theme .table {
+    color: var(--dark-text);
+    /* 添加细微分隔线 */
+    border-top: 1px solid var(--dark-border);
+    border-color: var(--dark-border); /* Ensure table border uses dark color */
+}
+
+.dark-theme .table th {
+    color: var(--dark-primary); /* 表头用主色 */
+    font-weight: 600;
+}
+
+/* Target all table cells, including header cells */
+.dark-theme .table > :not(caption) > * > * {
+    padding: .6rem .6rem; /* 减小表格内边距 */
+    background-color: transparent !important; /* 覆盖 bootstrap 条纹 */
+    border-bottom-width: 1px;
+    border-color: var(--dark-border); /* 使用统一边框色 */
+    box-shadow: none;
+    color: inherit; /* Inherit color (fixes potential header issues) */
+}
+
+.dark-theme .table > thead th { /* Specific styles for header cells */
+     color: var(--dark-primary);
+     border-color: var(--dark-border);
+}
+
+.dark-theme .table > tbody td { /* Specific styles for body cells */
+     color: var(--dark-text);
+     border-color: var(--dark-border);
+}
+
+
+.dark-theme .table-hover > tbody > tr:hover > * {
+     background-color: rgba(71, 142, 255, 0.1) !important; /* 确保悬停背景生效 */
+     color: var(--dark-text);
+}
+
+.dark-theme .table-light { /* Override for table-light if used */
+    --bs-table-bg: rgba(71, 142, 255, 0.1);
+    --bs-table-border-color: var(--dark-border);
+    color: var(--dark-primary);
+}
+
+/* Form styling */
+.dark-theme .form-label {
+    color: var(--dark-text); /* 确保标签使用主要文字颜色 */
+    margin-bottom: 0.5rem;
+}
+
+.dark-theme .form-control,
+.dark-theme .form-select {
+    background-color: rgba(0, 0, 0, 0.2); /* 表单控件稍暗背景 */
+    border: 1px solid var(--dark-border);
+    color: var(--dark-text);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4); /* 内部阴影 */
+}
+
+.dark-theme .form-control:focus,
+.dark-theme .form-select:focus {
+    background-color: rgba(0, 0, 0, 0.3); /* Focus background slightly different */
+    color: var(--dark-text);
+    border-color: var(--dark-primary);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4), 0 0 0 0.25rem rgba(71, 142, 255, 0.25);
+}
+
+/* Explicitly style placeholder */
+.dark-theme .form-control::placeholder {
+    color: var(--dark-text-muted); /* 使用已调亮的次要文字颜色 */
+    opacity: 0.8; /* 可以稍微降低透明度 */
+}
+
+/* Style select dropdown arrow */
+.dark-theme .form-select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23a0a0a0' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+}
+
+.dark-theme .form-text {
+    color: var(--dark-text-muted); /* 帮助文本也用亮一点的灰色 */
+}
+
+/* Background and Border utilities */
+.dark-theme .bg-light {
+    background-color: var(--dark-card-bg) !important; /* 让筛选框背景也变暗 */
+}
+
+.dark-theme .border {
+     border-color: var(--dark-border) !important;
+}
+
+/* Button styling */
+.dark-theme .btn {
+    /* Add general button transition for hover effects */
+     transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.dark-theme .btn-primary {
+    background-color: var(--dark-primary);
+    border-color: var(--dark-primary);
+    color: #fff;
+}
+
+.dark-theme .btn-primary:hover {
+    background-color: var(--dark-primary-hover);
+    border-color: var(--dark-primary-hover);
+    box-shadow: 0 0 10px rgba(71, 142, 255, 0.3);
+}
+
+.dark-theme .btn-secondary {
+    background-color: var(--dark-secondary);
+    border-color: var(--dark-secondary);
+     color: #fff;
+}
+.dark-theme .btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+/* Add hover styles for other buttons if needed */
+.dark-theme .btn-info { background-color: var(--dark-info); border-color: var(--dark-info); color: #fff;}
+.dark-theme .btn-info:hover { background-color: #138496; border-color: #117a8b; box-shadow: 0 0 10px rgba(23, 162, 184, 0.3); }
+.dark-theme .btn-warning { background-color: var(--dark-warning); border-color: var(--dark-warning); color: #1a1a2e; } /* Dark text on yellow */
+.dark-theme .btn-warning:hover { background-color: #e0a800; border-color: #d39e00; box-shadow: 0 0 10px rgba(255, 193, 7, 0.3); }
+.dark-theme .btn-danger { background-color: var(--dark-danger); border-color: var(--dark-danger); color: #fff;}
+.dark-theme .btn-danger:hover { background-color: #c82333; border-color: #bd2130; box-shadow: 0 0 10px rgba(220, 53, 69, 0.3); }
+
+
+/* Text and Alert styling */
+.dark-theme .text-muted {
+    color: var(--dark-text-muted) !important;
+}
+.dark-theme h1, .dark-theme h2, .dark-theme h3, .dark-theme h4, .dark-theme h5, .dark-theme h6 {
+     color: var(--dark-text); /* Ensure headings are light */
+}
+.dark-theme p {
+    color: var(--dark-text); /* Ensure paragraphs are light */
+}
+
+.dark-theme .alert {
+     border-width: 0;
+     color: #fff; /* 确保文字可见 */
+     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+.dark-theme .alert-success { background-color: var(--dark-success); }
+.dark-theme .alert-info { background-color: var(--dark-info); }
+.dark-theme .alert-warning { background-color: var(--dark-warning); color: #000; }
+.dark-theme .alert-error, /* Flask flash 使用 error */
+.dark-theme .alert-danger { background-color: var(--dark-danger); }
+.dark-theme .alert-dismissible .btn-close {
+     filter: invert(1) grayscale(100%) brightness(200%); /* Make close button white */
+}
+
+
+/* Pagination styling */
+.dark-theme .pagination .page-link {
+    background-color: var(--dark-card-bg);
+    border-color: var(--dark-border);
+    color: var(--dark-link);
+}
+
+.dark-theme .pagination .page-item.active .page-link {
+    background-color: var(--dark-primary);
+    border-color: var(--dark-primary);
+    color: #fff;
+}
+
+.dark-theme .pagination .page-item.disabled .page-link {
+    background-color: var(--dark-bg);
+    border-color: var(--dark-border);
+    color: var(--dark-text-muted);
+}
+
+/* Link styling */
+.dark-theme a {
+    color: var(--dark-link);
+}
+
+.dark-theme a:hover {
+     color: var(--dark-primary-hover);
+}
+
+/* Other elements */
+.dark-theme hr {
+    border-top: 1px solid var(--dark-border);
+    opacity: 0.5; /* Make hr less prominent */
+}
+
+.dark-theme footer.bg-light { /* Footer uses bg-light class */
+     background-color: var(--dark-card-bg) !important; /* Override bg-light */
+     border-top: 1px solid var(--dark-border);
+}
+.dark-theme footer.bg-light .text-muted {
+     color: var(--dark-text-muted) !important; /* Ensure footer text is visible */
+}
+
+/* Style chart containers specifically */
+.dark-theme .chart-container,
+.dark-theme #school-list-container,
+.dark-theme .announcements-container {
+    background-color: var(--dark-card-bg);
+    border: 1px solid var(--dark-border);
+    border-radius: 0.375rem;
+    /* padding: 1rem; */ /* Padding 已在内部元素控制 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), /* 加深阴影 */
+                inset 0 0 10px rgba(71, 142, 255, 0.1); /* 添加内部辉光 */
+    /* min-height: 300px; Ensure containers have some height (Set on dashboard grid items instead) */
+    display: flex; /* Center potential loading/error messages */
+    flex-direction: column; /* 统一为列布局 */
+    transition: box-shadow 0.3s ease-in-out; /* 添加悬停过渡 */
+}
+
+/* Override for containers outside the main dashboard grid if needed */
+.dark-theme .container .card,
+.dark-theme .container .bg-light { /* Target cards/bg-light directly inside .container */
+     background-color: var(--dark-card-bg) !important;
+     border: 1px solid var(--dark-border);
+     color: var(--dark-text);
+}
+.dark-theme .container h1,
+.dark-theme .container h2,
+.dark-theme .container h3 { /* Ensure headings on other pages are light */
+     color: var(--dark-text);
+}
+.dark-theme .container p {
+    color: var(--dark-text);
+}
+
+
+/* 悬停时增加辉光效果 */
+.dark-theme .chart-container:hover,
+.dark-theme #school-list-container:hover,
+.dark-theme .announcements-container:hover,
+.dark-theme .container .card:hover,
+.dark-theme .container .bg-light:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4),\
+                inset 0 0 15px rgba(71, 142, 255, 0.2),\
+                0 0 15px rgba(71, 142, 255, 0.1); /* 外部边缘辉光 */
+}
+
+
+/* Ensure ECharts instance inside takes up space */
+.dark-theme .chart-container > div[id^="national-"],
+.dark-theme .chart-container > div[id^="exam-type-"] {
+    width: 100%;
+    height: 100%;
+    min-height: 250px; /* Ensure chart div itself has min height */
+}
+
+/* Styles for the middle school list table (on dashboard) */
+.dark-theme #school-list-container h2,
+.dark-theme .announcements-container h2 {
+    padding: 0.75rem 1rem;
+    margin-bottom: 0;
+    border-bottom: 1px solid var(--dark-border);
+    color: var(--dark-primary);
+    font-size: 1.1rem;
+    font-weight: 600; /* 标题加粗 */
+    text-shadow: 0 0 5px rgba(71, 142, 255, 0.3); /* 轻微文字辉光 */
+}
+
+.dark-theme .scrollable-table { /* Specific to dashboard table container */
+    flex-grow: 1; /* Allow table container to take remaining space */
+    max-height: none; /* Remove fixed max-height if flex-grow is used */
+    border: none; /* Remove default border */
+    border-radius: 0;
+    overflow-y: auto; /* Keep scroll */
+}
+
+/* Style scrollbar for dark theme (WebKit browsers) */
+.dark-theme ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+.dark-theme ::-webkit-scrollbar-track {
+    background: var(--dark-bg);
+    border-radius: 4px;
+}
+.dark-theme ::-webkit-scrollbar-thumb {
+    background-color: var(--dark-border);
+    border-radius: 4px;
+    border: 2px solid var(--dark-bg);
+}
+.dark-theme ::-webkit-scrollbar-thumb:hover {
+    background-color: #5a6e90; /* Slightly lighter on hover */
+}
+
+.dark-theme #school-table { /* Specific to dashboard table */
+     width: 100%;
+     border-collapse: collapse; /* Remove spacing between cells */
+}
+
+.dark-theme #school-table thead th {
+    position: sticky;
+    top: 0;
+    background-color: rgba(71, 142, 255, 0.15); /* Darker header background */
+    /* color: var(--dark-primary); Inherited from .table th */
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 2px solid var(--dark-border);
+    z-index: 1;
+    white-space: nowrap; /* Prevent header text wrap */
+}
+
+.dark-theme #school-table tbody td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--dark-border); /* Row separator */
+    /* color: var(--dark-text); Inherited from .table > tbody td */
+    vertical-align: middle;
+}
+
+.dark-theme #school-table tbody tr:last-child td {
+    border-bottom: none; /* No border for the last row */
+}
+
+/* Remove specific hover from #school-table, use general .table-hover */
+/*
+.dark-theme #school-table tbody tr:hover td {
+     background-color: rgba(71, 142, 255, 0.1);
+}
+*/
+
+/* Styles for the announcement container (on dashboard) */
+.dark-theme #announcement-list {
+    list-style: none;
+    padding: 1rem;
+    margin: 0;
+    /* max-height: 250px; Limit height and make scrollable (use flex instead) */
+    overflow-y: auto;
+    flex-grow: 1; /* Allow list to fill space */
+}
+
+.dark-theme #announcement-list li {
+    margin-bottom: 0.75rem;
+    color: var(--dark-text-muted);
+}
+
+.dark-theme #announcement-list li:last-child {
+    margin-bottom: 0;
+}
+
+/* Already covered by .dark-theme a rules
+.dark-theme #announcement-list a {
+    color: var(--dark-link);
+    text-decoration: none;
+    transition: color 0.2s ease-in-out;
+}
+
+.dark-theme #announcement-list a:hover {
+    color: var(--dark-primary-hover);
+    text-decoration: underline;
+}
+*/
+
+/* Removed redundant scrollbar styles for list, use general ::-webkit-scrollbar */
+/*
+.dark-theme #announcement-list::-webkit-scrollbar {
+    width: 6px;
+}
+.dark-theme #announcement-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+.dark-theme #announcement-list::-webkit-scrollbar-thumb {
+    background-color: var(--dark-border);
+    border-radius: 3px;
+}
+*/
+
+/* --- Admin Area Specific Dark Styles --- */
+
+.dark-theme .sidebar {
+    background-color: var(--dark-card-bg); /* Use card background for sidebar */
+    border-right: 1px solid var(--dark-border);
+}
+
+.dark-theme .sidebar h4 {
+     color: var(--dark-primary); /* Make title primary color */
+}
+
+.dark-theme .sidebar a {
+    color: var(--dark-text-muted);
+}
+
+.dark-theme .sidebar a:hover,
+.dark-theme .sidebar a.active {
+    color: #fff; /* White text for active/hover */
+    background-color: var(--dark-primary); /* Use primary color for active background */
+}
+
+.dark-theme .sidebar hr {
+    border-top: 1px solid var(--dark-border);
+}
+
+.dark-theme .main-admin-content {
+     background-color: var(--dark-bg); /* Ensure main content area has dark background */
+     color: var(--dark-text);
+}
+
+/* Style admin tables, cards, etc. if needed, using general rules */
+.dark-theme .main-admin-content .card {
+     /* Already covered by general .dark-theme .card */
+}
+.dark-theme .main-admin-content .table {
+      /* Already covered by general .dark-theme .table */
+}
+.dark-theme .main-admin-content .alert {
+     /* Already covered by general .dark-theme .alert */
+}
+
+/* Ensure admin flash messages close button is visible */
+.dark-theme .main-admin-content .alert-dismissible .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+} 

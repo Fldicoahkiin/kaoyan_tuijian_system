@@ -7,6 +7,8 @@
     {# 可以使用 Bootstrap 或其他后台框架简化样式 #}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- 引入自定义深色主题 -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dark_theme.css') }}">
     <style>
         body {
             display: flex;
@@ -15,8 +17,7 @@
         }
         .sidebar {
             width: 250px;
-            background-color: #343a40;
-            color: white;
+            /* background-color: #343a40; */ /* 由 dark_theme.css 控制 */
             padding-top: 20px;
             position: fixed;
             top: 0;
@@ -24,14 +25,14 @@
             left: 0;
         }
         .sidebar a {
-            color: #adb5bd;
+            /* color: #adb5bd; */ /* 由 dark_theme.css 控制 */
             padding: 10px 15px;
             text-decoration: none;
             display: block;
         }
         .sidebar a:hover, .sidebar a.active {
-            color: white;
-            background-color: #495057;
+            /* color: white; */ /* 由 dark_theme.css 控制 */
+            /* background-color: #495057; */ /* 由 dark_theme.css 控制 */
         }
         .sidebar .nav-link i {
             margin-right: 8px;
@@ -42,9 +43,9 @@
             flex: 1;
         }
         .admin-header {
-            background-color: #f8f9fa;
+            /* background-color: #f8f9fa; */ /* 由 dark_theme.css 控制 */
             padding: 10px 20px;
-            border-bottom: 1px solid #dee2e6;
+            /* border-bottom: 1px solid #dee2e6; */ /* 由 dark_theme.css 控制 */
             margin-bottom: 20px;
         }
     </style>
@@ -113,6 +114,8 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- 引入包含主题切换逻辑的 main.js -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     {% block admin_body_scripts %}{% endblock %}
 </body>
 </html> 

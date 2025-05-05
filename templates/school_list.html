@@ -1,147 +1,131 @@
 {% extends "base.html" %}
 
-{% block title %}院校库{% endblock %}
+{% block title %}院校库查询 - {{ super() }}{% endblock %}
 
 {% block content %}
-<div class="school-list-page container mt-4">
-    <h2>院校库查询</h2>
-
-    <!-- 查询表单 -->
-    <form method="GET" action="{{ url_for('school_list') }}" class="search-filters card p-3 mb-4">
-        <div class="row g-3 align-items-end">
-            <div class="col-md-3">
-                <label for="province" class="form-label">地区/省份:</label>
-                {# 可以动态生成省份列表，或手动列出一些 #}
-                <input type="text" id="province" name="province" class="form-control" value="{{ request.args.get('province', '') }}">
-            </div>
-            <div class="col-md-3">
-                <label for="level" class="form-label">院校等级:</label>
-                <select id="level" name="level" class="form-select">
-                    <option value="" {% if not request.args.get('level') %}selected{% endif %}>全部</option>
-                    <option value="985" {% if request.args.get('level') == '985' %}selected{% endif %}>985</option>
-                    <option value="211" {% if request.args.get('level') == '211' %}selected{% endif %}>211</option>
-                    <option value="双一流" {% if request.args.get('level') == '双一流' %}selected{% endif %}>双一流</option>
-                    <option value="一般" {% if request.args.get('level') == '一般' %}selected{% endif %}>一般</option>
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label for="name" class="form-label">院校名称:</label>
-                <input type="text" id="name" name="name" class="form-control" value="{{ request.args.get('name', '') }}">
-            </div>
-            <div class="col-md-3">
-                <label for="computer_rank" class="form-label">计算机等级:</label>
-                <select id="computer_rank" name="computer_rank" class="form-select">
-                    <option value="" {% if not request.args.get('computer_rank') %}selected{% endif %}>全部</option>
-                    {# 假设的等级，需要根据实际数据调整 #}
-                    <option value="A+" {% if request.args.get('computer_rank') == 'A+' %}selected{% endif %}>A+</option>
-                    <option value="A" {% if request.args.get('computer_rank') == 'A' %}selected{% endif %}>A</option>
-                    <option value="A-" {% if request.args.get('computer_rank') == 'A-' %}selected{% endif %}>A-</option>
-                    <option value="B+" {% if request.args.get('computer_rank') == 'B+' %}selected{% endif %}>B+</option>
-                    <option value="B" {% if request.args.get('computer_rank') == 'B' %}selected{% endif %}>B</option>
-                    <option value="B-" {% if request.args.get('computer_rank') == 'B-' %}selected{% endif %}>B-</option>
-                    <option value="C+" {% if request.args.get('computer_rank') == 'C+' %}selected{% endif %}>C+</option>
-                    <option value="C" {% if request.args.get('computer_rank') == 'C' %}selected{% endif %}>C</option>
-                    <option value="C-" {% if request.args.get('computer_rank') == 'C-' %}selected{% endif %}>C-</option>
-                    <option value="无" {% if request.args.get('computer_rank') == '无' %}selected{% endif %}>无</option>
-                </select>
-            </div>
-            <div class="col-md-12 text-end">
-                <button type="submit" class="btn btn-primary">查询</button>
-                <a href="{{ url_for('school_list') }}" class="btn btn-secondary">重置</a>
-            </div>
-        </div>
-    </form>
-
-    <!-- 结果列表 -->
-    <div class="results-container card">
-        <div class="card-header">
-            查询结果 (共 {{ schools|length }} 条)
-        </div>
-        <div class="table-responsive">
-            <table class="table table-striped table-hover mb-0">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>院校名称</th>
-                        <th>院校等级</th>
-                        <th>计算机等级</th>
-                        <th>地区</th>
-                        <th>收藏人数</th>
-                        <th>操作</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% if schools %}
-                        {% for school in schools %}
-                            <tr>
-                                <td>{{ loop.index }}</td>
-                                <td>
-                                    {# 使用 school.id 或 name 作为 school_id #}
-                                    <a href="{{ url_for('school_detail', school_id=(school.id or school.name)) }}">{{ school.name }}</a>
-                                </td>
-                                <td>{{ school.level }}</td>
-                                <td>{{ school.computer_rank }}</td>
-                                <td>{{ school.province }} ({{school.region}})</td>
-                                <td>{{ school.favorites_count | default(0) }}</td>
-                                <td>
-                                    <a href="{{ url_for('school_detail', school_id=(school.id or school.name)) }}" class="btn btn-sm btn-info">详情</a>
-                                    {# 收藏按钮可以放在详情页，这里简化 #}
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    {% else %}
-                        <tr>
-                            <td colspan="7" class="text-center">未找到符合条件的院校。</td>
-                        </tr>
-                    {% endif %}
-                </tbody>
-            </table>
-        </div>
-         {# 分页控件 #}
-         {% if pagination and pagination.total_pages > 1 %}
-            <nav aria-label="Page navigation" class="mt-4">
-                <ul class="pagination justify-content-center">
-                    {# 上一页 #}
-                    <li class="page-item {% if pagination.page == 1 %}disabled{% endif %}">
-                        <a class="page-link" href="{{ url_for('school_list', page=pagination.page - 1, **pagination.args) }}">上一页</a>
-                    </li>
-
-                    {# 显示部分页码 #}
-                    {% set start_page = [1, pagination.page - 2] | max %}
-                    {% set end_page = [pagination.total_pages, pagination.page + 2] | min %}
-
-                    {% if start_page > 1 %}
-                        <li class="page-item"><a class="page-link" href="{{ url_for('school_list', page=1, **pagination.args) }}">1</a></li>
-                        {% if start_page > 2 %}<li class="page-item disabled"><span class="page-link">...</span></li>{% endif %}
-                    {% endif %}
-
-                    {% for p in range(start_page, end_page + 1) %}
-                        <li class="page-item {% if p == pagination.page %}active{% endif %}">
-                            <a class="page-link" href="{{ url_for('school_list', page=p, **pagination.args) }}">{{ p }}</a>
-                        </li>
-                    {% endfor %}
-
-                    {% if end_page < pagination.total_pages %}
-                        {% if end_page < pagination.total_pages - 1 %}<li class="page-item disabled"><span class="page-link">...</span></li>{% endif %}
-                         <li class="page-item"><a class="page-link" href="{{ url_for('school_list', page=pagination.total_pages, **pagination.args) }}">{{ pagination.total_pages }}</a></li>
-                    {% endif %}
-
-                    {# 下一页 #}
-                    <li class="page-item {% if pagination.page == pagination.total_pages %}disabled{% endif %}">
-                        <a class="page-link" href="{{ url_for('school_list', page=pagination.page + 1, **pagination.args) }}">下一页</a>
-                    </li>
-                </ul>
-            </nav>
-            {% endif %}
+<div class="row mb-4">
+    <div class="col">
+        <h1><i class="fas fa-university"></i> 院校库查询</h1>
+        <p>根据条件筛选院校，了解基本信息和热度。</p>
     </div>
 </div>
 
-{# 引入 Bootstrap CSS/JS (如果决定使用) 或自定义样式 #}
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<style>
-    /* 可以在这里添加针对此页面的额外 CSS */
-    .search-filters .form-label { font-weight: bold; }
-    .results-container .card-header { font-size: 1.1em; }
-</style>
+<!-- 筛选表单 -->
+<form method="GET" action="{{ url_for('school_list') }}" class="mb-4 p-3 border rounded bg-light">
+    <div class="row g-3 align-items-end">
+        <div class="col-md-2">
+            <label for="region" class="form-label">省份/地区</label>
+            <select name="region" id="region" class="form-select">
+                <option value="">所有地区</option>
+                {% for p in provinces %}
+                <option value="{{ p }}" {% if request.args.get('region') == p %}selected{% endif %}>{{ p }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label for="level" class="form-label">院校等级</label>
+            <select name="level" id="level" class="form-select">
+                <option value="">所有等级</option>
+                {% for l in levels %}
+                <option value="{{ l }}" {% if request.args.get('level') == l %}selected{% endif %}>{{ l }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label for="rank" class="form-label">计算机等级</label>
+            <select name="rank" id="rank" class="form-select">
+                <option value="">所有评级</option>
+                 {% for r in ranks %}
+                 <option value="{{ r }}" {% if request.args.get('rank') == r %}selected{% endif %}>{{ r }}</option>
+                 {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label for="name" class="form-label">院校名称</label>
+            <input type="text" name="name" id="name" class="form-control" placeholder="输入关键词..." value="{{ request.args.get('name', '') }}">
+        </div>
+        <div class="col-md-auto">
+            <button type="submit" class="btn btn-primary w-100"><i class="fas fa-filter"></i> 筛选</button>
+        </div>
+        <div class="col-md-auto">
+             <a href="{{ url_for('school_list') }}" class="btn btn-secondary w-100"><i class="fas fa-times"></i> 清空</a>
+        </div>
+    </div>
+</form>
+
+<!-- 院校列表 -->
+<div class="table-responsive">
+    <table class="table table-striped table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>#</th>
+                <th><i class="fas fa-school"></i> 院校名称</th>
+                <th><i class="fas fa-medal"></i> 院校等级</th>
+                <th><i class="fas fa-laptop-code"></i> 计算机等级</th>
+                <th><i class="fas fa-users"></i> <a href="{{ url_for('school_list', region=request.args.get('region'), level=request.args.get('level'), name=request.args.get('name'), rank=request.args.get('rank'), sort='enrollment' if request.args.get('sort') != 'enrollment' else '-enrollment') }}">24年招生人数 <i class="fas fa-sort"></i></a></th>
+                <th><i class="fas fa-heart"></i> <a href="{{ url_for('school_list', region=request.args.get('region'), level=request.args.get('level'), name=request.args.get('name'), rank=request.args.get('rank'), sort='favorites' if request.args.get('sort') != 'favorites' else '-favorites') }}">收藏人数 <i class="fas fa-sort"></i></a></th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if schools %}
+                {% for school in schools %}
+                <tr>
+                    <td>{{ loop.index + (pagination.page - 1) * pagination.per_page }}</td>
+                    <td><a href="{{ url_for('school_detail', school_id=school.id) }}">{{ school.name }}</a></td>
+                    <td><span class="badge {% if school.level == '985' %}bg-danger{% elif school.level == '211' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">{{ school.level or '未知' }}</span></td>
+                    <td>{{ school.computer_rank or '-' }}</td>
+                    <td>{{ school.enrollment_24 or '-' }}</td>
+                    <td>{{ school.favorites_count }}</td>
+                    <td>
+                        <a href="{{ url_for('school_detail', school_id=school.id) }}" class="btn btn-sm btn-info"><i class="fas fa-eye"></i> 查看详情</a>
+                        {% if 'username' in session %}
+                            <form action="{{ url_for('toggle_favorite', school_id=school.id) }}" method="POST" style="display: inline;">
+                                <button type="submit" class="btn btn-sm {% if school.id in current_user_favorites %}btn-danger{% else %}btn-outline-danger{% endif %}">
+                                    <i class="fas fa-heart"></i> {% if school.id in current_user_favorites %}取消收藏{% else %}收藏{% endif %}
+                                </button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="7" class="text-center">没有找到符合条件的院校。</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<!-- 分页 -->
+{% if pagination and pagination.pages > 1 %}
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+        <!-- 上一页 -->
+        <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+            <a class="page-link" href="{% if pagination.has_prev %}{{ url_for('school_list', page=pagination.prev_num, **request.args) }}{% else %}"#{% endif %}" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        <!-- 页码 -->
+        {% for page_num in pagination.iter_pages() %}
+            {% if page_num %}
+                <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('school_list', page=page_num, **request.args) }}">{{ page_num }}</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+            {% endif %}
+        {% endfor %}
+        <!-- 下一页 -->
+        <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+            <a class="page-link" href="{% if pagination.has_next %}{{ url_for('school_list', page=pagination.next_num, **request.args) }}{% else %}"#{% endif %}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+{% endif %}
 
 {% endblock %} 

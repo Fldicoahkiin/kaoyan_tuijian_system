@@ -1,220 +1,238 @@
 {% extends "base.html" %}
 
-{% block title %}{{ school.name }} - 详情{% endblock %}
+{% block title %}{{ school.name }} - 详情 - {{ super() }}{% endblock %}
 
-{% block head_scripts %}
-    {# 引入 ECharts 用于可能的分数线图表 #}
-    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        .favorite-btn {
-            cursor: pointer;
-            color: #ccc; /* 默认灰色 */
-            font-size: 1.5em;
-            transition: color 0.3s ease;
-        }
-        .favorite-btn.favorited {
-            color: #ff4d4d; /* 收藏后红色 */
-        }
-        .card {
-            margin-bottom: 20px;
-        }
-        .major-card .card-header {
-            background-color: #f8f9fa;
-            font-weight: bold;
-        }
-        .list-group-item span {
-            font-weight: bold;
-            margin-right: 5px;
-        }
-        #score-line-chart {
-            width: 100%;
-            height: 300px; /* 设置图表高度 */
-            margin-top: 15px;
-        }
-    </style>
+{% block head_extra %}
+    <!-- ECharts -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.3.3/dist/echarts.min.js"></script>
 {% endblock %}
 
 {% block content %}
-<div class="container mt-4 school-detail-page">
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h2>{{ school.name }}</h2>
-            {# 收藏按钮 - 需要用户登录才显示 #}
-            {% if 'username' in session %}
-                <span class="favorite-btn {% if school.id in user_favorites %}favorited{% endif %}"
-                      data-school-id="{{ school.id or school.name }}"
-                      title="点击收藏/取消收藏">
-                    <i class="fas fa-heart"></i>
-                </span>
-            {% endif %}
+<div class="container">
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <h1 class="display-5">{{ school.name }}</h1>
+            <p class="lead">
+                <span class="badge {% if school.level == '985' %}bg-danger{% elif school.level == '211' %}bg-warning text-dark{% else %}bg-secondary{% endif %} me-2">{{ school.level or '未知等级' }}</span>
+                <span class="text-muted"><i class="fas fa-map-marker-alt"></i> {{ school.province or '未知' }} ({{ school.region or '未知地区' }})</span>
+            </p>
         </div>
-        <div class="card-body">
-            <p><strong>院校等级:</strong> {{ school.level }}</p>
-            <p><strong>地区:</strong> {{ school.province }} ({{ school.region }})</p>
-            <p><strong>计算机等级:</strong> {{ school.computer_rank }}</p>
-            <p><strong>考试类型:</strong> {{ school.self_vs_408 }}</p>
-            {% if school.intro %}
-                <p><strong>简介:</strong></p>
-                <p>{{ school.intro }}</p>
+        <div class="col-md-4 text-md-end align-self-center">
+            {% if 'username' in session %}
+            <form action="{{ url_for('toggle_favorite', school_id=school.id) }}" method="POST">
+                <button type="submit" class="btn {% if is_favorite %}btn-danger{% else %}btn-outline-danger{% endif %} btn-lg">
+                    <i class="fas fa-heart"></i> {% if is_favorite %}已收藏{% else %}收藏院校{% endif %}
+                </button>
+            </form>
+            {% else %}
+            <a href="{{ url_for('login', next=request.url) }}" class="btn btn-outline-danger btn-lg">
+                <i class="fas fa-heart"></i> 登录后收藏
+            </a>
             {% endif %}
+            <p class="text-muted mt-1">收藏人数: {{ favorites_count }}</p>
         </div>
     </div>
 
-    <h3>招生院系与专业</h3>
-    {% if school.departments %}
-        {% for dept in school.departments %}
-            <div class="card department-card">
+    <div class="row gy-4">
+        <!-- 左侧主要信息 -->
+        <div class="col-lg-8">
+            <!-- 学校简介和评级 -->
+            <div class="card mb-4">
                 <div class="card-header">
-                    {{ dept.department_name }}
+                    <i class="fas fa-info-circle"></i> 基本信息
                 </div>
                 <div class="card-body">
-                    {% if dept.majors %}
-                        {% for major in dept.majors %}
-                            <div class="card major-card mb-3">
-                                <div class="card-header">
-                                    {{ major.major_name }} ({{ major.major_code }})
-                                </div>
-                                <ul class="list-group list-group-flush">
-                                    {% if major.enrollment_24 is not none %}<li class="list-group-item"><span>24年招生人数:</span> {{ major.enrollment_24 }}</li>{% endif %}
-                                    {% if major.exam_subjects %}<li class="list-group-item"><span>初试科目:</span> <pre>{{ major.exam_subjects }}</pre></li>{% endif %}
-                                    {% if major.reference_books %}<li class="list-group-item"><span>参考书目:</span> <pre>{{ major.reference_books }}</pre></li>{% endif %}
-                                    {% if major.retrial_subjects %}<li class="list-group-item"><span>复试科目:</span> <pre>{{ major.retrial_subjects }}</pre></li>{% endif %}
-                                    {% if major.tuition_duration %}<li class="list-group-item"><span>学费学制:</span> <pre>{{ major.tuition_duration }}</pre></li>{% endif %}
-                                    {% if major.score_lines %}
-                                        <li class="list-group-item">
-                                            <span>复试线:</span>
-                                            <ul>
-                                                {% for year, score in major.score_lines.items() %}
-                                                    {% if score is not none %}<li>{{ year }}: {{ score }}</li>{% endif %}
-                                                {% endfor %}
-                                            </ul>
-                                            {# 四川院校复试线图表容器 #}
-                                            {% if sichuan_score_chart_data %}
-                                                <div id="score-line-chart"></div>
-                                            {% endif %}
-                                        </li>
+                    <p><strong><i class="fas fa-book-open"></i> 简介:</strong> {{ school.intro or '暂无简介' }}</p>
+                    <p><strong><i class="fas fa-trophy"></i> 计算机评级:</strong> {{ school.computer_rank or '暂无评级' }}</p>
+                    <p><strong><i class="fas fa-question-circle"></i> 自命题/408:</strong> {{ school.self_vs_408 or '待判断' }}</p>
+                </div>
+            </div>
+
+            <!-- 院系与专业信息 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-sitemap"></i> 院系与专业详情
+                </div>
+                <div class="accordion" id="departmentsAccordion">
+                    {% if school.departments %}
+                        {% for department in school.departments %}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading{{ loop.index }}">
+                                <button class="accordion-button {% if not loop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="{{ 'true' if loop.first else 'false' }}" aria-controls="collapse{{ loop.index }}">
+                                    <strong>{{ department.department_name or '未知院系' }}</strong>
+                                </button>
+                            </h2>
+                            <div id="collapse{{ loop.index }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" aria-labelledby="heading{{ loop.index }}" data-bs-parent="#departmentsAccordion">
+                                <div class="accordion-body">
+                                    {% if department.majors %}
+                                        <ul class="list-group list-group-flush">
+                                            {% for major in department.majors %}
+                                                <li class="list-group-item">
+                                                    <h5>{{ major.major_name | default('未知专业') }} ({{ major.major_code | default('无代码') }})</h5>
+                                                    <p><small class="text-muted">{{ major.degree_type | default('') }} | {{ major.study_type | default('') }}</small></p>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <p><strong>初试科目:</strong> <pre class="bg-light p-2 rounded">{{ major.exam_subjects or '-' }}</pre></p>
+                                                            <p><strong>参考书目:</strong> {{ major.reference_books or '-' }}</p>
+                                                            <p><strong>复试科目:</strong> {{ major.retrial_subjects or '-' }}</p>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <p><strong>24招生人数:</strong> {{ major.enrollment_24 or '-' }}</p>
+                                                            <p><strong>学费学制:</strong> {{ major.tuition_duration or '-' }}</p>
+                                                            <p><strong>23/24录取信息:</strong>
+                                                                <pre class="bg-light p-2 rounded">23: {{ major.admission_info_23 or '-' }}
+24: {{ major.admission_info_24 or '-' }}</pre>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        <p class="text-muted">该院系下暂无专业信息。</p>
                                     {% endif %}
-                                    {% if major.admission_info_23 %}<li class="list-group-item"><span>23拟录取情况:</span> <pre>{{ major.admission_info_23 }}</pre></li>{% endif %}
-                                    {% if major.admission_info_24 %}<li class="list-group-item"><span>24拟录取情况:</span> <pre>{{ major.admission_info_24 }}</pre></li>{% endif %}
-                                </ul>
+                                </div>
                             </div>
+                        </div>
                         {% endfor %}
                     {% else %}
-                        <p>该院系下暂无专业信息。</p>
+                        <div class="card-body">
+                            <p class="text-muted">暂无院系信息。</p>
+                        </div>
                     {% endif %}
                 </div>
             </div>
-        {% endfor %}
-    {% else %}
-        <p>暂无院系信息。</p>
-    {% endif %}
+        </div>
 
+        <!-- 右侧分数线图表 -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-chart-line"></i> 近三年复试线趋势 (计算机相关专业)
+                </div>
+                <div class="card-body">
+                    <div id="scoreLineChart" style="width: 100%; height: 400px;"></div>
+                    <p class="text-muted small mt-2">注：数据来源于爬取的历年分数线，可能包含不同专业的分数，仅供参考。</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
-{% block body_scripts %}
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% block scripts %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const favButton = document.querySelector('.favorite-btn');
-    if (favButton) {
-        favButton.addEventListener('click', function() {
-            const schoolId = this.dataset.schoolId;
-            const isFavorited = this.classList.contains('favorited');
-            const icon = this.querySelector('i');
+    var scoreLineChart = echarts.init(document.getElementById('scoreLineChart'));
+    var schoolData = {{ school | tojson }};
 
-            // 发送 API 请求
-            fetch(`/api/school/favorite/${schoolId}`, {
-                method: 'POST',
-                headers: {
-                    // 如果后端需要 CSRF token，需要在这里添加
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ favorite: !isFavorited }) // 发送要执行的操作
-            })
-            .then(response => {
-                if (!response.ok) {
-                    // 如果是 401 (Unauthorized) 或 403 (Forbidden)，提示登录
-                    if (response.status === 401 || response.status === 403) {
-                         alert('请先登录才能收藏！');
-                         // 可以选择跳转到登录页面
-                         // window.location.href = "{{ url_for('login') }}";
-                         throw new Error('需要登录');
+    // 提取分数线数据
+    let years = new Set();
+    let seriesData = [];
+    let legendData = [];
+
+    if (schoolData.departments) {
+        schoolData.departments.forEach(dept => {
+            if (dept.majors) {
+                dept.majors.forEach(major => {
+                    if (major.score_lines) {
+                        let majorKey = `${major.major_name || '专业'}(${major.major_code || '未知代码'})`;
+                        let scores = [];
+                        let currentYears = [];
+                        // 确保按年份排序
+                        let sortedYears = Object.keys(major.score_lines).sort();
+
+                        sortedYears.forEach(year => {
+                            years.add(year);
+                            currentYears.push(year);
+                            // 尝试提取纯数字分数
+                            let scoreText = major.score_lines[year];
+                            let scoreMatch = scoreText ? String(scoreText).match(/^(\d+)/) : null;
+                            scores.push(scoreMatch ? parseInt(scoreMatch[1]) : null); // 如果没有数字，设为null
+                        });
+
+                        if (scores.some(s => s !== null)) { // 只添加有有效分数的系列
+                             legendData.push(majorKey);
+                             seriesData.push({
+                                name: majorKey,
+                                type: 'line',
+                                data: scores,
+                                // MarkPoint/MarkLine can be added here if needed
+                                smooth: true
+                            });
+                        }
                     }
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    // 更新按钮状态
-                    this.classList.toggle('favorited', data.is_favorited);
-                    // 可以根据需要更新页面上显示的收藏数（如果存在）
-                } else {
-                    alert(data.message || '操作失败');
-                }
-            })
-            .catch(error => {
-                if (error.message !== '需要登录') {
-                    console.error('收藏操作失败:', error);
-                    alert('操作失败，请稍后重试。');
-                }
-            });
+                });
+            }
         });
     }
 
-    // --- Sichuan Score Line Chart Logic ---
-    const chartDataElement = document.getElementById('score-line-chart');
-    // 从后端获取图表数据 (如果存在)
-    const chartData = {{ sichuan_score_chart_data | tojson | safe if sichuan_score_chart_data else 'null' }};
+    let sortedYearsArray = Array.from(years).sort();
 
-    if (chartDataElement && chartData && chartData.years && chartData.scores) {
-        const scoreLineChart = echarts.init(chartDataElement);
-        const option = {
-            title: {
-                text: '近三年复试线趋势 (总分)',
-                left: 'center',
-                textStyle: { fontSize: 14 }
-            },
-            tooltip: { trigger: 'axis' },
-            xAxis: {
-                type: 'category',
-                boundaryGap: false,
-                data: chartData.years
-            },
-            yAxis: {
-                type: 'value',
-                name: '分数',
-                scale: true // 允许 Y 轴根据数据缩放
-            },
-            series: [
-                {
-                    name: '总分线',
-                    type: 'line',
-                    data: chartData.scores,
-                    markPoint: { // 标记最高最低点
-                         data: [
-                             {type: 'max', name: '最大值'},
-                             {type: 'min', name: '最小值'}
-                         ]
-                     },
-                     markLine: { // 平均值线
-                         data: [
-                             {type: 'average', name: '平均值'}
-                         ]
-                     }
-                }
-            ]
-        };
-        scoreLineChart.setOption(option);
-
-         // 监听窗口大小变化，重新绘制图表
-        window.addEventListener('resize', function() {
-            scoreLineChart.resize();
+    // 重新整理 seriesData 以匹配完整的 sortedYearsArray
+    let finalSeriesData = seriesData.map(series => {
+        let alignedData = [];
+        let originalDataIndex = 0;
+        // 假设 series.data 和它对应的年份顺序与 sortedYears 一致
+        // 这里需要更健壮的逻辑来根据年份匹配分数
+        // 简化：假设 major.score_lines 的 key 是按年份顺序的
+        // 找到当前 series 在原始数据中的年份
+        let majorYears = [];
+        schoolData.departments.forEach(dept => {
+             dept.majors.forEach(major => {
+                 if (`${major.major_name || '专业'}(${major.major_code || '未知代码'})` === series.name && major.score_lines){
+                     majorYears = Object.keys(major.score_lines).sort();
+                 }
+             });
         });
-    }
 
-});
+        sortedYearsArray.forEach(year => {
+            let yearIndex = majorYears.indexOf(year);
+            if (yearIndex !== -1) {
+                alignedData.push(series.data[yearIndex]);
+            } else {
+                alignedData.push(null); // 如果该年份没有数据，填充null
+            }
+        });
+
+        return { ...series, data: alignedData };
+    });
+
+
+    var option = {
+        tooltip: {
+            trigger: 'axis'
+        },
+        legend: {
+            data: legendData,
+            bottom: 10,
+            type: 'scroll' // 如果图例太多，允许滚动
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '15%', // 为图例留出空间
+            containLabel: true
+        },
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: sortedYearsArray
+        },
+        yAxis: {
+            type: 'value',
+            name: '分数线',
+            min: function(value) { // 动态设置最小值，避免从0开始
+                return Math.max(0, Math.floor(value.min * 0.9));
+            }
+        },
+        series: finalSeriesData
+    };
+
+    scoreLineChart.setOption(option);
+
+    // Optional: Add resize listener
+    window.addEventListener('resize', function () {
+        scoreLineChart.resize();
+    });
 </script>
 {% endblock %} 
