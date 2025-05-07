@@ -1,2 +1,45 @@
 2025-05-05 01:42:27,973 INFO: 应用启动日志配置完成 [in /Users/mac/WorkSpace/考研推荐系统/app.py:44]
 2025-05-05 01:42:56,870 INFO: 应用启动日志配置完成 [in /Users/mac/WorkSpace/考研推荐系统/app.py:44]
+2025-05-07 21:55:38,362 INFO app MainThread : Flask 应用启动
+2025-05-07 21:55:38,382 WARNING werkzeug MainThread :  * Debugger is active!
+2025-05-07 21:55:38,390 INFO werkzeug MainThread :  * Debugger PIN: 719-181-218
+2025-05-07 21:56:40,750 INFO werkzeug MainThread :  * Detected change in '/Users/mac/WorkSpace/考研推荐系统/app.py', reloading
+2025-05-07 21:56:41,261 INFO app MainThread : Flask 应用启动
+2025-05-07 21:56:41,286 WARNING werkzeug MainThread :  * Debugger is active!
+2025-05-07 21:56:41,298 INFO werkzeug MainThread :  * Debugger PIN: 719-181-218
+2025-05-07 21:56:44,027 INFO werkzeug Thread-2 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:44] "GET /profile HTTP/1.1" 200 -
+2025-05-07 21:56:44,100 INFO werkzeug Thread-3 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:44] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-07 21:56:44,649 INFO werkzeug Thread-4 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:44] "GET / HTTP/1.1" 200 -
+2025-05-07 21:56:44,657 INFO werkzeug Thread-5 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:44] "GET / HTTP/1.1" 200 -
+2025-05-07 21:56:54,055 INFO werkzeug Thread-6 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:54] "GET /recommend HTTP/1.1" 200 -
+2025-05-07 21:56:54,132 INFO werkzeug Thread-7 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:54] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-07 21:56:54,494 INFO werkzeug Thread-8 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:54] "GET / HTTP/1.1" 200 -
+2025-05-07 21:56:54,521 INFO werkzeug Thread-9 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:54] "GET / HTTP/1.1" 200 -
+2025-05-07 21:56:55,428 INFO werkzeug Thread-10 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:55] "GET /school-list HTTP/1.1" 200 -
+2025-05-07 21:56:55,492 INFO werkzeug Thread-11 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:55] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-07 21:56:55,896 INFO werkzeug Thread-12 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:55] "GET / HTTP/1.1" 200 -
+2025-05-07 21:56:55,918 INFO werkzeug Thread-13 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:55] "GET / HTTP/1.1" 200 -
+2025-05-07 21:56:56,525 INFO werkzeug Thread-14 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:56] "GET / HTTP/1.1" 200 -
+2025-05-07 21:56:56,570 INFO werkzeug Thread-15 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:56] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-07 21:56:56,576 INFO werkzeug Thread-16 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:56] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-07 21:56:56,865 INFO werkzeug Thread-17 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:56] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-07 21:56:56,935 INFO werkzeug Thread-18 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:56] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-07 21:56:56,949 INFO werkzeug Thread-19 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:56] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-07 21:56:56,958 INFO werkzeug Thread-20 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:56] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-07 21:56:56,958 INFO werkzeug Thread-21 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:56] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-07 21:56:56,963 INFO werkzeug Thread-22 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:56] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-07 21:56:56,964 INFO werkzeug Thread-23 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:56] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-07 21:56:56,966 INFO werkzeug Thread-24 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:56] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-07 21:56:57,036 INFO werkzeug Thread-25 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:57] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-07 21:56:57,038 INFO werkzeug Thread-26 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:57] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-07 21:56:57,042 INFO werkzeug Thread-27 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:57] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-07 21:56:57,045 INFO werkzeug Thread-29 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:57] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-07 21:56:57,046 INFO werkzeug Thread-28 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:57] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-07 21:56:58,268 INFO werkzeug Thread-30 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:58] "GET /school-list HTTP/1.1" 200 -
+2025-05-07 21:56:58,419 INFO werkzeug Thread-31 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:58] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-07 21:56:58,760 INFO werkzeug Thread-32 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:58] "GET / HTTP/1.1" 200 -
+2025-05-07 21:56:58,764 INFO werkzeug Thread-33 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:58] "GET / HTTP/1.1" 200 -
+2025-05-07 21:57:21,031 INFO werkzeug Thread-35 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:57:21] "[33mGET /apple-touch-icon-precomposed.png HTTP/1.1[0m" 404 -
+2025-05-07 21:57:21,032 INFO werkzeug Thread-36 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:57:21] "[33mGET /apple-touch-icon.png HTTP/1.1[0m" 404 -
+2025-05-07 21:57:21,032 INFO werkzeug Thread-37 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:57:21] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-05-07 21:57:21,097 INFO werkzeug Thread-34 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:57:21] "GET /school-list HTTP/1.1" 200 -

@@ -63,8 +63,8 @@ def extract_province_from_string(text):
             return province
     return None
 
-def extract_province_smart(row, school_name_raw, intro_raw):
-    """智能提取省份，按优先级：列 -> 名称 -> 简介。"""
+def extract_province_smart(row, school_name_raw, intro_raw, sheet_name_for_province_extraction):
+    """智能提取省份，按优先级：列 -> 名称 -> 简介 -> 工作表名。"""
     school_name = str(school_name_raw) if pd.notna(school_name_raw) else ''
     intro = str(intro_raw) if pd.notna(intro_raw) else ''
     
@@ -89,7 +89,13 @@ def extract_province_smart(row, school_name_raw, intro_raw):
             # print(f"    提取自名称(括号内城市 {location}): {province_mapped}")
             return province_mapped
 
-    # 2.2 直接在名称中查找省份关键字
+    # 2.2 检查学校名称是否以已知城市开头
+    for city, province_of_city in CITY_TO_PROVINCE.items():
+        if school_name.startswith(city):
+            # print(f"    提取自名称(城市前缀 {city}): {province_of_city}")
+            return province_of_city
+
+    # 2.3 直接在名称中查找省份关键字
     province_from_name = extract_province_from_string(school_name)
     if province_from_name:
         # print(f"    提取自名称(关键字): {province_from_name}")
@@ -101,8 +107,13 @@ def extract_province_smart(row, school_name_raw, intro_raw):
         # print(f"    提取自简介: {province_from_intro}")
         return province_from_intro
 
-    # 4. 无法提取，返回 None
-    # print(f"    未能提取省份: {school_name}")
+    # 4. 尝试使用工作表名称 (作为较低优先级)
+    if sheet_name_for_province_extraction and is_valid_province(str(sheet_name_for_province_extraction).strip()):
+        # print(f"    提取自工作表名称: {str(sheet_name_for_province_extraction).strip()}")
+        return str(sheet_name_for_province_extraction).strip()
+
+    # 5. 无法提取，返回 None
+    # print(f"    未能提取省份 for {school_name} from any source.")
     return None
 
 def clean_column_names(df):
@@ -179,6 +190,7 @@ def process_excel_data(excel_path, output_json_path):
     for sheet_name in xls.sheet_names:
         print(f"  正在处理工作表: {sheet_name}...")
         actual_major_code_col = None # 用于存储实际的专业代码列名
+        actual_school_name_col = None # 用于存储实际的学校名称列名
         
         try:
             # 1. 动态表头检测
@@ -212,6 +224,24 @@ def process_excel_data(excel_path, output_json_path):
             else:
                 print(f"    使用 '{actual_major_code_col}' 作为专业代码列。")
 
+            # 2.a 定位学校名称列
+            possible_school_name_cols = ['学校名称', '院校名称', '院校'] 
+            for name_variant in possible_school_name_cols:
+                if name_variant in df.columns:
+                    actual_school_name_col = name_variant
+                    print(f"    使用 '{actual_school_name_col}' 作为学校名称列。")
+                    break
+            
+            if actual_school_name_col is None:
+                print(f"    严重警告: 工作表 '{sheet_name}' 中未找到任何可识别的学校名称列 (尝试过: {possible_school_name_cols})。清理后的列为: {list(df.columns)}。跳过此工作表。")
+                continue
+
+            # 2.b 向前填充学校名称列以处理合并单元格
+            # print(f"    对学校名称列 '{actual_school_name_col}' 进行向前填充 (ffill)...") # 可以取消注释以获取更详细的日志
+            df[actual_school_name_col] = df[actual_school_name_col].ffill()
+            # print(f"    学校名称列 '{actual_school_name_col}' 向前填充完成。")
+
+
             # 删除专业代码列完全为空的行
             df.dropna(subset=[actual_major_code_col], how='all', inplace=True)
             df.reset_index(drop=True, inplace=True) # 重置索引
@@ -237,25 +267,26 @@ def process_excel_data(excel_path, output_json_path):
 
             # 2. 处理每一行数据
             for index, row in df.iterrows():
-                school_name_raw = row.get('学校名称')
+                school_name_raw = row.get(actual_school_name_col) # 使用 ffill 处理后的学校名称列
                 intro_raw = row.get('简介')
                 # province_col_raw = row.get('省份') # 获取省份列原始值 (暂时不修改省份提取逻辑)
 
-                # 处理学校名称合并单元格
-                current_school_name_raw = school_name_raw
-                if pd.isna(current_school_name_raw) and index > 0:
-                    prev_raw_name = df.loc[index-1].get('学校名称')
-                    current_school_name_raw = prev_raw_name if pd.notna(prev_raw_name) else None
+                # 处理学校名称合并单元格 - ffill 已处理，简化此部分
+                # current_school_name_raw = school_name_raw
+                # if pd.isna(current_school_name_raw) and index > 0:
+                #     prev_raw_name = df.loc[index-1].get(actual_school_name_col) # 使用实际学校名称列
+                #     current_school_name_raw = prev_raw_name if pd.notna(prev_raw_name) else None
 
-                if pd.isna(current_school_name_raw):
-                     # 因为 header 行不固定，所以行号显示不直接用 index+5
-                     print(f"    跳过行 (原始Excel行号未知): 无法确定学校名称。") 
+                if pd.isna(school_name_raw): # 直接检查 ffill后的值
+                     print(f"    跳过行 (原始Excel行号未知，DataFrame index {index}): 学校名称在列 '{actual_school_name_col}' 中为空或无效。") 
                      continue
+                
+                current_school_name_raw = school_name_raw # 确保 current_school_name_raw 被赋值
 
                 school_name_cleaned = str(current_school_name_raw).split('\\n')[0].strip()
                 school_level = extract_school_level(str(current_school_name_raw))
 
-                province = extract_province_smart(row, current_school_name_raw, intro_raw)
+                province = extract_province_smart(row, current_school_name_raw, intro_raw, sheet_name) # 传入 sheet_name
 
                 major_code_raw = row.get(actual_major_code_col, '') # 使用实际识别的专业代码列名
                 major_code_str = str(major_code_raw).strip() if pd.notna(major_code_raw) else ''
@@ -272,12 +303,19 @@ def process_excel_data(excel_path, output_json_path):
                         "level": school_level,
                         "province": province if province else "未知省份", # 使用提取到的省份, 确保不是 None
                         "intro": str(intro_raw).strip() if pd.notna(intro_raw) else None,
-                        "computer_rank": row.get('计算机等级', '').strip() if pd.notna(row.get('计算机等级')) else None,
+                        "computer_rank": None, # 初始化，将在下面填充
                         "self_vs_408": "待判断", # 需要逻辑来判断是自命题还是408
                         "departments": {}, # 使用字典存储院系，方便合并专业, key为院系名称
                         "favorites_count": 0
                     }
                 
+                # 填充或更新 computer_rank (兼容 '计算机等级' 和 '计算机评级')
+                computer_rank_val = row.get('计算机等级') or row.get('计算机评级')
+                if pd.notna(computer_rank_val):
+                    all_schools_data[school_name_cleaned]['computer_rank'] = str(computer_rank_val).strip()
+                elif all_schools_data[school_name_cleaned]['computer_rank'] is None: # 如果之前没有设置过，则保持为 None
+                    all_schools_data[school_name_cleaned]['computer_rank'] = None
+                    
                 # 获取或创建院系信息
                 department_name = row.get('招生院系', '未知院系')
                 if pd.isna(department_name): department_name = '未知院系'

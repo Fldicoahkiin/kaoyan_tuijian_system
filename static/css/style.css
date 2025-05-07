@@ -56,6 +56,11 @@ body {
     background-size: 20px 20px;
 }
 
+body.dark-theme {
+    background-color: #0d1117; /* GitHub-like dark background */
+    color: #c9d1d9; 
+}
+
 /* 滚动条 */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -630,4 +635,53 @@ a:hover {
 .dashboard-schools-list .list-group-item {
      background-color: var(--dark-secondary-bg);
      border-bottom: 1px solid var(--border-color);
+}
+
+/* --- 列表组 List Group (用于公告等) --- */
+.list-group {
+    border-radius: var(--border-radius); /* 确保整个列表组有圆角 */
+    overflow: hidden; /* 配合圆角 */
+}
+
+.list-group-item {
+    background-color: transparent !important; /* 默认背景透明，依赖容器 */
+    border-color: var(--border-color) !important; /* 统一边框颜色 */
+    color: var(--text-muted-color) !important; /* 默认文字颜色 */
+    padding: 0.8rem 1.2rem; /* 统一内边距 */
+    border-left: none !important;
+    border-right: none !important;
+    border-top-width: 0px !important; /* 移除顶部边框 */
+}
+
+.list-group-item:first-child {
+    border-top-width: 0 !important; /* 第一个也不要顶部边框 */
+}
+
+.list-group-item:last-child {
+    border-bottom-width: 0 !important; /* 最后一个不要底部边框 (如果列表在卡片内) */
+}
+
+/* 如果列表组在卡片内，通常不需要单独的 hover 效果 */
+/* 如果列表组独立存在，可以添加 hover */
+/*
+.list-group-item:hover {
+    background-color: rgba(34, 211, 238, 0.05) !important;
+    color: var(--text-color) !important;
+}
+*/
+
+/* 针对 Admin 公告列表的特定调整 */
+.card-body > .list-group {
+    margin: -1.25rem; /* 抵消 card-body 的 padding，让列表填满 */
+    border: none; /* 移除 list-group 自身的边框，依赖 card */
+    border-radius: 0; /* 移除 list-group 自身的圆角 */
+}
+.card-body > .list-group .list-group-item {
+     border-radius: 0 !important; /* 确保列表项没有圆角 */
+     border-left: none !important;
+     border-right: none !important;
+     border-top: 1px solid var(--border-color) !important; /* 内部项用顶部边框分隔 */
+}
+.card-body > .list-group .list-group-item:first-child {
+    border-top: none !important; /* 卡片内第一个列表项移除顶部边框 */
 }

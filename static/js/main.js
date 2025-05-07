@@ -114,17 +114,15 @@ function renderDashboardSchoolPage(page) {
 
     tableBody.innerHTML = ''; // 清空表格内容
     if (schoolsToShow.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="4" class="text-center p-5 text-muted">没有更多院校数据</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan=\"4\" class=\"text-center p-5 text-muted\">没有更多院校数据</td></tr>`;
     } else {
         schoolsToShow.forEach(school => {
             const row = `
                 <tr>
-                    <td><a href="/school/${encodeURIComponent(school.id)}" class="text-decoration-none link-light">${school.name || 'N/A'}</a></td>
-                    <td><span class="badge bg-secondary">${school.level || 'N/A'}</span></td>
+                    <td><a href=\"/school/${encodeURIComponent(school.id)}\" class=\"text-decoration-none link-light\">${school.name || 'N/A'}</a></td>
+                    <td><span class=\"badge bg-secondary\">${school.level || 'N/A'}</span></td>
                     <td>${school.province || 'N/A'}</td>
                     <td>${school.computer_rank || 'N/A'}</td>
-                    {# <td>${school.enrollment_24 || '-'}</td> #}
-                    {# <td>${school.exam_subjects || '-'}</td> #}
                 </tr>
             `;
             tableBody.innerHTML += row;
@@ -281,17 +279,17 @@ function fetchNationalLineData(apiUrl, chartInstance, title) {
         })
         .then(data => {
             const option = {
-                 title: { text: title, left: 'center', textStyle: { color: '#ccc' } },
+                 title: { text: title, left: 'center', top: 10, textStyle: { color: '#ccc' } },
                  tooltip: { trigger: 'axis' },
                  legend: { data: data.legend, bottom: 10, textStyle: { color: '#ccc' } },
-                 grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
+                 grid: { left: '3%', right: '4%', top: '50px', bottom: '40px', containLabel: true },
                  xAxis: { type: 'category', data: data.years, axisLabel: { color: '#ccc' } },
                  yAxis: {
                     type: 'value',
                     min: 'dataMin', // 设置 Y 轴从数据最小值开始
-                    axisLabel: { color: '#ccc' }
+                    axisLabel: { color: '#ccc' } // X轴文字颜色 -> Y轴文字颜色
                  },
-                 series: data.series.map(s => ({ ...s, type: 'line', smooth: true }))
+                 series: data.series // 直接使用从API获取的series配置
              };
             chartInstance.setOption(option);
             chartInstance.hideLoading();
@@ -308,15 +306,15 @@ function fetchExamTypeRatio(chartInstance) {
          })
         .then(data => {
             const option = {
-                title: { text: '自命题 vs 408 比例', left: 'center', textStyle: { color: '#ccc' } },
+                title: { text: '自命题 vs 408 比例', left: 'center', top: 10, textStyle: { color: '#ccc' } },
                 tooltip: { trigger: 'item', formatter: '{a} <br/>{b} : {c} ({d}%)' },
-                legend: { orient: 'vertical', left: 'left', data: data.map(item => item.name), textStyle: { color: '#ccc' } },
+                legend: { orient: 'horizontal', bottom: 10, data: data.map(item => item.name), textStyle: { color: '#ccc' } },
                 series: [
                     {
                         name: '考试类型',
                         type: 'pie',
-                        radius: '50%',
-                        center: ['50%', '60%'],
+                        radius: '55%',
+                        center: ['50%', '58%'],
                         data: data,
                         emphasis: {
                             itemStyle: {
@@ -325,8 +323,8 @@ function fetchExamTypeRatio(chartInstance) {
                                 shadowColor: 'rgba(0, 0, 0, 0.5)'
                             }
                         },
-                         label: { color: '#ccc' },
-                         labelLine: { lineStyle: { color: '#aaa' } }
+                         label: { color: '#ccc', fontSize: 11 },
+                         labelLine: { lineStyle: { color: '#aaa' }, length: 4, length2: 8 }
                     }
                 ]
             };

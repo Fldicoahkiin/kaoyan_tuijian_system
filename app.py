@@ -10,6 +10,7 @@ from math import ceil # 用于分页计算
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, SelectField, TextAreaField, IntegerField, BooleanField
 from wtforms.validators import DataRequired, Length, EqualTo, Optional, NumberRange
+import logging # 导入 logging
 
 # --- 导入爬虫函数 ---
 from utils.scraper import run_scraper 
@@ -52,11 +53,26 @@ def load_json_data(file_path, default_value=[]):
         with open(file_path, 'r', encoding='utf-8') as f:
             return json.load(f)
     except FileNotFoundError:
-        print(f"错误：未找到数据文件 {file_path}")
+        # 使用 app.logger 记录错误
+        app.logger.error(f"数据文件未找到: {file_path}")
         return default_value
     except json.JSONDecodeError:
-        print(f"错误：解析数据文件 {file_path} 时出错")
+        app.logger.error(f"解析数据文件时出错: {file_path}")
         return default_value
+
+# --- 数据保存函数 (新增) ---
+def save_schools_data(data):
+    """保存院校数据到 schools.json 文件。"""
+    try:
+        with open(SCHOOLS_DATA_PATH, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2) # 使用 indent=2 提高可读性
+        return True
+    except IOError as e:
+        app.logger.error(f"无法写入学校数据文件 {SCHOOLS_DATA_PATH}: {e}")
+        return False
+    except Exception as e:
+        app.logger.error(f"保存学校数据时发生未知错误: {e}")
+        return False
 
 # 加载所有核心数据
 schools_data = load_json_data(SCHOOLS_DATA_PATH)
@@ -78,7 +94,7 @@ def save_user_data(username, data):
             json.dump(data, f, ensure_ascii=False, indent=4)
         return True
     except IOError as e:
-        print(f"错误：无法写入用户文件 {user_file}: {e}")
+        app.logger.error(f"错误：无法写入用户文件 {user_file}: {e}")
         return False
 
 # --- 新增：计算各学校收藏人数 ---
@@ -133,7 +149,6 @@ class AdminUserForm(FlaskForm):
     is_admin = BooleanField('是否为管理员')
     submit = SubmitField('保存更改')
 
-# --- 新增：编辑学校信息表单 ---
 class SchoolEditForm(FlaskForm):
     name = StringField('学校名称', validators=[DataRequired(), Length(max=100)])
     level = SelectField('院校等级', choices=[('', '未知'), ('985', '985'), ('211', '211'), ('双一流', '双一流'), ('一般', '一般')], validators=[Optional()], default='')
@@ -171,63 +186,14 @@ def api_schools_list():
 @app.route('/api/national-lines/total')
 def get_national_line_total():
     lines_data = load_json_data(NATIONAL_LINES_PATH)
-    years = sorted(lines_data.keys())
+    if not lines_data or 'total' not in lines_data or 'years' not in lines_data['total'] or 'scores' not in lines_data['total']:
+        return jsonify({"error": "Total data not found or incomplete"}), 404
+    
+    total_data = lines_data['total']
+    years = total_data['years']
     scores = {
-        "A类考生总分": [lines_data[year].get('a_total', None) for year in years],
-        "B类考生总分": [lines_data[year].get('b_total', None) for year in years]
-    }
-    # 构造 ECharts 需要的格式
-    echarts_data = {
-        "years": years,
-        "legend": list(scores.keys()),
-        "series": [
-            {
-                "name": name,
-                "data": data,
-                "type": "line", # 指定图表类型
-                "smooth": True  # 平滑曲线
-            }
-            for name, data in scores.items()
-        ],
-        "yAxis": { # 添加 yAxis 配置
-            "min": "dataMin" # 设置 Y 轴最小值
-        }
-    }
-    return jsonify(echarts_data)
-
-@app.route('/api/national-lines/politics')
-def get_national_line_politics():
-    lines_data = load_json_data(NATIONAL_LINES_PATH)
-    years = sorted(lines_data.keys())
-    scores = {
-        "A类政治/英语": [lines_data[year].get('a_politics_english', None) for year in years],
-        "B类政治/英语": [lines_data[year].get('b_politics_english', None) for year in years]
-    }
-    echarts_data = {
-        "years": years,
-        "legend": list(scores.keys()),
-        "series": [
-            {
-                "name": name,
-                "data": data,
-                "type": "bar", # 使用柱状图
-                "barMaxWidth": 30 # 控制柱子宽度
-            }
-            for name, data in scores.items()
-        ],
-         "yAxis": { # 添加 yAxis 配置
-             "min": "dataMin" # 设置 Y 轴最小值
-         }
-    }
-    return jsonify(echarts_data)
-
-@app.route('/api/national-lines/others')
-def get_national_line_others():
-    lines_data = load_json_data(NATIONAL_LINES_PATH)
-    years = sorted(lines_data.keys())
-    scores = {
-        "A类数学/专业课": [lines_data[year].get('a_math_major', None) for year in years],
-        "B类数学/专业课": [lines_data[year].get('b_math_major', None) for year in years]
+        "A类考生总分": total_data['scores'].get("A区", [None] * len(years)),
+        "B类考生总分": total_data['scores'].get("B区", [None] * len(years))
     }
     echarts_data = {
         "years": years,
@@ -241,8 +207,81 @@ def get_national_line_others():
             }
             for name, data in scores.items()
         ],
-         "yAxis": { # 添加 yAxis 配置
-             "min": "dataMin" # 设置 Y 轴最小值
+        "yAxis": {
+            "min": "dataMin"
+        }
+    }
+    return jsonify(echarts_data)
+
+@app.route('/api/national-lines/politics')
+def get_national_line_politics():
+    lines_data = load_json_data(NATIONAL_LINES_PATH)
+    if not lines_data or 'politics' not in lines_data or 'years' not in lines_data['politics'] or 'scores' not in lines_data['politics']:
+        return jsonify({"error": "Politics data not found or incomplete"}), 404
+
+    politics_data = lines_data['politics']
+    years = politics_data['years']
+    # The legend in HTML was "A类政治/英语"
+    scores = {
+        "A类政治/英语": politics_data['scores'].get("A区", [None] * len(years)),
+        "B类政治/英语": politics_data['scores'].get("B区", [None] * len(years))
+    }
+    echarts_data = {
+        "years": years,
+        "legend": list(scores.keys()),
+        "series": [
+            {
+                "name": name,
+                "data": data,
+                "type": "bar", 
+                "barMaxWidth": 30
+            }
+            for name, data in scores.items()
+        ],
+         "yAxis": {
+             "min": "dataMin"
+         }
+    }
+    return jsonify(echarts_data)
+
+@app.route('/api/national-lines/others')
+def get_national_line_others():
+    lines_data = load_json_data(NATIONAL_LINES_PATH)
+    if not lines_data or 'others' not in lines_data or 'years' not in lines_data['others'] or 'scores' not in lines_data['others']:
+        return jsonify({"error": "Others data not found or incomplete"}), 404
+
+    others_data = lines_data['others']
+    years = others_data['years']
+    # The legend in HTML was "A类数学/专业课". We'll try to pick relevant A/B区 data.
+    # This part is tricky given the current JSON structure for 'others'.
+    # Let's assume we want "数学一" for A区 and B区 as a proxy for "数学/专业课".
+    # A more robust solution would be to restructure national_lines.json for this specific view.
+    
+    a_scores = others_data['scores'].get("数学一 (A区)", [])
+    b_scores = others_data['scores'].get("数学一 (B区)", [])
+
+    # Ensure data length matches years length, padding with None if necessary
+    a_scores_padded = (a_scores + [None] * len(years))[:len(years)]
+    b_scores_padded = (b_scores + [None] * len(years))[:len(years)]
+
+    scores = {
+        "A类数学/专业课": a_scores_padded,
+        "B类数学/专业课": b_scores_padded
+    }
+    echarts_data = {
+        "years": years,
+        "legend": list(scores.keys()),
+        "series": [
+            {
+                "name": name,
+                "data": data,
+                "type": "line",
+                "smooth": True
+            }
+            for name, data in scores.items() if any(d is not None for d in data) # Only add series if it has some data
+        ],
+         "yAxis": {
+             "min": "dataMin"
          }
     }
     return jsonify(echarts_data)
@@ -925,13 +964,15 @@ def toggle_admin_status(username):
 @admin_required
 def admin_schools():
     """后台：查看院校列表 (增加搜索功能)"""
-    schools_data = schools_data
     search_query = request.args.get('q', '') # 获取搜索查询参数
+
+    # 直接使用全局的 schools_data
+    current_schools_data = schools_data 
 
     if search_query:
         # 如果有搜索查询，过滤学校数据
         filtered_schools = [
-            school for school in schools_data
+            school for school in current_schools_data # 使用 current_schools_data
             if search_query.lower() in school.get('name', '').lower() or
                search_query.lower() in school.get('province', '').lower()
         ]
@@ -939,7 +980,7 @@ def admin_schools():
         flash(f"搜索 \"{search_query}\" 的结果:", 'info')
     else:
         # 没有搜索查询，显示所有学校
-        schools_to_display = schools_data
+        schools_to_display = current_schools_data # 使用 current_schools_data
 
     return render_template('admin/schools.html', schools=schools_to_display, search_query=search_query)
 
@@ -965,31 +1006,37 @@ def trigger_crawler():
 @admin_required
 def admin_edit_school(school_id):
     """后台：编辑院校顶层信息"""
-    schools = schools_data
-    school = next((s for s in schools if s['id'] == school_id), None)
+    # 在 POST 和 GET 中都尝试找到学校
+    school_to_edit = next((s for s in schools_data if s.get('id') == school_id), None)
 
-    if not school:
-        flash('未找到该院校。', 'danger')
+    if not school_to_edit:
+        flash('未找到该院校。 ({school_id})', 'danger')
         return redirect(url_for('admin_schools'))
 
-    form = SchoolEditForm(obj=school) # 使用 obj 填充表单
+    form = SchoolEditForm(obj=school_to_edit) # GET 请求时预填充
 
-    if form.validate_on_submit():
+    if form.validate_on_submit(): # 处理 POST 请求
         try:
-            school['name'] = form.name.data
-            school['level'] = form.level.data
-            school['province'] = form.province.data
-            school['intro'] = form.intro.data
-            school['computer_rank'] = form.computer_rank.data
+            # 使用 form.populate_obj 更新字典 (更简洁)
+            form.populate_obj(school_to_edit) 
 
-            save_schools_data(schools) # 保存整个列表
-            flash('院校信息更新成功!', 'success')
+            # 保存更新后的整个列表到文件
+            if save_schools_data(schools_data):
+                flash('院校信息更新成功!', 'success')
+                # 重新加载数据到内存，确保后续请求拿到最新数据 (可选，取决于应用是否需要立即反映)
+                # global schools_data
+                # schools_data = load_json_data(SCHOOLS_DATA_PATH)
+            else:
+                 flash('院校信息已在内存中更新，但写入文件失败！', 'danger')
+
             return redirect(url_for('admin_schools'))
         except Exception as e:
-             flash(f'更新院校信息时出错: {e}', 'danger')
-             logging.error(f"Error updating school {school_id}: {e}")
+             app.logger.error(f"更新学校 {school_id} 时出错: {e}", exc_info=True)
+             flash(f'更新院校信息时发生内部错误，请查看服务器日志。({e})', 'danger')
+             # 不重定向，留在编辑页面显示错误
 
-    return render_template('admin/edit_school.html', form=form, school=school)
+    # GET 请求渲染模板，传递 form (已填充数据) 和 school (用于显示标题等)
+    return render_template('admin/edit_school.html', form=form, school=school_to_edit)
 
 def get_region(province):
     """根据省份判断 A/B 区。"""
@@ -1008,7 +1055,20 @@ def get_region(province):
     if province in a_region_provinces:
         return "A区"
     else:
-        return "未知地区"
+        # 对于不在列表中的省份（如广西、内蒙等B区省份），应返回B区
+        b_region_provinces = ["内蒙古", "广西", "海南", "贵州", "云南", "西藏", "甘肃", "青海", "宁夏", "新疆"]
+        if province in b_region_provinces:
+            return "B区"
+        else:
+            return "未知地区" # 如果省份名称无效或不属于A/B区
 
 if __name__ == '__main__':
+    # 配置日志
+    log_dir = os.path.join(BASE_DIR, 'logs')
+    os.makedirs(log_dir, exist_ok=True)
+    log_file = os.path.join(log_dir, 'app.log')
+    logging.basicConfig(filename=log_file,
+                        level=logging.INFO, # 可以调整级别 DEBUG, INFO, WARNING, ERROR, CRITICAL
+                        format='%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
+    app.logger.info("Flask 应用启动")
     app.run(debug=True, port=5001) 

@@ -1,46 +1,52 @@
 {% extends "base.html" %}
 
-{% block title %}个人中心 - {{ session['username'] }}{% endblock %}
+{% block title %}个人资料{% endblock %}
 
 {% block content %}
-<div class="profile-container">
-    <h2>个人中心</h2>
-    <p>用户名: {{ session['username'] }}</p>
+<div class="row justify-content-center align-items-center flex-grow-1 py-4">
+    <div class="col-md-8 col-lg-7 col-xl-6"> {# Profile form can be wider #}
+        <div class="card shadow-sm p-4">
+             <div class="card-body">
+                <h2 class="text-center mb-4">编辑个人资料</h2>
+                
+                {% include '_flash_messages.html' %}
 
-    <h3>更新个人信息与偏好</h3>
-    <form method="POST" action="{{ url_for('profile') }}" class="profile-form">
-        <div class="form-group">
-            <label for="education_background">学历背景:</label>
-            <input type="text" id="education_background" name="education_background" value="{{ user_profile.education_background or '' }}">
-        </div>
-        <div class="form-group">
-            <label for="major_area">报考专业领域:</label>
-            <input type="text" id="major_area" name="major_area" value="{{ user_profile.major_area or '' }}">
-        </div>
-        <div class="form-group">
-            <label for="target_location">目标所在地:</label>
-            <input type="text" id="target_location" name="target_location" value="{{ user_profile.target_location or '' }}">
-        </div>
-        <div class="form-group">
-            <label for="target_level">期望院校层次:</label>
-            <select id="target_level" name="target_level">
-                <option value="" {% if not user_profile.target_level %}selected{% endif %}>--请选择--</option>
-                <option value="985" {% if user_profile.target_level == '985' %}selected{% endif %}>985</option>
-                <option value="211" {% if user_profile.target_level == '211' %}selected{% endif %}>211</option>
-                <option value="双一流" {% if user_profile.target_level == '双一流' %}selected{% endif %}>双一流</option>
-                <option value="一般" {% if user_profile.target_level == '一般' %}selected{% endif %}>一般</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="expected_score">预期初试分数:</label>
-            <input type="number" id="expected_score" name="expected_score" value="{{ user_profile.expected_score or '' }}">
-        </div>
-        <button type="submit" class="btn btn-primary">更新资料</button>
-    </form>
+                <form method="POST" action="{{ url_for('profile') }}">
+                    {# If using Flask-WTF, include form.hidden_tag() #}
+                    
+                    <div class="mb-3">
+                        <label for="education_background" class="form-label">教育背景</label>
+                        <input type="text" id="education_background" name="education_background" class="form-control" value="{{ user_profile.get('education_background', '') }}">
+                    </div>
+                     <div class="mb-3">
+                        <label for="major_area" class="form-label">专业领域</label>
+                        <input type="text" id="major_area" name="major_area" class="form-control" value="{{ user_profile.get('major_area', '') }}">
+                    </div>
+                     <div class="mb-3">
+                        <label for="target_location" class="form-label">目标地区 (省份)</label>
+                        <input type="text" id="target_location" name="target_location" class="form-control" value="{{ user_profile.get('target_location', '') }}">
+                    </div>
+                     <div class="mb-3">
+                        <label for="target_level" class="form-label">目标院校等级</label>
+                        <select id="target_level" name="target_level" class="form-select">
+                            <option value="" {% if not user_profile.get('target_level') %}selected{% endif %}>-- 请选择 --</option>
+                            <option value="985" {% if user_profile.get('target_level') == '985' %}selected{% endif %}>985</option>
+                            <option value="211" {% if user_profile.get('target_level') == '211' %}selected{% endif %}>211</option>
+                            <option value="双一流" {% if user_profile.get('target_level') == '双一流' %}selected{% endif %}>双一流</option>
+                            <option value="一般" {% if user_profile.get('target_level') == '一般' %}selected{% endif %}>一般</option>
+                        </select>
+                    </div>
+                     <div class="mb-4">
+                        <label for="expected_score" class="form-label">预期分数</label>
+                        <input type="number" id="expected_score" name="expected_score" class="form-control" value="{{ user_profile.get('expected_score', '') }}">
+                    </div>
 
-    {# 后续可以添加收藏夹列表显示 #}
-    {# <h3>我的收藏</h3> #}
-    {# ... #}
-
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary">保存更改</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %} 
