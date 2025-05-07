@@ -17,13 +17,16 @@
         </div>
         <div class="card-body">
             <form method="POST" action="{{ url_for('admin_announcements') }}">
+                {# 添加 CSRF token 字段 #}
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <div class="mb-3">
                     <label for="announcementTitle" class="form-label">公告标题</label>
                     <input type="text" class="form-control" id="announcementTitle" name="title" required>
                 </div>
                 <div class="mb-3">
                     <label for="announcementUrl" class="form-label">公告链接 (URL)</label>
-                    <input type="url" class="form-control" id="announcementUrl" name="url" placeholder="https://example.com/announcement">
+                    {# 将 type 从 url 改为 text #}
+                    <input type="text" class="form-control" id="announcementUrl" name="url" placeholder="https://example.com 或留空/输入 #">
                 </div>
                 <button type="submit" class="btn btn-primary">添加公告</button>
             </form>
@@ -51,33 +54,26 @@
                     </thead>
                     <tbody id="announcement-tbody"> {# 添加 ID #}
                         {% for announcement in announcements %}
-                        {# 添加 data-index 用于排序 #}
-                        <tr id="announcement-row-{{ loop.index0 }}" data-index="{{ loop.index0 }}">
-                            <td class="text-center drag-handle" style="cursor: move;"><i class="fas fa-grip-vertical"></i></td> {# 拖拽句柄 #}
-                            <td class="view-mode announcement-title-cell">
-                                <span class="announcement-title">{{ announcement.title }}</span>
+                        {# 添加 data-original-title 用于编辑保存时识别 #}
+                        <tr id="announcement-row-{{ loop.index0 }}" data-index="{{ loop.index0 }}" data-original-title="{{ announcement.title }}">
+                            {# Col 1: Drag Handle #}
+                            <td class="text-center drag-handle" style="cursor: move;"><i class="fas fa-grip-vertical"></i></td>
+                            {# Col 2: Title - View and Edit #}
+                            <td class="announcement-title-cell">
+                                <span class="announcement-title view-mode">{{ announcement.title }}</span>
+                                <input type="text" name="title" class="form-control form-control-sm edit-mode edit-title" value="{{ announcement.title }}" style="display: none;" required>
                             </td>
-                            <td class="view-mode announcement-url-cell">
-                                <a href="{{ announcement.url if announcement.url else '#' }}" target="_blank" class="announcement-url">{{ announcement.url if announcement.url else '无链接' }}</a>
+                            {# Col 3: URL - View and Edit #}
+                            <td class="announcement-url-cell">
+                                <a href="{{ announcement.url if announcement.url else '#' }}" target="_blank" class="announcement-url view-mode">{{ announcement.url if announcement.url else '无链接' }}</a>
+                                <input type="url" name="url" class="form-control form-control-sm edit-mode edit-url" value="{{ announcement.url }}" placeholder="https://example.com" style="display: none;">
                             </td>
-                            <td class="edit-mode" style="display:none;" colspan="1"> {# 编辑模式合并单元格 (colspan=1 因为标题URL合并了) #}
-                                <form method="POST" action="{{ url_for('admin_update_announcement', index=loop.index0) }}" class="update-form">
-                                    <div class="mb-1">
-                                        <input type="text" name="title" class="form-control form-control-sm edit-title" value="{{ announcement.title }}" required>
-                                    </div>
-                                    <div>
-                                        <input type="url" name="url" class="form-control form-control-sm edit-url" value="{{ announcement.url }}" placeholder="https://example.com">
-                                    </div>
-                                </form>
-                            </td>
+                            {# Col 4: Actions #}
                             <td>
                                 <button type="button" class="btn btn-sm btn-primary me-1 edit-btn view-mode" data-index="{{ loop.index0 }}">编辑</button>
-                                <button type="submit" class="btn btn-sm btn-success me-1 save-btn edit-mode" style="display:none;" data-index="{{ loop.index0 }}">保存</button>
+                                <button type="button" class="btn btn-sm btn-success me-1 save-btn edit-mode" style="display:none;" data-index="{{ loop.index0 }}">保存</button> {# Type改为button #}
                                 <button type="button" class="btn btn-sm btn-secondary cancel-btn edit-mode" style="display:none;" data-index="{{ loop.index0 }}">取消</button>
-                                {# 删除按钮改为表单 #}
-                                <form action="{{ url_for('delete_announcement', index=loop.index0) }}" method="POST" class="d-inline view-mode" onsubmit="return confirm('确定要删除此公告吗？');">
-                                    <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> 删除</button>
-                                </form>
+                                <button type="button" class="btn btn-danger btn-sm delete-btn view-mode" data-title="{{ announcement.title }}"><i class="fas fa-trash-alt"></i> 删除</button>
                             </td>
                         </tr>
                         {% endfor %}
@@ -108,7 +104,7 @@ if (typeof window.announcementScriptInitialized === 'undefined') {
         const tbody = document.getElementById('announcement-tbody');
         const reorderUrl = document.getElementById('announcements-table').dataset.reorderUrl;
         const saveOrderBtn = document.getElementById('save-order-btn');
-        let currentOrderForSaving = []; // Stores the order to be saved, initialized with current state
+        let currentOrderForSaving = []; // Stores the order to be saved
         let hasSortableInitialized = false; // Flag to ensure Sortable is initialized only once
         let saveButtonListenerAttached = false; // Flag to ensure listener is attached only once
 
@@ -116,23 +112,22 @@ if (typeof window.announcementScriptInitialized === 'undefined') {
             currentOrderForSaving = [];
             if (tbody) {
                 tbody.querySelectorAll('tr').forEach(row => {
-                    currentOrderForSaving.push(row.dataset.index);
+                    // 改为获取标题
+                    const titleSpan = row.querySelector('.announcement-title');
+                    if (titleSpan) {
+                        currentOrderForSaving.push(titleSpan.textContent.trim());
+                    }
                 });
             }
-            console.log('Order updated internally. currentOrderForSaving is now:', JSON.stringify(currentOrderForSaving));
-            // Enable save button only if there are items or if saving an empty list is allowed.
-            // For now, let's assume saving empty is fine, or button is enabled by default.
+            console.log('Order updated internally. currentOrderForSaving is now (titles):', JSON.stringify(currentOrderForSaving));
             if(saveOrderBtn) saveOrderBtn.disabled = false; 
         }
 
         // Initialize current order on page load
         updateCurrentOrder(); 
-        // Disable button if no announcements initially, and we don't want to save empty order implicitly
-        if (saveOrderBtn && currentOrderForSaving.length === 0 && tbody && tbody.children.length === 0) { 
-            // saveOrderBtn.disabled = true; // Uncomment if initial empty save is not desired
+        if (saveOrderBtn && currentOrderForSaving.length === 0 && tbody && tbody.children.length === 0) {
             console.log('Initial state: No announcements, save button might be disabled if configured.');
         }
-
 
         if (tbody && !hasSortableInitialized) {
             console.log('SortableJS initializing...');
@@ -149,15 +144,8 @@ if (typeof window.announcementScriptInitialized === 'undefined') {
 
         if (saveOrderBtn && !saveButtonListenerAttached) {
             saveOrderBtn.addEventListener('click', function() {
-                console.log('Save button clicked. Current currentOrderForSaving:', JSON.stringify(currentOrderForSaving));
-                
-                // The check for null is removed as currentOrderForSaving is always an array now.
-                // If you want to prevent saving if no actual drag has occurred since load or last save,
-                // you might need a more complex state (e.g., a 'dirty' flag).
-                // For now, it saves the current state of the table rows' data-index attributes.
-
+                console.log('Save button clicked. Sending order (titles):', JSON.stringify(currentOrderForSaving));
                 saveOrderBtn.disabled = true;
-                console.log('Proceeding to fetch, currentOrderForSaving:', JSON.stringify(currentOrderForSaving));
 
                 fetch(reorderUrl, {
                     method: 'POST',
@@ -165,11 +153,13 @@ if (typeof window.announcementScriptInitialized === 'undefined') {
                         'Content-Type': 'application/json',
                         'X-CSRFToken': '{{ csrf_token() }}'
                     },
-                    body: JSON.stringify({ new_order: currentOrderForSaving })
+                    // 使用正确的键名 'order' 并发送标题数组
+                    body: JSON.stringify({ order: currentOrderForSaving })
                 })
                 .then(response => {
                     console.log('Fetch response received:', response.status);
-                    if (!response.ok) { // Check for non-2xx responses
+                    // 修改检查服务器返回的键名
+                    if (!response.ok) { 
                         return response.json().then(errData => { 
                             throw new Error(errData.message || `HTTP error! status: ${response.status}`); 
                         });
@@ -178,7 +168,8 @@ if (typeof window.announcementScriptInitialized === 'undefined') {
                 })
                 .then(data => {
                     console.log('Fetch data received:', data);
-                    if (data.success) {
+                    // 修改检查服务器返回的键名
+                    if (data.status === 'success') { 
                         console.log('Order updated successfully via fetch.');
                         const successAlert = document.createElement('div');
                         successAlert.className = 'alert alert-success alert-dismissible fade show position-fixed bottom-0 end-0 m-3';
@@ -187,14 +178,11 @@ if (typeof window.announcementScriptInitialized === 'undefined') {
                         document.body.appendChild(successAlert);
                         setTimeout(() => {
                             if (successAlert.parentElement) {
-                                 try { bootstrap.Alert.getOrCreateInstance(successAlert).close(); } catch(e) { console.warn('Failed to close alert:', e); }
+                                try { bootstrap.Alert.getOrCreateInstance(successAlert).close(); } catch(e) { console.warn('Failed to close alert:', e); }
                             }
                         }, 3000);
-                        // No need to hide footer as it's always visible now
-                        // updateCurrentOrder(); // Re-capture the order, though it should be the same as what was saved.
-                                            // Or, if backend reassigns indices, we might need to update data-index attributes on rows.
-                        saveOrderBtn.disabled = false; // Re-enable after successful save
-                        console.log('Save process complete. currentOrderForSaving reflects saved state (or next state to save).');
+                        saveOrderBtn.disabled = false; 
+                        console.log('Save process complete.');
                     } else {
                         alert('更新顺序失败: ' + (data.message || '未知错误'));
                         console.error('Failed to update order:', data.message);
@@ -210,26 +198,28 @@ if (typeof window.announcementScriptInitialized === 'undefined') {
             saveButtonListenerAttached = true;
         }
 
-        // --- 以下是之前的编辑/取消/保存逻辑，需要调整以适应新的列结构 ---
+        // --- 以下是编辑/取消/保存逻辑 --- 
         document.querySelectorAll('.edit-btn').forEach(button => {
             button.addEventListener('click', function () {
                 const index = this.dataset.index;
                 const row = document.getElementById(`announcement-row-${index}`);
-                // Hide view mode cells (title, url) and view-mode buttons/links
-                row.querySelector('.announcement-title-cell').style.display = 'none';
-                row.querySelector('.announcement-url-cell').style.display = 'none';
-                row.querySelectorAll('.view-mode').forEach(el => {
-                     if (el.tagName === 'BUTTON' || el.tagName === 'FORM') { // Hide delete form too
-                         el.style.display = 'none';
-                     }
-                });
-                // Hide the drag handle column cell
-                row.querySelector('td.drag-handle').style.display = 'none';
+                
+                // 获取当前视图内容，用于取消时恢复
+                const currentTitle = row.querySelector('.announcement-title').textContent.trim();
+                const currentUrl = row.querySelector('.announcement-url').getAttribute('href');
+                // 将原始值存起来，以便取消时恢复
+                row.dataset.editingTitle = currentTitle;
+                row.dataset.editingUrl = currentUrl;
 
-                // Show edit mode cell and buttons
-                row.querySelector('td.edit-mode').style.display = 'table-cell';
-                row.querySelector('button.save-btn.edit-mode').style.display = 'inline-block';
-                row.querySelector('button.cancel-btn.edit-mode').style.display = 'inline-block';
+                // 切换可见性
+                row.querySelectorAll('.view-mode').forEach(el => { el.style.display = 'none'; });
+                row.querySelectorAll('.edit-mode').forEach(el => {
+                    if (el.tagName === 'INPUT') {
+                         el.style.display = 'block'; // 输入框用 block
+                    } else if (el.tagName === 'BUTTON'){
+                         el.style.display = 'inline-block'; // 按钮用 inline-block
+                    }
+                });
             });
         });
 
@@ -237,40 +227,155 @@ if (typeof window.announcementScriptInitialized === 'undefined') {
             button.addEventListener('click', function () {
                 const index = this.dataset.index;
                 const row = document.getElementById(`announcement-row-${index}`);
-                // Show view mode cells and buttons/links
-                row.querySelector('.announcement-title-cell').style.display = 'table-cell';
-                row.querySelector('.announcement-url-cell').style.display = 'table-cell';
-                row.querySelectorAll('.view-mode').forEach(el => {
-                     if (el.tagName === 'BUTTON' || el.tagName === 'FORM') { // Show delete form too
-                         el.style.display = 'inline-block';
-                     }
-                });
-                // Show the drag handle column cell
-                row.querySelector('td.drag-handle').style.display = 'table-cell';
+                
+                // 恢复输入框的值为编辑前的值
+                row.querySelector('.edit-title').value = row.dataset.editingTitle || '';
+                row.querySelector('.edit-url').value = row.dataset.editingUrl || '';
+                // 清除临时存储的值
+                delete row.dataset.editingTitle;
+                delete row.dataset.editingUrl;
 
-                // Hide edit mode cell and buttons
-                row.querySelector('td.edit-mode').style.display = 'none';
-                row.querySelector('button.save-btn.edit-mode').style.display = 'none';
-                row.querySelector('button.cancel-btn.edit-mode').style.display = 'none';
+                // 切换可见性
+                row.querySelectorAll('.edit-mode').forEach(el => { el.style.display = 'none'; });
+                row.querySelectorAll('.view-mode').forEach(el => {
+                   if (el.tagName === 'SPAN' || el.tagName === 'A' || el.tagName === 'BUTTON') {
+                        el.style.display = el.tagName === 'BUTTON' ? 'inline-block' : 'block'; // 或根据需要调整
+                    }
+                });
             });
         });
 
         document.querySelectorAll('.save-btn').forEach(button => {
             button.addEventListener('click', function(event) {
-                event.preventDefault();
+                event.preventDefault(); // 阻止可能的默认行为
                 const index = this.dataset.index;
                 const row = document.getElementById(`announcement-row-${index}`);
-                const form = row.querySelector('.update-form');
+                const updateUrl = "{{ url_for('admin_update_announcement') }}"; // 获取更新 URL
 
-                const titleInput = form.querySelector('.edit-title');
-                if (!titleInput.value.trim()) {
+                const originalTitle = row.dataset.originalTitle; // 获取原始标题
+                const newTitleInput = row.querySelector('.edit-title');
+                const newUrlInput = row.querySelector('.edit-url');
+                const newTitle = newTitleInput.value.trim();
+                const newUrl = newUrlInput.value.trim();
+
+                if (!newTitle) {
                     alert('标题不能为空！');
-                    titleInput.focus();
+                    newTitleInput.focus();
                     return;
                 }
-                form.submit();
+                
+                console.log(`Saving announcement: original='${originalTitle}', new='${newTitle}', url='${newUrl}'`);
+
+                // 发送 AJAX 请求
+                fetch(updateUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ 
+                        original_title: originalTitle, 
+                        new_title: newTitle, 
+                        new_url: newUrl 
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(errData => {
+                            throw new Error(errData.message || `HTTP error! status: ${response.status}`);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status === 'success') {
+                        console.log('Announcement updated successfully via AJAX');
+                        // 更新视图
+                        const titleSpan = row.querySelector('.announcement-title');
+                        const urlLink = row.querySelector('.announcement-url');
+                        titleSpan.textContent = newTitle;
+                        urlLink.textContent = newUrl || '无链接';
+                        urlLink.href = newUrl || '#';
+                        row.dataset.originalTitle = newTitle; // 更新原始标题为新的标题，以便再次编辑
+                        // 更新删除按钮的 data-title (如果存在)
+                        const deleteBtn = row.querySelector('.delete-btn');
+                        if(deleteBtn) deleteBtn.dataset.title = newTitle;
+                        
+                        // 切换回视图模式
+                        row.querySelectorAll('.edit-mode').forEach(el => { el.style.display = 'none'; });
+                        row.querySelectorAll('.view-mode').forEach(el => {
+                            if (el.tagName === 'SPAN' || el.tagName === 'A' || el.tagName === 'BUTTON') {
+                                el.style.display = el.tagName === 'BUTTON' ? 'inline-block' : 'block'; // 或根据需要调整
+                            }
+                        });
+                        // 显示成功消息 (可选)
+                        // ... (可以添加类似删除成功那样的提示)
+                    } else {
+                        alert('保存公告失败: ' + (data.message || '未知错误'));
+                        console.error('Failed to save announcement:', data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error saving announcement (fetch catch):', error);
+                    alert('保存公告时发生错误: ' + error.message);
+                });
             });
         });
+
+        // 新增：处理删除按钮点击事件
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const titleToDelete = this.dataset.title;
+                const rowToDelete = this.closest('tr'); // 获取要删除的行
+                const deleteUrl = "{{ url_for('delete_announcement') }}"; // 获取删除的 URL
+
+                if (confirm(`确定要删除公告 "${titleToDelete}" 吗？`)) {
+                    console.log(`Attempting to delete: ${titleToDelete}`);
+                    fetch(deleteUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token() }}' // 包含 CSRF Token
+                        },
+                        body: JSON.stringify({ title: titleToDelete })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(errData => {
+                                throw new Error(errData.message || `HTTP error! status: ${response.status}`);
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.status === 'success') {
+                            console.log(`Successfully deleted: ${titleToDelete}`);
+                            rowToDelete.remove(); // 从表格中移除行
+                            // 可以选择性地显示成功消息
+                            const successAlert = document.createElement('div');
+                            successAlert.className = 'alert alert-info alert-dismissible fade show position-fixed bottom-0 end-0 m-3'; // 用 info 级别
+                            successAlert.setAttribute('role', 'alert');
+                            successAlert.innerHTML = `公告 "${titleToDelete}" 已删除。<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
+                            document.body.appendChild(successAlert);
+                            setTimeout(() => {
+                                if (successAlert.parentElement) {
+                                    try { bootstrap.Alert.getOrCreateInstance(successAlert).close(); } catch(e) { console.warn('Failed to close alert:', e); }
+                                }
+                            }, 3000);
+                             updateCurrentOrder(); // 更新内部顺序（如果需要）
+                        } else {
+                            alert('删除公告失败: ' + (data.message || '未知错误'));
+                            console.error('Failed to delete announcement:', data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error deleting announcement (fetch catch):', error);
+                        alert('删除公告时发生错误: ' + error.message);
+                    });
+                }
+            });
+        });
+
     });
 } // End of window.announcementScriptInitialized check
 </script>

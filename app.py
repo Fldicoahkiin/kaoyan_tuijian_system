@@ -14,6 +14,9 @@ import logging # 导入 logging
 from flask_wtf.csrf import CSRFProtect # 导入 CSRFProtect
 # import fcntl # 移除 fcntl
 import portalocker # 导入 portalocker
+import fcntl # 添加导入
+import time # 添加导入
+from logging.handlers import RotatingFileHandler
 
 # --- 导入爬虫函数 ---
 from utils.scraper import run_scraper 
@@ -301,12 +304,45 @@ def get_exam_type_ratio():
     ])
     return jsonify(ratio_data)
 
-@app.route('/api/announcements', methods=['GET'])
+@app.route('/api/announcements')
 def get_announcements():
-    """返回最新的公告信息。"""
-    # 每次请求时直接从文件加载最新数据
-    latest_announcements = load_json_data(ANNOUNCEMENTS_PATH, default_value=[])
-    return jsonify(latest_announcements)
+    """API 端点，用于获取公告信息"""
+    announcements_file_path = os.path.join(app.root_path, 'data', 'announcements.json')
+    try:
+        # 确保数据目录存在
+        data_dir = os.path.dirname(announcements_file_path)
+        if not os.path.exists(data_dir):
+            os.makedirs(data_dir)
+            app.logger.info(f"创建数据目录: {data_dir}")
+
+        # 如果文件不存在，创建一个空的JSON数组文件
+        if not os.path.exists(announcements_file_path):
+            with open(announcements_file_path, 'w', encoding='utf-8') as f_create:
+                json.dump([], f_create)
+            app.logger.info(f"创建空的公告文件: {announcements_file_path}")
+
+        with open(announcements_file_path, 'r', encoding='utf-8') as f:
+            fcntl.flock(f.fileno(), fcntl.LOCK_SH) # 获取共享锁
+            try:
+                content = f.read()
+                if not content: # 文件为空
+                    app.logger.warning(f"公告文件 {announcements_file_path} 为空，返回空列表。")
+                    announcements = []
+                else:
+                    announcements = json.loads(content)
+            except json.JSONDecodeError as e_decode:
+                app.logger.error(f"在 get_announcements 中解析公告文件 {announcements_file_path} 时出错: {e_decode}")
+                # 对于API端点，返回错误JSON可能比抛出500更好，或者返回空数据
+                return jsonify([]) # 或 jsonify({'error': 'Failed to parse announcements data'}), 500
+            # fcntl.flock(f.fileno(), fcntl.LOCK_UN) # 锁会在文件关闭时自动释放
+            return jsonify(announcements)
+        
+    except IOError as e_io:
+        app.logger.error(f"读取或锁定公告文件时发生IO错误 (get_announcements): {e_io}", exc_info=True)
+        return jsonify([]) # 出错时返回空列表
+    except Exception as e:
+        app.logger.error(f"获取公告时发生意外错误: {e}", exc_info=True)
+        return jsonify([]) # 出错时返回空列表
 
 # --- 用户认证路由 ---
 
@@ -847,98 +883,76 @@ def admin_announcements():
 @app.route('/admin/announcements/reorder', methods=['POST'])
 @admin_required
 def admin_reorder_announcements():
-    data = request.get_json()
-    if not data or 'new_order' not in data or not isinstance(data['new_order'], list):
-        return jsonify({"success": False, "message": "无效的请求数据。"}), 400
-
-    new_order_indices_str = data['new_order']
+    """处理公告拖拽排序后保存的请求"""
+    announcements_file_path = os.path.join(app.root_path, 'data', 'announcements.json')
     try:
-        new_order_indices = [int(i) for i in new_order_indices_str]
-    except ValueError:
-         return jsonify({"success": False, "message": "索引必须是数字。"}), 400
+        new_order_data = request.get_json()
+        if not new_order_data or 'order' not in new_order_data:
+            app.logger.error("无效的排序请求数据")
+            return jsonify({'status': 'error', 'message': '无效的请求数据'}), 400
 
-    # --- 文件锁开始 (使用 portalocker) ---
-    lock_file_path = ANNOUNCEMENTS_PATH + ".lock"
-    fp_lock = None
-    lock_acquired = False
-    try:
-        # 以追加模式打开锁文件 (创建如果不存在)
-        fp_lock = open(lock_file_path, 'a')
+        ordered_titles = new_order_data['order']
+        app.logger.debug(f"接收到的新公告顺序 (titles): {ordered_titles}")
 
-        # --- 尝试获取锁 ---
-        portalocker.lock(fp_lock, portalocker.LOCK_EX | portalocker.LOCK_NB)
-        lock_acquired = True
-        app.logger.debug(f"成功获取锁文件 {lock_file_path}")
-
-        # --- Lock acquired, perform read-modify-write ---
-        current_announcements = load_json_data(ANNOUNCEMENTS_PATH, default_value=[])
-
-        # Length and index checks (repeat as file could have changed before lock)
-        if len(new_order_indices) != len(current_announcements):
-            return jsonify({"success": False, "message": "数据已更改，请刷新重试 (长度不符)。"}), 409 # Conflict
-
-        original_indices_set = set(range(len(current_announcements)))
-        new_indices_set = set(new_order_indices)
-        if new_indices_set != original_indices_set:
-            return jsonify({"success": False, "message": "数据已更改，请刷新重试 (索引无效)。"}), 409 # Conflict
-
-        reordered_announcements = []
-        try:
-            for index in new_order_indices:
-                reordered_announcements.append(current_announcements[index])
-        except IndexError:
-             app.logger.error("重新排序时出现意外的索引错误。")
-             return jsonify({"success": False, "message": "处理顺序时出现索引错误。"}), 500
-
-        # --- Write the new data --- (Inside lock context)
-        app.logger.info(f"[DEBUG] 即将写入公告文件的内容:") # Log before dump
-        app.logger.info(json.dumps(reordered_announcements, ensure_ascii=False, indent=2))
-        try:
-            # Use a separate handle for writing the actual data file
-            with open(ANNOUNCEMENTS_PATH, 'w', encoding='utf-8') as f_write:
-                json.dump(reordered_announcements, f_write, ensure_ascii=False, indent=2)
-                f_write.flush() # Force Python's internal buffer to be written to OS
-                os.fsync(f_write.fileno()) # Ask OS to write buffer to disk
-        except IOError as write_e:
-            app.logger.error(f"写入公告文件时发生 IO 错误: {write_e}", exc_info=True)
-            return jsonify({"success": False, "message": "保存公告顺序时出错 (写入失败)。"}), 500
-
-        # --- DEBUG Log --- (Keep this)
-        app.logger.info(f"[DEBUG]公告文件 {ANNOUNCEMENTS_PATH} 保存后的内容:")
-        try:
-            # Read with a new handle, lock is still held on fp_lock
-            with open(ANNOUNCEMENTS_PATH, 'r', encoding='utf-8') as f_read:
-                saved_content = json.load(f_read)
-                app.logger.info(json.dumps(saved_content, ensure_ascii=False, indent=2))
-        except Exception as e_read:
-            app.logger.error(f"[DEBUG] 读取刚保存的公告文件失败: {e_read}")
-
-        # --- Operation successful --- Return success before releasing lock in finally
-        return jsonify({"success": True, "message": "公告顺序已更新。"})
-
-    except portalocker.LockException as le:
-        app.logger.warning(f"无法获取锁文件 {lock_file_path} ({type(le).__name__})，其他请求可能正在写入。")
-        return jsonify({"success": False, "message": "服务器正忙，请稍后重试。"}), 503
-    except IOError as e: # Catch errors like opening the lock file itself
-        app.logger.error(f"处理公告排序时发生文件 IO 错误: {e}", exc_info=True)
-        return jsonify({"success": False, "message": "保存公告顺序时出错。"}), 500
-    except Exception as e:
-         app.logger.error(f"重新排序公告时发生未知错误: {e}", exc_info=True)
-         return jsonify({"success": False, "message": "处理请求时发生内部错误。"}), 500
-    finally:
-        # --- 文件锁结束 --- Ensure lock is always released if acquired
-        if lock_acquired and fp_lock:
-             try:
-                 portalocker.unlock(fp_lock)
-                 fp_lock.close()
-                 app.logger.debug(f"释放锁文件 {lock_file_path} (finally)")
-             except Exception as e_unlock:
-                 app.logger.error(f"Finally块释放文件锁时出错: {e_unlock}")
-        elif fp_lock: # If lock wasn't acquired but file handle exists (e.g., error during lock attempt)
+        with open(announcements_file_path, 'r+', encoding='utf-8') as f:
+            fcntl.flock(f.fileno(), fcntl.LOCK_EX)  # 获取排他锁
             try:
-                fp_lock.close() # Just close the handle
-            except Exception as e_close:
-                 app.logger.error(f"Finally块关闭锁文件句柄时出错: {e_close}")
+                content = f.read()
+                if not content:
+                    current_announcements = []
+                else:
+                    current_announcements = json.loads(content)
+            except json.JSONDecodeError as e_decode:
+                app.logger.error(f"在 admin_reorder_announcements 中解析公告文件时出错: {e_decode}")
+                return jsonify({'status': 'error', 'message': f'解析公告数据时出错: {e_decode}'}), 500 # 内部服务器错误更合适
+
+            announcement_map = {ann['title']: ann for ann in current_announcements}
+            reordered_announcements = []
+            processed_titles = set()
+            missing_titles = []
+
+            for title in ordered_titles:
+                if title in announcement_map and title not in processed_titles:
+                    reordered_announcements.append(announcement_map[title])
+                    processed_titles.add(title)
+                else:
+                    if title not in announcement_map:
+                        missing_titles.append(title)
+                    app.logger.warning(f"排序请求中的公告标题 '{title}' 在当前数据中不存在或已处理，将被忽略。")
+
+            original_titles = set(ann['title'] for ann in current_announcements)
+            if processed_titles != original_titles:
+                lost_titles = original_titles - processed_titles
+                if lost_titles:
+                    app.logger.warning(f"以下公告在排序后丢失: {lost_titles}。将追加到列表末尾。")
+                    for lost_title in lost_titles:
+                        if lost_title in announcement_map:
+                            reordered_announcements.append(announcement_map[lost_title])
+            
+            if missing_titles:
+                app.logger.warning(f"前端发送了以下不存在的公告标题: {missing_titles}")
+
+            app.logger.debug(f"即将写入公告文件的内容:\\n{json.dumps(reordered_announcements, indent=2, ensure_ascii=False)}")
+            
+            f.seek(0)
+            f.truncate()
+            json.dump(reordered_announcements, f, ensure_ascii=False, indent=2)
+            f.flush() #确保写入磁盘
+            os.fsync(f.fileno()) #确保写入磁盘
+
+            app.logger.debug(f"公告文件 {announcements_file_path} 保存后的内容:\\n{json.dumps(reordered_announcements, indent=2, ensure_ascii=False)}")
+            # fcntl.flock(f.fileno(), fcntl.LOCK_UN) # 锁会在文件关闭时自动释放
+            return jsonify({'status': 'success', 'message': '公告顺序已更新'})
+
+    except IOError as e_io:
+        app.logger.error(f"读写或锁定公告文件时发生IO错误: {e_io}", exc_info=True)
+        return jsonify({'status': 'error', 'message': '文件操作失败'}), 500
+    except json.JSONDecodeError as e_json: # 主要捕获请求数据的JSON解析错误
+        app.logger.error(f"解析请求数据时出错: {e_json}", exc_info=True)
+        return jsonify({'status': 'error', 'message': f'请求数据格式错误: {e_json}'}), 400
+    except Exception as e:
+        app.logger.error(f"处理公告排序请求时发生意外错误: {e}", exc_info=True)
+        return jsonify({'status': 'error', 'message': f'处理请求时发生内部错误: {e}'}), 500
 
 @app.route('/admin/profile', methods=['GET', 'POST'])
 @admin_required
@@ -1240,47 +1254,113 @@ def admin_save_national_lines():
         flash(f'保存国家线数据时发生错误: {e}', 'danger')
     return redirect(url_for('admin_edit_national_lines'))
 
-@app.route('/admin/announcements/update/<int:index>', methods=['POST'])
-@admin_required 
-def admin_update_announcement(index):
-    if request.method == 'POST':
-        new_title = request.form.get('title')
-        new_url = request.form.get('url')
-        
-        current_announcements = load_json_data(ANNOUNCEMENTS_PATH, default_value=[])
-        
-        if 0 <= index < len(current_announcements):
-            current_announcements[index]['title'] = new_title
-            current_announcements[index]['url'] = new_url if new_url else '#'
-            
-            try:
-                with open(ANNOUNCEMENTS_PATH, 'w', encoding='utf-8') as f:
-                    json.dump(current_announcements, f, ensure_ascii=False, indent=2)
-                flash('公告已成功更新。', 'success')
-            except IOError:
-                flash('保存公告更新时出错。', 'error')
-        else:
-            flash('无效的公告索引，无法更新。', 'error')
-            
-        return redirect(url_for('admin_announcements'))
+@app.route('/admin/announcements/update', methods=['POST'])
+@admin_required
+def admin_update_announcement():
+    """处理更新单个公告的请求"""
+    try:
+        data = request.get_json()
+        original_title = data.get('original_title')
+        new_title = data.get('new_title')
+        new_url = data.get('new_url')
 
-@app.route('/admin/announcement/delete/<int:index>', methods=['POST']) # 使用 POST 方法
-@admin_required # 确保应用了权限控制装饰器
-def delete_announcement(index):
-    current_announcements = load_json_data(ANNOUNCEMENTS_PATH, default_value=[])
-    if 0 <= index < len(current_announcements):
-        try:
-            deleted_title = current_announcements.pop(index)['title']
-            with open(ANNOUNCEMENTS_PATH, 'w', encoding='utf-8') as f:
-                json.dump(current_announcements, f, ensure_ascii=False, indent=2)
-            flash(f'公告 "{deleted_title}" 已删除。', 'success')
-        except IndexError:
-             flash('删除时发生意外索引错误。', 'error')
-        except IOError as e:
-            flash(f'删除公告时写入文件出错: {e}', 'error')
-    else:
-        flash('无效的公告索引，无法删除。', 'error')
-    return redirect(url_for('admin_announcements'))
+        if not original_title or not new_title:
+            return jsonify({'status': 'error', 'message': '缺少必要的公告信息。'}), 400
+
+        announcements_file_path = os.path.join(app.root_path, 'data', 'announcements.json')
+        updated = False
+
+        with open(announcements_file_path, 'r+', encoding='utf-8') as f:
+            fcntl.flock(f.fileno(), fcntl.LOCK_EX) # 获取排他锁
+            try:
+                content = f.read()
+                if not content:
+                    announcements = []
+                else:
+                    announcements = json.loads(content)
+            except json.JSONDecodeError as e_decode:
+                app.logger.error(f"在 admin_update_announcement 中解析公告文件时出错: {e_decode}")
+                return jsonify({'status': 'error', 'message': f'解析公告数据时出错: {e_decode}'}), 500
+
+            for ann in announcements:
+                if ann['title'] == original_title:
+                    ann['title'] = new_title
+                    ann['url'] = new_url
+                    updated = True
+                    break
+            
+            if updated:
+                f.seek(0)
+                f.truncate()
+                json.dump(announcements, f, ensure_ascii=False, indent=2)
+                f.flush()
+                os.fsync(f.fileno())
+                app.logger.info(f"公告 '{original_title}' 已更新为 '{new_title}'")
+                return jsonify({'status': 'success', 'message': '公告已成功更新。'})
+            else:
+                return jsonify({'status': 'error', 'message': '未找到要更新的公告。'}), 404
+        
+    except IOError as e_io:
+        app.logger.error(f"读写或锁定公告文件时发生IO错误 (update): {e_io}", exc_info=True)
+        return jsonify({'status': 'error', 'message': '文件操作失败'}), 500
+    except json.JSONDecodeError as e_json: # 主要捕获请求数据的JSON解析错误
+        app.logger.error(f"解析更新公告的请求数据时出错: {e_json}", exc_info=True)
+        return jsonify({'status': 'error', 'message': f'请求数据格式错误: {e_json}'}), 400
+    except Exception as e:
+        app.logger.error(f"更新公告时发生意外错误: {e}", exc_info=True)
+        return jsonify({'status': 'error', 'message': f'更新公告时发生内部错误: {e}'}), 500
+
+@app.route('/admin/announcement/delete', methods=['POST']) # 修改路由以接收JSON
+@admin_required
+def delete_announcement(): # 修改函数签名，不再需要 index
+    """处理删除公告的请求（通过标题）"""
+    try:
+        data = request.get_json()
+        title_to_delete = data.get('title')
+
+        if not title_to_delete:
+            return jsonify({'status': 'error', 'message': '缺少要删除的公告标题。'}), 400
+
+        announcements_file_path = os.path.join(app.root_path, 'data', 'announcements.json')
+        deleted = False
+
+        with open(announcements_file_path, 'r+', encoding='utf-8') as f:
+            fcntl.flock(f.fileno(), fcntl.LOCK_EX) # 获取排他锁
+            try:
+                content = f.read()
+                if not content:
+                    announcements = []
+                else:
+                    announcements = json.loads(content)
+            except json.JSONDecodeError as e_decode:
+                app.logger.error(f"在 delete_announcement 中解析公告文件时出错: {e_decode}")
+                return jsonify({'status': 'error', 'message': f'解析公告数据时出错: {e_decode}'}), 500
+
+            original_count = len(announcements)
+            announcements = [ann for ann in announcements if ann['title'] != title_to_delete]
+            
+            if len(announcements) < original_count:
+                deleted = True
+                f.seek(0)
+                f.truncate()
+                json.dump(announcements, f, ensure_ascii=False, indent=2)
+                f.flush()
+                os.fsync(f.fileno())
+                app.logger.info(f"公告 '{title_to_delete}' 已被删除。")
+                return jsonify({'status': 'success', 'message': '公告已成功删除。'})
+            else:
+                app.logger.warning(f"尝试删除公告 '{title_to_delete}' 但未找到。")
+                return jsonify({'status': 'error', 'message': '未找到要删除的公告。'}), 404
+
+    except IOError as e_io:
+        app.logger.error(f"读写或锁定公告文件时发生IO错误 (delete): {e_io}", exc_info=True)
+        return jsonify({'status': 'error', 'message': '文件操作失败'}), 500
+    except json.JSONDecodeError as e_json: # 主要捕获请求数据的JSON解析错误
+        app.logger.error(f"解析删除公告的请求数据时出错: {e_json}", exc_info=True)
+        return jsonify({'status': 'error', 'message': f'请求数据格式错误: {e_json}'}), 400
+    except Exception as e:
+        app.logger.error(f"删除公告时发生意外错误: {e}", exc_info=True)
+        return jsonify({'status': 'error', 'message': f'删除公告时发生内部错误: {e}'}), 500
 
 if __name__ == '__main__':
     # 配置日志
