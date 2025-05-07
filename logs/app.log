@@ -1,45 +1,679 @@
-2025-05-05 01:42:27,973 INFO: 应用启动日志配置完成 [in /Users/mac/WorkSpace/考研推荐系统/app.py:44]
-2025-05-05 01:42:56,870 INFO: 应用启动日志配置完成 [in /Users/mac/WorkSpace/考研推荐系统/app.py:44]
-2025-05-07 21:55:38,362 INFO app MainThread : Flask 应用启动
-2025-05-07 21:55:38,382 WARNING werkzeug MainThread :  * Debugger is active!
-2025-05-07 21:55:38,390 INFO werkzeug MainThread :  * Debugger PIN: 719-181-218
-2025-05-07 21:56:40,750 INFO werkzeug MainThread :  * Detected change in '/Users/mac/WorkSpace/考研推荐系统/app.py', reloading
-2025-05-07 21:56:41,261 INFO app MainThread : Flask 应用启动
-2025-05-07 21:56:41,286 WARNING werkzeug MainThread :  * Debugger is active!
-2025-05-07 21:56:41,298 INFO werkzeug MainThread :  * Debugger PIN: 719-181-218
-2025-05-07 21:56:44,027 INFO werkzeug Thread-2 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:44] "GET /profile HTTP/1.1" 200 -
-2025-05-07 21:56:44,100 INFO werkzeug Thread-3 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:44] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
-2025-05-07 21:56:44,649 INFO werkzeug Thread-4 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:44] "GET / HTTP/1.1" 200 -
-2025-05-07 21:56:44,657 INFO werkzeug Thread-5 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:44] "GET / HTTP/1.1" 200 -
-2025-05-07 21:56:54,055 INFO werkzeug Thread-6 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:54] "GET /recommend HTTP/1.1" 200 -
-2025-05-07 21:56:54,132 INFO werkzeug Thread-7 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:54] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
-2025-05-07 21:56:54,494 INFO werkzeug Thread-8 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:54] "GET / HTTP/1.1" 200 -
-2025-05-07 21:56:54,521 INFO werkzeug Thread-9 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:54] "GET / HTTP/1.1" 200 -
-2025-05-07 21:56:55,428 INFO werkzeug Thread-10 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:55] "GET /school-list HTTP/1.1" 200 -
-2025-05-07 21:56:55,492 INFO werkzeug Thread-11 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:55] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
-2025-05-07 21:56:55,896 INFO werkzeug Thread-12 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:55] "GET / HTTP/1.1" 200 -
-2025-05-07 21:56:55,918 INFO werkzeug Thread-13 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:55] "GET / HTTP/1.1" 200 -
-2025-05-07 21:56:56,525 INFO werkzeug Thread-14 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:56] "GET / HTTP/1.1" 200 -
-2025-05-07 21:56:56,570 INFO werkzeug Thread-15 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:56] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
-2025-05-07 21:56:56,576 INFO werkzeug Thread-16 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:56] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
-2025-05-07 21:56:56,865 INFO werkzeug Thread-17 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:56] "GET /api/schools/list HTTP/1.1" 200 -
-2025-05-07 21:56:56,935 INFO werkzeug Thread-18 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:56] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
-2025-05-07 21:56:56,949 INFO werkzeug Thread-19 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:56] "GET /api/schools/list HTTP/1.1" 200 -
-2025-05-07 21:56:56,958 INFO werkzeug Thread-20 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:56] "GET /api/national-lines/total HTTP/1.1" 200 -
-2025-05-07 21:56:56,958 INFO werkzeug Thread-21 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:56] "GET /api/national-lines/politics HTTP/1.1" 200 -
-2025-05-07 21:56:56,963 INFO werkzeug Thread-22 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:56] "GET /api/national-lines/others HTTP/1.1" 200 -
-2025-05-07 21:56:56,964 INFO werkzeug Thread-23 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:56] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
-2025-05-07 21:56:56,966 INFO werkzeug Thread-24 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:56] "GET /api/announcements HTTP/1.1" 200 -
-2025-05-07 21:56:57,036 INFO werkzeug Thread-25 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:57] "GET /api/national-lines/total HTTP/1.1" 200 -
-2025-05-07 21:56:57,038 INFO werkzeug Thread-26 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:57] "GET /api/national-lines/politics HTTP/1.1" 200 -
-2025-05-07 21:56:57,042 INFO werkzeug Thread-27 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:57] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
-2025-05-07 21:56:57,045 INFO werkzeug Thread-29 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:57] "GET /api/announcements HTTP/1.1" 200 -
-2025-05-07 21:56:57,046 INFO werkzeug Thread-28 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:57] "GET /api/national-lines/others HTTP/1.1" 200 -
-2025-05-07 21:56:58,268 INFO werkzeug Thread-30 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:58] "GET /school-list HTTP/1.1" 200 -
-2025-05-07 21:56:58,419 INFO werkzeug Thread-31 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:58] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
-2025-05-07 21:56:58,760 INFO werkzeug Thread-32 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:58] "GET / HTTP/1.1" 200 -
-2025-05-07 21:56:58,764 INFO werkzeug Thread-33 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:56:58] "GET / HTTP/1.1" 200 -
-2025-05-07 21:57:21,031 INFO werkzeug Thread-35 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:57:21] "[33mGET /apple-touch-icon-precomposed.png HTTP/1.1[0m" 404 -
-2025-05-07 21:57:21,032 INFO werkzeug Thread-36 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:57:21] "[33mGET /apple-touch-icon.png HTTP/1.1[0m" 404 -
-2025-05-07 21:57:21,032 INFO werkzeug Thread-37 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:57:21] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
-2025-05-07 21:57:21,097 INFO werkzeug Thread-34 (process_request_thread) : 127.0.0.1 - - [07/May/2025 21:57:21] "GET /school-list HTTP/1.1" 200 -
+2025-05-08 01:02:53,778 INFO app MainThread : Flask 应用启动
+2025-05-08 01:02:53,806 WARNING werkzeug MainThread :  * Debugger is active!
+2025-05-08 01:02:53,819 INFO werkzeug MainThread :  * Debugger PIN: 719-181-218
+2025-05-08 01:03:38,080 INFO werkzeug MainThread :  * Detected change in '/Users/mac/WorkSpace/考研推荐系统/app.py', reloading
+2025-05-08 01:03:38,524 INFO app MainThread : Flask 应用启动
+2025-05-08 01:03:38,548 WARNING werkzeug MainThread :  * Debugger is active!
+2025-05-08 01:03:38,558 INFO werkzeug MainThread :  * Debugger PIN: 719-181-218
+2025-05-08 01:03:41,142 INFO app MainThread : Flask 应用启动
+2025-05-08 01:03:41,168 INFO werkzeug MainThread : [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5001
+2025-05-08 01:03:41,169 INFO werkzeug MainThread : [33mPress CTRL+C to quit[0m
+2025-05-08 01:03:41,169 INFO werkzeug MainThread :  * Restarting with stat
+2025-05-08 01:03:41,474 INFO app MainThread : Flask 应用启动
+2025-05-08 01:03:41,494 WARNING werkzeug MainThread :  * Debugger is active!
+2025-05-08 01:03:41,503 INFO werkzeug MainThread :  * Debugger PIN: 719-181-218
+2025-05-08 01:03:43,130 INFO werkzeug Thread-2 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:03:43] "GET / HTTP/1.1" 200 -
+2025-05-08 01:03:43,320 INFO werkzeug Thread-3 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:03:43] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:03:43,321 INFO werkzeug Thread-4 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:03:43] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:03:43,671 INFO werkzeug Thread-5 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:03:43] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:03:43,674 INFO werkzeug Thread-6 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:03:43] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:03:43,696 INFO werkzeug Thread-7 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:03:43] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:03:43,902 INFO werkzeug Thread-8 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:03:43] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:03:43,905 INFO werkzeug Thread-10 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:03:43] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:03:43,906 INFO werkzeug Thread-9 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:03:43] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:03:43,913 INFO werkzeug Thread-11 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:03:43] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:03:43,916 INFO werkzeug Thread-12 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:03:43] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:03:43,917 INFO werkzeug Thread-13 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:03:43] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:03:43,920 INFO werkzeug Thread-14 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:03:43] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:03:44,018 INFO werkzeug Thread-15 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:03:44] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:03:44,018 INFO werkzeug Thread-16 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:03:44] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:03:44,020 INFO werkzeug Thread-17 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:03:44] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:04:03,608 INFO werkzeug Thread-18 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:03] "[35m[1mGET /admin/announcements HTTP/1.1[0m" 500 -
+2025-05-08 01:04:03,671 INFO werkzeug Thread-19 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:03] "[36mGET /admin/announcements?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:04:03,672 INFO werkzeug Thread-20 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:03] "[36mGET /admin/announcements?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2025-05-08 01:04:03,942 INFO werkzeug Thread-21 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:03] "GET /admin/announcements?__debugger__=yes&cmd=resource&f=console.png&s=vErS2dTWrPgwhsbiBzSy HTTP/1.1" 200 -
+2025-05-08 01:04:04,223 INFO werkzeug Thread-22 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:04] "GET /admin/?__debugger__=yes&amp;cmd=resource&amp;f=debugger.js HTTP/1.1" 200 -
+2025-05-08 01:04:05,858 INFO werkzeug Thread-23 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:05] "[35m[1mGET /admin/announcements HTTP/1.1[0m" 500 -
+2025-05-08 01:04:05,997 INFO werkzeug Thread-24 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:05] "[36mGET /admin/announcements?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:04:05,999 INFO werkzeug Thread-25 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:05] "[36mGET /admin/announcements?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2025-05-08 01:04:06,614 INFO werkzeug Thread-26 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:06] "[36mGET /admin/announcements?__debugger__=yes&cmd=resource&f=console.png&s=vErS2dTWrPgwhsbiBzSy HTTP/1.1[0m" 304 -
+2025-05-08 01:04:06,643 INFO werkzeug Thread-27 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:06] "GET /admin/?__debugger__=yes&amp;cmd=resource&amp;f=debugger.js HTTP/1.1" 200 -
+2025-05-08 01:04:10,423 INFO werkzeug Thread-28 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:10] "GET /admin/ HTTP/1.1" 200 -
+2025-05-08 01:04:10,499 INFO werkzeug Thread-29 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:10] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:04:10,500 INFO werkzeug Thread-30 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:10] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:04:10,775 INFO werkzeug Thread-31 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:10] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:04:10,778 INFO werkzeug Thread-32 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:10] "GET / HTTP/1.1" 200 -
+2025-05-08 01:04:12,623 INFO werkzeug Thread-33 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:12] "GET /admin/edit-exam-ratios HTTP/1.1" 200 -
+2025-05-08 01:04:12,730 INFO werkzeug Thread-34 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:12] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:04:12,731 INFO werkzeug Thread-35 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:12] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:04:13,013 INFO werkzeug Thread-36 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:13] "GET / HTTP/1.1" 200 -
+2025-05-08 01:04:13,019 INFO werkzeug Thread-37 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:13] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:04:13,650 INFO werkzeug Thread-38 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:13] "GET /admin/edit-national-lines HTTP/1.1" 200 -
+2025-05-08 01:04:13,711 INFO werkzeug Thread-39 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:13] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:04:13,712 INFO werkzeug Thread-40 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:13] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:04:14,019 INFO werkzeug Thread-41 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:14] "GET / HTTP/1.1" 200 -
+2025-05-08 01:04:14,020 INFO werkzeug Thread-42 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:14] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:04:14,724 INFO werkzeug Thread-43 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:14] "GET /admin/edit-exam-ratios HTTP/1.1" 200 -
+2025-05-08 01:04:14,780 INFO werkzeug Thread-44 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:14] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:04:14,781 INFO werkzeug Thread-45 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:14] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:04:15,063 INFO werkzeug Thread-46 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:15] "GET / HTTP/1.1" 200 -
+2025-05-08 01:04:15,065 INFO werkzeug Thread-47 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:15] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:04:15,746 INFO werkzeug Thread-48 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:15] "GET /admin/edit-national-lines HTTP/1.1" 200 -
+2025-05-08 01:04:15,793 INFO werkzeug Thread-49 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:15] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:04:15,793 INFO werkzeug Thread-50 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:15] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:04:16,098 INFO werkzeug Thread-51 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:16] "GET / HTTP/1.1" 200 -
+2025-05-08 01:04:16,100 INFO werkzeug Thread-52 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:16] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:04:19,666 INFO werkzeug Thread-53 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:19] "[35m[1mGET /admin/announcements HTTP/1.1[0m" 500 -
+2025-05-08 01:04:19,711 INFO werkzeug Thread-54 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:19] "[36mGET /admin/announcements?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:04:19,713 INFO werkzeug Thread-55 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:19] "[36mGET /admin/announcements?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2025-05-08 01:04:19,961 INFO werkzeug Thread-56 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:19] "[36mGET /admin/announcements?__debugger__=yes&cmd=resource&f=console.png&s=vErS2dTWrPgwhsbiBzSy HTTP/1.1[0m" 304 -
+2025-05-08 01:04:20,042 INFO werkzeug Thread-57 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:20] "GET /admin/?__debugger__=yes&amp;cmd=resource&amp;f=debugger.js HTTP/1.1" 200 -
+2025-05-08 01:04:23,062 INFO werkzeug Thread-58 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:23] "GET /admin/schools HTTP/1.1" 200 -
+2025-05-08 01:04:23,131 INFO werkzeug Thread-59 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:23] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:04:23,137 INFO werkzeug Thread-60 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:23] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:04:23,486 INFO werkzeug Thread-61 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:23] "GET / HTTP/1.1" 200 -
+2025-05-08 01:04:23,487 INFO werkzeug Thread-62 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:23] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:04:23,935 INFO werkzeug Thread-63 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:23] "GET /admin/users HTTP/1.1" 200 -
+2025-05-08 01:04:24,044 INFO werkzeug Thread-64 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:24] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:04:24,046 INFO werkzeug Thread-65 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:24] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:04:24,331 INFO werkzeug Thread-66 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:24] "GET / HTTP/1.1" 200 -
+2025-05-08 01:04:24,336 INFO werkzeug Thread-67 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:24] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:04:24,812 INFO werkzeug Thread-68 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:24] "GET /admin/profile HTTP/1.1" 200 -
+2025-05-08 01:04:24,876 INFO werkzeug Thread-69 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:24] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:04:24,877 INFO werkzeug Thread-70 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:24] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:04:25,158 INFO werkzeug Thread-71 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:25] "GET / HTTP/1.1" 200 -
+2025-05-08 01:04:25,159 INFO werkzeug Thread-72 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:25] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:04:25,756 INFO werkzeug Thread-73 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:25] "GET /admin/edit-national-lines HTTP/1.1" 200 -
+2025-05-08 01:04:25,813 INFO werkzeug Thread-74 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:25] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:04:25,814 INFO werkzeug Thread-75 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:25] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:04:26,219 INFO werkzeug Thread-76 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:26] "GET / HTTP/1.1" 200 -
+2025-05-08 01:04:26,220 INFO werkzeug Thread-77 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:26] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:04:28,003 INFO werkzeug Thread-78 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:28] "[35m[1mGET /admin/announcements HTTP/1.1[0m" 500 -
+2025-05-08 01:04:28,173 INFO werkzeug Thread-79 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:28] "[36mGET /admin/announcements?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:04:28,174 INFO werkzeug Thread-80 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:28] "[36mGET /admin/announcements?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2025-05-08 01:04:28,423 INFO werkzeug Thread-81 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:28] "[36mGET /admin/announcements?__debugger__=yes&cmd=resource&f=console.png&s=vErS2dTWrPgwhsbiBzSy HTTP/1.1[0m" 304 -
+2025-05-08 01:04:28,525 INFO werkzeug Thread-82 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:04:28] "GET /admin/?__debugger__=yes&amp;cmd=resource&amp;f=debugger.js HTTP/1.1" 200 -
+2025-05-08 01:04:38,937 INFO app MainThread : Flask 应用启动
+2025-05-08 01:04:38,974 INFO werkzeug MainThread : [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5001
+2025-05-08 01:04:38,974 INFO werkzeug MainThread : [33mPress CTRL+C to quit[0m
+2025-05-08 01:04:38,975 INFO werkzeug MainThread :  * Restarting with stat
+2025-05-08 01:04:39,286 INFO app MainThread : Flask 应用启动
+2025-05-08 01:04:39,307 WARNING werkzeug MainThread :  * Debugger is active!
+2025-05-08 01:04:39,318 INFO werkzeug MainThread :  * Debugger PIN: 719-181-218
+2025-05-08 01:07:30,617 INFO werkzeug MainThread :  * Detected change in '/Users/mac/WorkSpace/考研推荐系统/app.py', reloading
+2025-05-08 01:07:30,725 INFO werkzeug MainThread :  * Restarting with stat
+2025-05-08 01:07:31,302 INFO app MainThread : Flask 应用启动
+2025-05-08 01:07:31,332 WARNING werkzeug MainThread :  * Debugger is active!
+2025-05-08 01:07:31,346 INFO werkzeug MainThread :  * Debugger PIN: 719-181-218
+2025-05-08 01:07:33,453 INFO werkzeug MainThread :  * Detected change in '/Users/mac/WorkSpace/考研推荐系统/app.py', reloading
+2025-05-08 01:07:33,507 INFO werkzeug MainThread :  * Restarting with stat
+2025-05-08 01:07:33,833 INFO app MainThread : Flask 应用启动
+2025-05-08 01:07:33,852 WARNING werkzeug MainThread :  * Debugger is active!
+2025-05-08 01:07:33,861 INFO werkzeug MainThread :  * Debugger PIN: 719-181-218
+2025-05-08 01:07:35,966 INFO werkzeug Thread-2 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:07:35] "[35m[1mGET /admin/announcements HTTP/1.1[0m" 500 -
+2025-05-08 01:07:36,166 INFO werkzeug Thread-3 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:07:36] "[36mGET /admin/announcements?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:07:36,168 INFO werkzeug Thread-4 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:07:36] "[36mGET /admin/announcements?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2025-05-08 01:07:36,469 INFO werkzeug Thread-5 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:07:36] "GET /admin/announcements?__debugger__=yes&cmd=resource&f=console.png&s=7XztQEkGOiN2ZxfBr6Tn HTTP/1.1" 200 -
+2025-05-08 01:07:36,724 INFO werkzeug Thread-6 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:07:36] "GET /admin/?__debugger__=yes&amp;cmd=resource&amp;f=debugger.js HTTP/1.1" 200 -
+2025-05-08 01:07:38,455 INFO werkzeug Thread-7 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:07:38] "[35m[1mGET /admin/announcements HTTP/1.1[0m" 500 -
+2025-05-08 01:07:38,586 INFO werkzeug Thread-8 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:07:38] "[36mGET /admin/announcements?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:07:38,587 INFO werkzeug Thread-9 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:07:38] "[36mGET /admin/announcements?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2025-05-08 01:07:38,884 INFO werkzeug Thread-10 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:07:38] "[36mGET /admin/announcements?__debugger__=yes&cmd=resource&f=console.png&s=7XztQEkGOiN2ZxfBr6Tn HTTP/1.1[0m" 304 -
+2025-05-08 01:07:39,012 INFO werkzeug Thread-11 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:07:39] "GET /admin/?__debugger__=yes&amp;cmd=resource&amp;f=debugger.js HTTP/1.1" 200 -
+2025-05-08 01:09:04,744 INFO app MainThread : Flask 应用启动
+2025-05-08 01:09:04,780 INFO werkzeug MainThread : [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5001
+2025-05-08 01:09:04,780 INFO werkzeug MainThread : [33mPress CTRL+C to quit[0m
+2025-05-08 01:09:04,781 INFO werkzeug MainThread :  * Restarting with stat
+2025-05-08 01:09:05,093 INFO app MainThread : Flask 应用启动
+2025-05-08 01:09:05,113 WARNING werkzeug MainThread :  * Debugger is active!
+2025-05-08 01:09:05,124 INFO werkzeug MainThread :  * Debugger PIN: 719-181-218
+2025-05-08 01:09:06,223 INFO werkzeug Thread-2 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:09:06] "[35m[1mGET /admin/announcements HTTP/1.1[0m" 500 -
+2025-05-08 01:09:06,297 INFO werkzeug Thread-3 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:09:06] "[36mGET /admin/announcements?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:09:06,299 INFO werkzeug Thread-4 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:09:06] "[36mGET /admin/announcements?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2025-05-08 01:09:06,635 INFO werkzeug Thread-5 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:09:06] "GET /admin/announcements?__debugger__=yes&cmd=resource&f=console.png&s=pAD4MCTbIDpRDan1M4gL HTTP/1.1" 200 -
+2025-05-08 01:09:06,889 INFO werkzeug Thread-6 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:09:06] "GET /admin/?__debugger__=yes&amp;cmd=resource&amp;f=debugger.js HTTP/1.1" 200 -
+2025-05-08 01:09:17,051 INFO werkzeug Thread-7 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:09:17] "GET /admin/edit-exam-ratios HTTP/1.1" 200 -
+2025-05-08 01:09:17,136 INFO werkzeug Thread-8 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:09:17] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:09:17,138 INFO werkzeug Thread-9 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:09:17] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:09:17,459 INFO werkzeug Thread-11 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:09:17] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:09:17,472 INFO werkzeug Thread-10 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:09:17] "GET / HTTP/1.1" 200 -
+2025-05-08 01:09:19,386 INFO werkzeug Thread-12 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:09:19] "GET /admin/schools HTTP/1.1" 200 -
+2025-05-08 01:09:19,539 INFO werkzeug Thread-13 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:09:19] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:09:19,542 INFO werkzeug Thread-14 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:09:19] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:09:20,000 INFO werkzeug Thread-15 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:09:20] "GET / HTTP/1.1" 200 -
+2025-05-08 01:09:20,003 INFO werkzeug Thread-16 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:09:20] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:09:20,516 INFO werkzeug Thread-17 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:09:20] "[35m[1mGET /admin/announcements HTTP/1.1[0m" 500 -
+2025-05-08 01:09:20,591 INFO werkzeug Thread-18 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:09:20] "[36mGET /admin/announcements?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:09:20,593 INFO werkzeug Thread-19 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:09:20] "[36mGET /admin/announcements?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2025-05-08 01:09:21,195 INFO werkzeug Thread-20 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:09:21] "[36mGET /admin/announcements?__debugger__=yes&cmd=resource&f=console.png&s=pAD4MCTbIDpRDan1M4gL HTTP/1.1[0m" 304 -
+2025-05-08 01:09:21,229 INFO werkzeug Thread-21 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:09:21] "GET /admin/?__debugger__=yes&amp;cmd=resource&amp;f=debugger.js HTTP/1.1" 200 -
+2025-05-08 01:09:41,441 INFO werkzeug MainThread :  * Detected change in '/Users/mac/WorkSpace/考研推荐系统/app.py', reloading
+2025-05-08 01:09:41,506 INFO werkzeug MainThread :  * Restarting with stat
+2025-05-08 01:09:41,994 INFO app MainThread : Flask 应用启动
+2025-05-08 01:09:42,020 WARNING werkzeug MainThread :  * Debugger is active!
+2025-05-08 01:09:42,032 INFO werkzeug MainThread :  * Debugger PIN: 719-181-218
+2025-05-08 01:09:44,121 INFO werkzeug MainThread :  * Detected change in '/Users/mac/WorkSpace/考研推荐系统/app.py', reloading
+2025-05-08 01:09:44,175 INFO werkzeug MainThread :  * Restarting with stat
+2025-05-08 01:09:44,501 INFO app MainThread : Flask 应用启动
+2025-05-08 01:09:44,522 WARNING werkzeug MainThread :  * Debugger is active!
+2025-05-08 01:09:44,530 INFO werkzeug MainThread :  * Debugger PIN: 719-181-218
+2025-05-08 01:09:45,200 INFO werkzeug Thread-2 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:09:45] "[35m[1mGET /admin/announcements HTTP/1.1[0m" 500 -
+2025-05-08 01:09:45,299 INFO werkzeug Thread-3 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:09:45] "[36mGET /admin/announcements?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:09:45,302 INFO werkzeug Thread-4 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:09:45] "[36mGET /admin/announcements?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2025-05-08 01:09:45,603 INFO werkzeug Thread-5 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:09:45] "GET /admin/announcements?__debugger__=yes&cmd=resource&f=console.png&s=9fD1peQYzff4EhEpWhtk HTTP/1.1" 200 -
+2025-05-08 01:09:45,948 INFO werkzeug Thread-6 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:09:45] "GET /admin/?__debugger__=yes&amp;cmd=resource&amp;f=debugger.js HTTP/1.1" 200 -
+2025-05-08 01:12:02,110 INFO werkzeug MainThread :  * Detected change in '/Users/mac/WorkSpace/考研推荐系统/app.py', reloading
+2025-05-08 01:12:02,175 INFO werkzeug MainThread :  * Restarting with stat
+2025-05-08 01:12:02,586 INFO app MainThread : Flask 应用启动
+2025-05-08 01:12:02,611 WARNING werkzeug MainThread :  * Debugger is active!
+2025-05-08 01:12:02,622 INFO werkzeug MainThread :  * Debugger PIN: 719-181-218
+2025-05-08 01:12:13,081 INFO werkzeug MainThread :  * Detected change in '/Users/mac/WorkSpace/考研推荐系统/app.py', reloading
+2025-05-08 01:12:13,139 INFO werkzeug MainThread :  * Restarting with stat
+2025-05-08 01:12:15,823 INFO app MainThread : Flask 应用启动
+2025-05-08 01:12:15,855 INFO werkzeug MainThread : [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5001
+2025-05-08 01:12:15,856 INFO werkzeug MainThread : [33mPress CTRL+C to quit[0m
+2025-05-08 01:12:15,856 INFO werkzeug MainThread :  * Restarting with stat
+2025-05-08 01:12:16,158 INFO app MainThread : Flask 应用启动
+2025-05-08 01:12:16,180 WARNING werkzeug MainThread :  * Debugger is active!
+2025-05-08 01:12:16,189 INFO werkzeug MainThread :  * Debugger PIN: 719-181-218
+2025-05-08 01:12:19,274 INFO werkzeug Thread-2 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:12:19] "GET /admin/announcements HTTP/1.1" 200 -
+2025-05-08 01:12:19,430 INFO werkzeug Thread-3 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:12:19] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:12:19,431 INFO werkzeug Thread-4 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:12:19] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:12:20,312 INFO werkzeug Thread-6 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:12:20] "GET /static/js/main.js HTTP/1.1" 200 -
+2025-05-08 01:12:20,326 INFO werkzeug Thread-5 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:12:20] "GET / HTTP/1.1" 200 -
+2025-05-08 01:12:23,644 INFO flask_wtf.csrf Thread-7 (process_request_thread) : The CSRF token is missing.
+2025-05-08 01:12:23,645 INFO werkzeug Thread-7 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:12:23] "[31m[1mPOST /admin/announcements/reorder HTTP/1.1[0m" 400 -
+2025-05-08 01:12:35,500 INFO flask_wtf.csrf Thread-8 (process_request_thread) : The CSRF token is missing.
+2025-05-08 01:12:35,501 INFO werkzeug Thread-8 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:12:35] "[31m[1mPOST /admin/announcements/reorder HTTP/1.1[0m" 400 -
+2025-05-08 01:12:56,432 INFO werkzeug Thread-9 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:12:56] "GET /admin/announcements HTTP/1.1" 200 -
+2025-05-08 01:12:56,603 INFO werkzeug Thread-10 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:12:56] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:12:56,604 INFO werkzeug Thread-11 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:12:56] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:12:57,101 INFO werkzeug Thread-12 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:12:57] "GET / HTTP/1.1" 200 -
+2025-05-08 01:12:57,103 INFO werkzeug Thread-13 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:12:57] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:12:58,958 INFO werkzeug Thread-14 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:12:58] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:13:01,166 INFO werkzeug Thread-15 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:01] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:13:06,800 INFO werkzeug Thread-16 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:06] "GET / HTTP/1.1" 200 -
+2025-05-08 01:13:06,886 INFO werkzeug Thread-17 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:06] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:13:06,886 INFO werkzeug Thread-18 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:06] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:13:07,170 INFO werkzeug Thread-19 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:07] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:13:07,203 INFO werkzeug Thread-20 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:07] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:13:07,206 INFO werkzeug Thread-21 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:07] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:13:07,207 INFO werkzeug Thread-22 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:07] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:13:07,543 INFO werkzeug Thread-23 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:07] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:13:07,547 INFO werkzeug Thread-24 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:07] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:13:07,550 INFO werkzeug Thread-25 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:07] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:13:07,553 INFO werkzeug Thread-26 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:07] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:13:07,553 INFO werkzeug Thread-27 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:07] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:13:07,556 INFO werkzeug Thread-28 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:07] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:13:07,557 INFO werkzeug Thread-29 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:07] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:13:07,654 INFO werkzeug Thread-30 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:07] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:13:07,655 INFO werkzeug Thread-31 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:07] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:13:12,724 INFO werkzeug Thread-32 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:12] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:13:15,602 INFO werkzeug Thread-33 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:15] "GET / HTTP/1.1" 200 -
+2025-05-08 01:13:15,769 INFO werkzeug Thread-34 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:15] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:13:15,769 INFO werkzeug Thread-35 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:15] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:13:16,229 INFO werkzeug Thread-36 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:16] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:13:16,247 INFO werkzeug Thread-37 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:16] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:13:16,252 INFO werkzeug Thread-39 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:16] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:13:16,256 INFO werkzeug Thread-38 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:16] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:13:16,257 INFO werkzeug Thread-40 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:16] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:13:16,258 INFO werkzeug Thread-41 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:16] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:13:16,260 INFO werkzeug Thread-43 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:16] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:13:16,262 INFO werkzeug Thread-42 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:16] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:13:16,263 INFO werkzeug Thread-44 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:16] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:13:16,266 INFO werkzeug Thread-45 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:16] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:13:16,266 INFO werkzeug Thread-46 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:16] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:13:16,267 INFO werkzeug Thread-47 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:16] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:13:16,272 INFO werkzeug Thread-48 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:16] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:13:20,505 INFO werkzeug Thread-49 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:20] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:13:22,677 INFO werkzeug Thread-50 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:22] "GET / HTTP/1.1" 200 -
+2025-05-08 01:13:22,761 INFO werkzeug Thread-51 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:22] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:13:22,766 INFO werkzeug Thread-52 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:22] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:13:23,176 INFO werkzeug Thread-54 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:23] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:13:23,179 INFO werkzeug Thread-53 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:23] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:13:23,182 INFO werkzeug Thread-55 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:23] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:13:23,184 INFO werkzeug Thread-56 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:23] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:13:23,185 INFO werkzeug Thread-57 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:23] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:13:23,186 INFO werkzeug Thread-58 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:23] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:13:23,187 INFO werkzeug Thread-59 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:23] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:13:23,306 INFO werkzeug Thread-60 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:23] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:13:23,308 INFO werkzeug Thread-61 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:23] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:13:23,310 INFO werkzeug Thread-62 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:23] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:13:23,313 INFO werkzeug Thread-64 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:23] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:13:23,315 INFO werkzeug Thread-63 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:23] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:13:23,315 INFO werkzeug Thread-65 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:23] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:13:27,286 INFO werkzeug Thread-66 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:27] "GET / HTTP/1.1" 200 -
+2025-05-08 01:13:27,459 INFO werkzeug Thread-67 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:27] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:13:27,461 INFO werkzeug Thread-68 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:27] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:13:27,820 INFO werkzeug Thread-69 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:27] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:13:27,823 INFO werkzeug Thread-70 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:27] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:13:27,856 INFO werkzeug Thread-71 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:27] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:13:27,859 INFO werkzeug Thread-73 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:27] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:13:27,861 INFO werkzeug Thread-72 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:27] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:13:27,862 INFO werkzeug Thread-74 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:27] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:13:27,884 INFO werkzeug Thread-75 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:27] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:13:27,890 INFO werkzeug Thread-76 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:27] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:13:27,893 INFO werkzeug Thread-77 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:27] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:13:27,895 INFO werkzeug Thread-78 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:27] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:13:27,899 INFO werkzeug Thread-80 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:27] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:13:27,899 INFO werkzeug Thread-81 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:27] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:13:27,900 INFO werkzeug Thread-79 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:27] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:13:31,441 INFO werkzeug Thread-82 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:31] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:13:33,556 INFO werkzeug Thread-83 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:33] "GET / HTTP/1.1" 200 -
+2025-05-08 01:13:33,652 INFO werkzeug Thread-85 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:33] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:13:33,652 INFO werkzeug Thread-84 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:33] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:13:33,950 INFO werkzeug Thread-86 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:33] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:13:33,954 INFO werkzeug Thread-87 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:33] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:13:33,973 INFO werkzeug Thread-88 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:33] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:13:34,015 INFO werkzeug Thread-89 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:34] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:13:34,101 INFO werkzeug Thread-90 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:34] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:13:34,103 INFO werkzeug Thread-91 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:34] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:13:34,109 INFO werkzeug Thread-94 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:34] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:13:34,110 INFO werkzeug Thread-92 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:34] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:13:34,110 INFO werkzeug Thread-93 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:34] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:13:34,140 INFO werkzeug Thread-95 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:34] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:13:34,243 INFO werkzeug Thread-96 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:34] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:13:34,244 INFO werkzeug Thread-97 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:34] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:13:34,245 INFO werkzeug Thread-98 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:34] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:13:38,822 INFO werkzeug Thread-99 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:38] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:13:40,821 INFO werkzeug Thread-100 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:40] "GET / HTTP/1.1" 200 -
+2025-05-08 01:13:40,895 INFO werkzeug Thread-101 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:40] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:13:40,896 INFO werkzeug Thread-102 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:40] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:13:41,244 INFO werkzeug Thread-103 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:41] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:13:41,247 INFO werkzeug Thread-104 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:41] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:13:41,249 INFO werkzeug Thread-105 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:41] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:13:41,249 INFO werkzeug Thread-106 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:41] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:13:41,251 INFO werkzeug Thread-107 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:41] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:13:41,253 INFO werkzeug Thread-108 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:41] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:13:41,255 INFO werkzeug Thread-109 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:41] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:13:41,384 INFO werkzeug Thread-110 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:41] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:13:41,387 INFO werkzeug Thread-111 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:41] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:13:41,388 INFO werkzeug Thread-112 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:41] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:13:41,392 INFO werkzeug Thread-114 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:41] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:13:41,393 INFO werkzeug Thread-113 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:41] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:13:41,394 INFO werkzeug Thread-115 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:41] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:13:46,751 INFO werkzeug Thread-116 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:46] "GET /admin/announcements HTTP/1.1" 200 -
+2025-05-08 01:13:46,849 INFO werkzeug Thread-117 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:46] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:13:46,851 INFO werkzeug Thread-118 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:46] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:13:47,291 INFO werkzeug Thread-119 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:47] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:13:47,293 INFO werkzeug Thread-120 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:47] "GET / HTTP/1.1" 200 -
+2025-05-08 01:13:50,082 INFO werkzeug Thread-121 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:50] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:13:52,541 INFO werkzeug Thread-122 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:52] "GET / HTTP/1.1" 200 -
+2025-05-08 01:13:52,706 INFO werkzeug Thread-124 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:52] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:13:52,706 INFO werkzeug Thread-123 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:52] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:13:53,069 INFO werkzeug Thread-125 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:53] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:13:53,083 INFO werkzeug Thread-126 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:53] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:13:53,112 INFO werkzeug Thread-127 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:53] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:13:53,127 INFO werkzeug Thread-128 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:53] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:13:53,130 INFO werkzeug Thread-129 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:53] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:13:53,132 INFO werkzeug Thread-130 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:53] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:13:53,135 INFO werkzeug Thread-132 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:53] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:13:53,136 INFO werkzeug Thread-131 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:53] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:13:53,137 INFO werkzeug Thread-133 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:53] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:13:53,258 INFO werkzeug Thread-134 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:53] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:13:53,262 INFO werkzeug Thread-136 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:53] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:13:53,262 INFO werkzeug Thread-135 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:53] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:13:53,263 INFO werkzeug Thread-137 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:53] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:13:58,793 INFO werkzeug Thread-138 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:13:58] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:14:01,419 INFO werkzeug Thread-139 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:01] "GET / HTTP/1.1" 200 -
+2025-05-08 01:14:01,524 INFO werkzeug Thread-140 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:01] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:14:01,525 INFO werkzeug Thread-141 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:01] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:14:01,974 INFO werkzeug Thread-142 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:01] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:14:02,063 INFO werkzeug Thread-143 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:02] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:14:02,067 INFO werkzeug Thread-144 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:02] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:14:02,068 INFO werkzeug Thread-145 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:02] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:14:02,068 INFO werkzeug Thread-146 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:02] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:14:03,505 INFO werkzeug Thread-148 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:03] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:14:03,506 INFO werkzeug Thread-147 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:03] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:14:03,515 INFO werkzeug Thread-149 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:03] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:14:03,517 INFO werkzeug Thread-150 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:03] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:14:03,520 INFO werkzeug Thread-151 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:03] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:14:03,523 INFO werkzeug Thread-152 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:03] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:14:03,742 INFO werkzeug Thread-153 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:03] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:14:03,745 INFO werkzeug Thread-154 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:03] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:14:05,686 INFO werkzeug Thread-155 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:05] "GET / HTTP/1.1" 200 -
+2025-05-08 01:14:05,778 INFO werkzeug Thread-156 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:05] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:14:05,778 INFO werkzeug Thread-157 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:05] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:14:06,073 INFO werkzeug Thread-158 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:06] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:14:06,304 INFO werkzeug Thread-159 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:06] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:14:06,315 INFO werkzeug Thread-160 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:06] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:14:06,319 INFO werkzeug Thread-162 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:06] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:14:06,320 INFO werkzeug Thread-161 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:06] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:14:06,326 INFO werkzeug Thread-165 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:06] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:14:06,326 INFO werkzeug Thread-163 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:06] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:14:06,327 INFO werkzeug Thread-164 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:06] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:14:06,468 INFO werkzeug Thread-166 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:06] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:14:06,471 INFO werkzeug Thread-167 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:06] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:14:06,473 INFO werkzeug Thread-168 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:06] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:14:06,475 INFO werkzeug Thread-169 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:06] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:14:06,477 INFO werkzeug Thread-170 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:06] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:14:07,982 INFO werkzeug Thread-171 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:07] "GET / HTTP/1.1" 200 -
+2025-05-08 01:14:08,182 INFO werkzeug Thread-172 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:08] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:14:08,183 INFO werkzeug Thread-173 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:08] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:14:08,545 INFO werkzeug Thread-174 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:08] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:14:08,572 INFO werkzeug Thread-176 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:08] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:14:08,573 INFO werkzeug Thread-175 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:08] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:14:08,575 INFO werkzeug Thread-177 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:08] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:14:08,577 INFO werkzeug Thread-178 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:08] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:14:08,578 INFO werkzeug Thread-179 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:08] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:14:08,602 INFO werkzeug Thread-180 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:08] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:14:08,611 INFO werkzeug Thread-181 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:08] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:14:08,620 INFO werkzeug Thread-182 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:08] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:14:08,622 INFO werkzeug Thread-183 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:08] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:14:08,624 INFO werkzeug Thread-184 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:08] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:14:08,626 INFO werkzeug Thread-185 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:08] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:14:08,626 INFO werkzeug Thread-186 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:08] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:14:11,743 INFO werkzeug Thread-187 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:11] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:14:12,334 INFO werkzeug Thread-188 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:12] "GET /admin/announcements HTTP/1.1" 200 -
+2025-05-08 01:14:12,592 INFO werkzeug Thread-190 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:12] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:14:12,593 INFO werkzeug Thread-189 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:12] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:14:12,994 INFO werkzeug Thread-191 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:12] "GET / HTTP/1.1" 200 -
+2025-05-08 01:14:12,999 INFO werkzeug Thread-192 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:12] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:14:17,120 INFO werkzeug Thread-193 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:17] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:14:18,310 INFO werkzeug Thread-194 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:18] "GET /admin/announcements HTTP/1.1" 200 -
+2025-05-08 01:14:18,391 INFO werkzeug Thread-195 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:18] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:14:18,391 INFO werkzeug Thread-196 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:18] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:14:18,703 INFO werkzeug Thread-197 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:18] "GET / HTTP/1.1" 200 -
+2025-05-08 01:14:18,704 INFO werkzeug Thread-198 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:18] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:14:20,528 INFO werkzeug Thread-199 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:20] "GET /admin/announcements HTTP/1.1" 200 -
+2025-05-08 01:14:20,658 INFO werkzeug Thread-200 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:20] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:14:20,660 INFO werkzeug Thread-201 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:20] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:14:21,096 INFO werkzeug Thread-202 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:21] "GET / HTTP/1.1" 200 -
+2025-05-08 01:14:21,098 INFO werkzeug Thread-203 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:21] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:14:24,284 INFO werkzeug Thread-204 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:24] "GET / HTTP/1.1" 200 -
+2025-05-08 01:14:24,376 INFO werkzeug Thread-205 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:24] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:14:24,376 INFO werkzeug Thread-206 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:24] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:14:24,839 INFO werkzeug Thread-207 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:24] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:14:24,856 INFO werkzeug Thread-208 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:24] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:14:24,858 INFO werkzeug Thread-209 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:24] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:14:24,859 INFO werkzeug Thread-210 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:24] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:14:24,896 INFO werkzeug Thread-211 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:24] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:14:24,901 INFO werkzeug Thread-212 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:24] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:14:24,902 INFO werkzeug Thread-213 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:24] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:14:24,905 INFO werkzeug Thread-214 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:24] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:14:24,910 INFO werkzeug Thread-216 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:24] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:14:24,910 INFO werkzeug Thread-215 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:24] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:14:24,911 INFO werkzeug Thread-217 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:24] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:14:25,007 INFO werkzeug Thread-218 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:25] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:14:25,007 INFO werkzeug Thread-219 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:25] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:14:42,410 INFO werkzeug Thread-220 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:42] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:14:44,408 INFO werkzeug Thread-221 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:44] "GET / HTTP/1.1" 200 -
+2025-05-08 01:14:44,511 INFO werkzeug Thread-222 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:44] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:14:44,511 INFO werkzeug Thread-223 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:44] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:14:44,858 INFO werkzeug Thread-224 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:44] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:14:44,989 INFO werkzeug Thread-225 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:44] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:14:44,994 INFO werkzeug Thread-228 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:44] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:14:44,994 INFO werkzeug Thread-227 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:44] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:14:44,996 INFO werkzeug Thread-226 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:44] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:14:44,998 INFO werkzeug Thread-230 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:44] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:14:44,998 INFO werkzeug Thread-229 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:44] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:14:45,081 INFO werkzeug Thread-231 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:45] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:14:45,084 INFO werkzeug Thread-232 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:45] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:14:45,086 INFO werkzeug Thread-233 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:45] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:14:45,088 INFO werkzeug Thread-235 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:45] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:14:45,089 INFO werkzeug Thread-234 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:45] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:14:45,089 INFO werkzeug Thread-236 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:45] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:14:50,320 INFO werkzeug Thread-237 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:50] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:14:52,326 INFO werkzeug Thread-238 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:52] "GET / HTTP/1.1" 200 -
+2025-05-08 01:14:52,438 INFO werkzeug Thread-239 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:52] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:14:52,439 INFO werkzeug Thread-240 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:52] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:14:52,927 INFO werkzeug Thread-241 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:52] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:14:52,992 INFO werkzeug Thread-242 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:52] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:14:53,118 INFO werkzeug Thread-243 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:53] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:14:53,119 INFO werkzeug Thread-245 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:53] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:14:53,120 INFO werkzeug Thread-244 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:53] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:14:53,122 INFO werkzeug Thread-246 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:53] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:14:53,125 INFO werkzeug Thread-248 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:53] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:14:53,126 INFO werkzeug Thread-247 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:53] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:14:53,216 INFO werkzeug Thread-249 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:53] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:14:53,221 INFO werkzeug Thread-251 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:53] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:14:53,221 INFO werkzeug Thread-253 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:53] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:14:53,221 INFO werkzeug Thread-250 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:53] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:14:53,222 INFO werkzeug Thread-252 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:53] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:14:58,335 INFO werkzeug Thread-254 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:58] "GET / HTTP/1.1" 200 -
+2025-05-08 01:14:58,431 INFO werkzeug Thread-255 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:58] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:14:58,431 INFO werkzeug Thread-256 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:58] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:14:58,902 INFO werkzeug Thread-257 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:58] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:14:58,927 INFO werkzeug Thread-258 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:58] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:14:59,009 INFO werkzeug Thread-259 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:14:59] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:15:00,793 INFO werkzeug Thread-260 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:00] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:15:00,797 INFO werkzeug Thread-262 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:00] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:15:00,801 INFO werkzeug Thread-264 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:00] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:15:00,803 INFO werkzeug Thread-261 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:00] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:15:00,804 INFO werkzeug Thread-263 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:00] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:15:00,805 INFO werkzeug Thread-265 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:00] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:15:00,881 INFO werkzeug Thread-266 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:00] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:15:00,884 INFO werkzeug Thread-267 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:00] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:15:00,885 INFO werkzeug Thread-268 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:00] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:15:00,886 INFO werkzeug Thread-269 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:00] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:15:02,467 INFO werkzeug Thread-270 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:02] "GET /admin/announcements HTTP/1.1" 200 -
+2025-05-08 01:15:02,588 INFO werkzeug Thread-271 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:02] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:15:02,589 INFO werkzeug Thread-272 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:02] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:15:02,951 INFO werkzeug Thread-273 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:02] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:15:02,965 INFO werkzeug Thread-274 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:02] "GET / HTTP/1.1" 200 -
+2025-05-08 01:15:06,257 INFO werkzeug Thread-275 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:06] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:15:06,620 INFO werkzeug Thread-276 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:06] "GET /admin/announcements HTTP/1.1" 200 -
+2025-05-08 01:15:06,712 INFO werkzeug Thread-277 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:06] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:15:06,712 INFO werkzeug Thread-278 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:06] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:15:07,050 INFO werkzeug Thread-279 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:07] "GET / HTTP/1.1" 200 -
+2025-05-08 01:15:07,051 INFO werkzeug Thread-280 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:07] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:15:09,009 INFO werkzeug Thread-281 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:09] "GET / HTTP/1.1" 200 -
+2025-05-08 01:15:09,063 INFO werkzeug Thread-282 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:09] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:15:09,064 INFO werkzeug Thread-283 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:09] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:15:09,423 INFO werkzeug Thread-284 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:09] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:15:09,550 INFO werkzeug Thread-285 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:09] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:15:09,595 INFO werkzeug Thread-286 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:09] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:15:09,597 INFO werkzeug Thread-287 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:09] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:15:09,600 INFO werkzeug Thread-288 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:09] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:15:09,601 INFO werkzeug Thread-289 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:09] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:15:09,604 INFO werkzeug Thread-291 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:09] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:15:09,604 INFO werkzeug Thread-290 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:09] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:15:09,666 INFO werkzeug Thread-292 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:09] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:15:09,670 INFO werkzeug Thread-293 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:09] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:15:09,671 INFO werkzeug Thread-295 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:09] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:15:09,671 INFO werkzeug Thread-294 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:09] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:15:09,674 INFO werkzeug Thread-296 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:09] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:15:15,658 INFO werkzeug Thread-297 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:15] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:15:17,780 INFO werkzeug Thread-298 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:17] "GET / HTTP/1.1" 200 -
+2025-05-08 01:15:17,905 INFO werkzeug Thread-299 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:17] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:15:17,907 INFO werkzeug Thread-300 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:17] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:15:18,168 INFO werkzeug Thread-301 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:18] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:15:18,352 INFO werkzeug Thread-302 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:18] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:15:18,370 INFO werkzeug Thread-303 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:18] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:15:18,372 INFO werkzeug Thread-304 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:18] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:15:18,374 INFO werkzeug Thread-305 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:18] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:15:18,376 INFO werkzeug Thread-306 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:18] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:15:18,376 INFO werkzeug Thread-307 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:18] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:15:18,441 INFO werkzeug Thread-308 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:18] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:15:18,449 INFO werkzeug Thread-309 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:18] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:15:18,452 INFO werkzeug Thread-310 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:18] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:15:18,454 INFO werkzeug Thread-312 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:18] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:15:18,454 INFO werkzeug Thread-311 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:18] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:15:18,456 INFO werkzeug Thread-313 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:15:18] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:16:34,215 INFO werkzeug Thread-314 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:16:34] "GET /admin/announcements HTTP/1.1" 200 -
+2025-05-08 01:16:34,476 INFO werkzeug Thread-315 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:16:34] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:16:34,484 INFO werkzeug Thread-316 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:16:34] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:16:34,988 INFO werkzeug Thread-317 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:16:34] "GET / HTTP/1.1" 200 -
+2025-05-08 01:16:34,988 INFO werkzeug Thread-318 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:16:34] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:16:37,385 INFO werkzeug Thread-319 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:16:37] "GET /admin/announcements HTTP/1.1" 200 -
+2025-05-08 01:16:37,523 INFO werkzeug Thread-320 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:16:37] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:16:37,523 INFO werkzeug Thread-321 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:16:37] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:16:37,934 INFO werkzeug Thread-322 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:16:37] "GET / HTTP/1.1" 200 -
+2025-05-08 01:16:37,935 INFO werkzeug Thread-323 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:16:37] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:16:47,125 INFO werkzeug Thread-324 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:16:47] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:16:52,902 INFO werkzeug Thread-325 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:16:52] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:17:00,670 INFO werkzeug Thread-326 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:00] "GET / HTTP/1.1" 200 -
+2025-05-08 01:17:00,801 INFO werkzeug Thread-327 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:00] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:17:00,801 INFO werkzeug Thread-328 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:00] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:17:01,152 INFO werkzeug Thread-329 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:01] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:17:01,365 INFO werkzeug Thread-330 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:01] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:17:01,377 INFO werkzeug Thread-331 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:01] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:17:01,540 INFO werkzeug Thread-332 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:01] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:17:01,548 INFO werkzeug Thread-333 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:01] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:17:01,552 INFO werkzeug Thread-334 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:01] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:17:01,553 INFO werkzeug Thread-335 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:01] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:17:01,557 INFO werkzeug Thread-337 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:01] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:17:01,558 INFO werkzeug Thread-336 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:01] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:17:01,627 INFO werkzeug Thread-338 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:01] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:17:01,632 INFO werkzeug Thread-339 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:01] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:17:01,637 INFO werkzeug Thread-340 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:01] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:17:01,638 INFO werkzeug Thread-341 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:01] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:17:08,254 INFO werkzeug Thread-342 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:08] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:17:12,011 INFO werkzeug Thread-343 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:12] "GET / HTTP/1.1" 200 -
+2025-05-08 01:17:12,102 INFO werkzeug Thread-345 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:12] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:17:12,102 INFO werkzeug Thread-344 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:12] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:17:12,517 INFO werkzeug Thread-346 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:12] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:17:12,521 INFO werkzeug Thread-347 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:12] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:17:12,526 INFO werkzeug Thread-348 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:12] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:17:12,528 INFO werkzeug Thread-349 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:12] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:17:12,529 INFO werkzeug Thread-350 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:12] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:17:12,531 INFO werkzeug Thread-351 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:12] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:17:12,531 INFO werkzeug Thread-352 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:12] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:17:12,593 INFO werkzeug Thread-353 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:12] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:17:12,601 INFO werkzeug Thread-354 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:12] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:17:12,606 INFO werkzeug Thread-355 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:12] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:17:12,607 INFO werkzeug Thread-356 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:12] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:17:12,609 INFO werkzeug Thread-357 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:12] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:17:12,610 INFO werkzeug Thread-358 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:12] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:17:16,377 INFO werkzeug Thread-359 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:16] "GET /admin/announcements HTTP/1.1" 200 -
+2025-05-08 01:17:16,617 INFO werkzeug Thread-360 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:16] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:17:16,618 INFO werkzeug Thread-361 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:16] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:17:17,036 INFO werkzeug Thread-363 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:17] "GET / HTTP/1.1" 200 -
+2025-05-08 01:17:17,037 INFO werkzeug Thread-362 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:17:17] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:19:33,240 INFO werkzeug Thread-364 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:19:33] "GET /admin/announcements HTTP/1.1" 200 -
+2025-05-08 01:19:33,432 INFO werkzeug Thread-365 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:19:33] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:19:33,432 INFO werkzeug Thread-366 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:19:33] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:19:34,276 INFO werkzeug Thread-367 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:19:34] "GET / HTTP/1.1" 200 -
+2025-05-08 01:19:34,295 INFO werkzeug Thread-368 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:19:34] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:19:39,450 INFO werkzeug Thread-369 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:19:39] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:19:57,137 INFO werkzeug Thread-370 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:19:57] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:20:17,331 INFO werkzeug Thread-371 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:20:17] "GET / HTTP/1.1" 200 -
+2025-05-08 01:20:17,480 INFO werkzeug Thread-372 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:20:17] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:20:17,482 INFO werkzeug Thread-373 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:20:17] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:20:18,039 INFO werkzeug Thread-375 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:20:18] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:20:18,041 INFO werkzeug Thread-374 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:20:18] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:20:18,044 INFO werkzeug Thread-376 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:20:18] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:20:18,046 INFO werkzeug Thread-377 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:20:18] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:20:18,048 INFO werkzeug Thread-378 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:20:18] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:20:18,048 INFO werkzeug Thread-379 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:20:18] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:20:18,050 INFO werkzeug Thread-380 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:20:18] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:20:18,257 INFO werkzeug Thread-381 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:20:18] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:20:18,260 INFO werkzeug Thread-382 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:20:18] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:20:18,262 INFO werkzeug Thread-383 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:20:18] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:20:18,265 INFO werkzeug Thread-384 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:20:18] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:20:18,268 INFO werkzeug Thread-385 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:20:18] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:20:18,269 INFO werkzeug Thread-386 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:20:18] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:21:50,032 INFO werkzeug Thread-387 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:21:50] "GET /admin/announcements HTTP/1.1" 200 -
+2025-05-08 01:21:50,131 INFO werkzeug Thread-388 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:21:50] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:21:50,131 INFO werkzeug Thread-389 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:21:50] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:21:50,482 INFO werkzeug Thread-390 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:21:50] "GET / HTTP/1.1" 200 -
+2025-05-08 01:21:50,487 INFO werkzeug Thread-391 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:21:50] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:21:52,373 INFO werkzeug Thread-393 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:21:52] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:21:52,373 INFO werkzeug Thread-392 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:21:52] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:21:57,305 INFO werkzeug Thread-394 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:21:57] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:21:57,305 INFO werkzeug Thread-395 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:21:57] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:22:01,322 INFO werkzeug Thread-396 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:01] "GET / HTTP/1.1" 200 -
+2025-05-08 01:22:01,407 INFO werkzeug Thread-397 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:01] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:22:01,408 INFO werkzeug Thread-398 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:01] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:22:01,689 INFO werkzeug Thread-399 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:01] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:22:01,699 INFO werkzeug Thread-400 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:01] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:22:01,704 INFO werkzeug Thread-401 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:01] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:22:01,705 INFO werkzeug Thread-402 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:01] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:22:01,887 INFO werkzeug Thread-403 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:01] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:22:01,899 INFO werkzeug Thread-404 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:01] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:22:01,900 INFO werkzeug Thread-405 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:01] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:22:01,974 INFO werkzeug Thread-406 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:01] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:22:01,978 INFO werkzeug Thread-407 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:01] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:22:01,981 INFO werkzeug Thread-409 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:01] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:22:01,982 INFO werkzeug Thread-408 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:01] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:22:01,985 INFO werkzeug Thread-410 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:01] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:22:01,986 INFO werkzeug Thread-411 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:01] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:22:08,440 INFO werkzeug Thread-412 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:08] "GET /admin/announcements HTTP/1.1" 200 -
+2025-05-08 01:22:08,524 INFO werkzeug Thread-413 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:08] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:22:08,524 INFO werkzeug Thread-414 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:08] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:22:08,768 INFO werkzeug Thread-415 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:08] "GET / HTTP/1.1" 200 -
+2025-05-08 01:22:08,769 INFO werkzeug Thread-416 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:08] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:22:11,773 INFO werkzeug Thread-418 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:11] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:22:11,773 INFO werkzeug Thread-417 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:11] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:22:12,385 INFO werkzeug Thread-420 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:12] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:22:12,386 INFO werkzeug Thread-419 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:12] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:22:12,557 INFO werkzeug Thread-421 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:12] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:22:12,558 INFO werkzeug Thread-422 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:12] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:22:12,738 INFO werkzeug Thread-423 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:12] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:22:12,738 INFO werkzeug Thread-424 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:12] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:22:15,501 INFO werkzeug Thread-425 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:15] "GET /admin/announcements HTTP/1.1" 200 -
+2025-05-08 01:22:15,547 INFO werkzeug Thread-426 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:15] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:22:15,551 INFO werkzeug Thread-427 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:15] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:22:15,835 INFO werkzeug Thread-428 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:15] "GET / HTTP/1.1" 200 -
+2025-05-08 01:22:15,837 INFO werkzeug Thread-429 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:15] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:22:21,195 ERROR app Thread-430 (process_request_thread) : 解析数据文件时出错: /Users/mac/WorkSpace/考研推荐系统/data/announcements.json
+2025-05-08 01:22:21,196 INFO werkzeug Thread-431 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:21] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:22:21,196 INFO werkzeug Thread-430 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:21] "[31m[1mPOST /admin/announcements/reorder HTTP/1.1[0m" 400 -
+2025-05-08 01:22:41,081 ERROR app Thread-432 (process_request_thread) : 解析数据文件时出错: /Users/mac/WorkSpace/考研推荐系统/data/announcements.json
+2025-05-08 01:22:41,081 INFO werkzeug Thread-432 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:41] "[31m[1mPOST /admin/announcements/reorder HTTP/1.1[0m" 400 -
+2025-05-08 01:22:41,081 INFO werkzeug Thread-433 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:41] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:22:46,188 INFO werkzeug Thread-434 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:46] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:22:46,189 INFO werkzeug Thread-435 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:46] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:22:58,761 INFO werkzeug Thread-437 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:58] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:22:58,761 INFO werkzeug Thread-436 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:22:58] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:23:00,989 INFO werkzeug Thread-438 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:00] "GET / HTTP/1.1" 200 -
+2025-05-08 01:23:01,071 INFO werkzeug Thread-439 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:01] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:23:01,071 INFO werkzeug Thread-440 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:01] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:23:01,460 INFO werkzeug Thread-441 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:01] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:23:01,471 INFO werkzeug Thread-442 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:01] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:23:01,475 INFO werkzeug Thread-443 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:01] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:23:01,475 INFO werkzeug Thread-444 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:01] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:23:01,477 INFO werkzeug Thread-445 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:01] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:23:01,477 INFO werkzeug Thread-446 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:01] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:23:01,477 INFO werkzeug Thread-447 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:01] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:23:01,509 INFO werkzeug Thread-448 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:01] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:23:01,512 INFO werkzeug Thread-449 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:01] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:23:01,515 INFO werkzeug Thread-451 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:01] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:23:01,516 INFO werkzeug Thread-450 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:01] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:23:01,517 INFO werkzeug Thread-452 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:01] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:23:01,519 INFO werkzeug Thread-453 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:01] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:23:05,320 INFO werkzeug Thread-454 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:05] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:23:05,321 INFO werkzeug Thread-455 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:05] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:23:07,699 INFO werkzeug Thread-456 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:07] "GET / HTTP/1.1" 200 -
+2025-05-08 01:23:07,779 INFO werkzeug Thread-457 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:07] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:23:07,780 INFO werkzeug Thread-458 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:07] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:23:08,067 INFO werkzeug Thread-459 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:08] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:23:08,178 INFO werkzeug Thread-460 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:08] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:23:08,181 INFO werkzeug Thread-461 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:08] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:23:08,185 INFO werkzeug Thread-463 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:08] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:23:08,187 INFO werkzeug Thread-462 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:08] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:23:08,188 INFO werkzeug Thread-464 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:08] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:23:08,188 INFO werkzeug Thread-465 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:08] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:23:08,375 INFO werkzeug Thread-466 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:08] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:23:08,376 INFO werkzeug Thread-467 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:08] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:23:08,379 INFO werkzeug Thread-468 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:08] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:23:08,383 INFO werkzeug Thread-470 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:08] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:23:08,383 INFO werkzeug Thread-469 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:08] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:23:08,385 INFO werkzeug Thread-471 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:08] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:23:11,076 INFO werkzeug Thread-472 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:11] "GET /admin/announcements HTTP/1.1" 200 -
+2025-05-08 01:23:11,128 INFO werkzeug Thread-473 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:11] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:23:11,129 INFO werkzeug Thread-474 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:11] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:23:11,411 INFO werkzeug Thread-475 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:11] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:23:11,417 INFO werkzeug Thread-476 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:11] "GET / HTTP/1.1" 200 -
+2025-05-08 01:23:16,542 INFO werkzeug Thread-478 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:16] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:23:16,542 INFO werkzeug Thread-477 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:16] "POST /admin/announcements/reorder HTTP/1.1" 200 -
+2025-05-08 01:23:19,084 INFO werkzeug Thread-479 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:19] "GET / HTTP/1.1" 200 -
+2025-05-08 01:23:19,164 INFO werkzeug Thread-480 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:19] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-05-08 01:23:19,167 INFO werkzeug Thread-481 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:19] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:23:19,425 INFO werkzeug Thread-482 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:19] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:23:19,465 INFO werkzeug Thread-483 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:19] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:23:19,466 INFO werkzeug Thread-484 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:19] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:23:19,469 INFO werkzeug Thread-485 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:19] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:23:19,473 INFO werkzeug Thread-487 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:19] "GET /api/announcements HTTP/1.1" 200 -
+2025-05-08 01:23:19,473 INFO werkzeug Thread-486 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:19] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:23:19,476 INFO werkzeug Thread-488 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:19] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-05-08 01:23:19,500 INFO werkzeug Thread-489 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:19] "GET /api/schools/list HTTP/1.1" 200 -
+2025-05-08 01:23:19,565 INFO werkzeug Thread-491 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:19] "GET /api/national-lines/politics HTTP/1.1" 200 -
+2025-05-08 01:23:19,565 INFO werkzeug Thread-490 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:19] "GET /api/national-lines/total HTTP/1.1" 200 -
+2025-05-08 01:23:19,569 INFO werkzeug Thread-492 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:19] "GET /api/national-lines/others HTTP/1.1" 200 -
+2025-05-08 01:23:19,570 INFO werkzeug Thread-493 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:19] "GET /api/stats/exam-type-ratio HTTP/1.1" 200 -
+2025-05-08 01:23:19,571 INFO werkzeug Thread-494 (process_request_thread) : 127.0.0.1 - - [08/May/2025 01:23:19] "GET /api/announcements HTTP/1.1" 200 -

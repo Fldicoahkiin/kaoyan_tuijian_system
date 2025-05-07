@@ -1,26 +1,29 @@
 {% extends "admin/base_admin.html" %}
-
-{% block admin_title %}公告管理{% endblock %}
+{% block title %}管理公告 - 管理后台{% endblock %}
 
 {% block admin_content %}
-<div class="container-fluid">
-    <h1 class="mt-4">公告管理</h1>
+<div class="container-fluid px-4">
+    <h1 class="mt-4">管理公告</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}">仪表盘</a></li>
+        <li class="breadcrumb-item active">管理公告</li>
+    </ol>
 
-    <!-- 新增公告表单 -->
+    <!-- 添加公告的表单 -->
     <div class="card mb-4">
         <div class="card-header">
-            <i class="fas fa-plus me-1"></i>
-            新增公告
+            <i class="fas fa-plus-circle me-1"></i>
+            添加新公告
         </div>
         <div class="card-body">
-            <form action="{{ url_for('admin_announcements') }}" method="POST">
+            <form method="POST" action="{{ url_for('admin_announcements') }}">
                 <div class="mb-3">
-                    <label for="title" class="form-label">公告标题 <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" id="title" name="title" required>
+                    <label for="announcementTitle" class="form-label">公告标题</label>
+                    <input type="text" class="form-control" id="announcementTitle" name="title" required>
                 </div>
                 <div class="mb-3">
-                    <label for="url" class="form-label">链接 URL (可选)</label>
-                    <input type="url" class="form-control" id="url" name="url" placeholder="例如: http://example.com/notice">
+                    <label for="announcementUrl" class="form-label">公告链接 (URL)</label>
+                    <input type="url" class="form-control" id="announcementUrl" name="url" placeholder="https://example.com/announcement">
                 </div>
                 <button type="submit" class="btn btn-primary">添加公告</button>
             </form>
@@ -31,30 +34,241 @@
     <div class="card mb-4">
         <div class="card-header">
             <i class="fas fa-list me-1"></i>
-            现有公告
+            现有公告 (拖拽行调整顺序)
         </div>
         <div class="card-body">
             {% if announcements %}
-                <ul class="list-group">
-                    {% for announcement in announcements %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <div>
-                                {{ announcement.title }}
-                                {% if announcement.url and announcement.url != '#' %}
-                                    <a href="{{ announcement.url }}" target="_blank" class="ms-2 small text-muted">(链接)</a>
-                                {% endif %}
-                            </div>
-                            <form action="{{ url_for('delete_announcement', index=loop.index0) }}" method="POST" onsubmit="return confirm('确定要删除这条公告吗？');">
-                                <button type="submit" class="btn btn-sm btn-outline-danger">删除</button>
-                            </form>
-                        </li>
-                    {% endfor %}
-                </ul>
+            <div class="table-responsive">
+                {# 添加 data-reorder-url 以便JS访问 #}
+                <table class="table table-bordered table-hover align-middle" id="announcements-table" data-reorder-url="{{ url_for('admin_reorder_announcements') }}">
+                    <thead>
+                        <tr>
+                            <th style="width: 40px;"><i class="fas fa-arrows-alt-v" title="拖拽排序"></i></th> {# 添加拖拽提示图标 #}
+                            <th>标题</th>
+                            <th>URL</th>
+                            <th style="width: 130px;">操作</th> {# 调整回宽度 #}
+                        </tr>
+                    </thead>
+                    <tbody id="announcement-tbody"> {# 添加 ID #}
+                        {% for announcement in announcements %}
+                        {# 添加 data-index 用于排序 #}
+                        <tr id="announcement-row-{{ loop.index0 }}" data-index="{{ loop.index0 }}">
+                            <td class="text-center drag-handle" style="cursor: move;"><i class="fas fa-grip-vertical"></i></td> {# 拖拽句柄 #}
+                            <td class="view-mode announcement-title-cell">
+                                <span class="announcement-title">{{ announcement.title }}</span>
+                            </td>
+                            <td class="view-mode announcement-url-cell">
+                                <a href="{{ announcement.url if announcement.url else '#' }}" target="_blank" class="announcement-url">{{ announcement.url if announcement.url else '无链接' }}</a>
+                            </td>
+                            <td class="edit-mode" style="display:none;" colspan="1"> {# 编辑模式合并单元格 (colspan=1 因为标题URL合并了) #}
+                                <form method="POST" action="{{ url_for('admin_update_announcement', index=loop.index0) }}" class="update-form">
+                                    <div class="mb-1">
+                                        <input type="text" name="title" class="form-control form-control-sm edit-title" value="{{ announcement.title }}" required>
+                                    </div>
+                                    <div>
+                                        <input type="url" name="url" class="form-control form-control-sm edit-url" value="{{ announcement.url }}" placeholder="https://example.com">
+                                    </div>
+                                </form>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-primary me-1 edit-btn view-mode" data-index="{{ loop.index0 }}">编辑</button>
+                                <button type="submit" class="btn btn-sm btn-success me-1 save-btn edit-mode" style="display:none;" data-index="{{ loop.index0 }}">保存</button>
+                                <button type="button" class="btn btn-sm btn-secondary cancel-btn edit-mode" style="display:none;" data-index="{{ loop.index0 }}">取消</button>
+                                {# 删除按钮改为表单 #}
+                                <form action="{{ url_for('delete_announcement', index=loop.index0) }}" method="POST" class="d-inline view-mode" onsubmit="return confirm('确定要删除此公告吗？');">
+                                    <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> 删除</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
             {% else %}
-                <p class="text-center text-muted">暂无公告。</p>
+            <p class="text-center text-muted">暂无公告。</p>
             {% endif %}
         </div>
+        {# Card body for table ends #}
+        <div class="card-footer text-end" id="reorder-footer">
+            <button class="btn btn-primary" id="save-order-btn">保存当前顺序</button>
+        </div>
     </div>
-
 </div>
+
+{% block admin_body_scripts %}
+{{ super() }}
+{# 引入 SortableJS #}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const tbody = document.getElementById('announcement-tbody');
+    const reorderUrl = document.getElementById('announcements-table').dataset.reorderUrl;
+    const saveOrderBtn = document.getElementById('save-order-btn');
+    let currentOrderForSaving = []; // Stores the order to be saved, initialized with current state
+    let hasSortableInitialized = false; // Flag to ensure Sortable is initialized only once
+    let saveButtonListenerAttached = false; // Flag to ensure listener is attached only once
+
+    function updateCurrentOrder() {
+        currentOrderForSaving = [];
+        if (tbody) {
+            tbody.querySelectorAll('tr').forEach(row => {
+                currentOrderForSaving.push(row.dataset.index);
+            });
+        }
+        console.log('Order updated internally. currentOrderForSaving is now:', JSON.stringify(currentOrderForSaving));
+        // Enable save button only if there are items or if saving an empty list is allowed.
+        // For now, let's assume saving empty is fine, or button is enabled by default.
+        if(saveOrderBtn) saveOrderBtn.disabled = false; 
+    }
+
+    // Initialize current order on page load
+    updateCurrentOrder(); 
+    // Disable button if no announcements initially, and we don't want to save empty order implicitly
+    if (saveOrderBtn && currentOrderForSaving.length === 0 && tbody && tbody.children.length === 0) { 
+        // saveOrderBtn.disabled = true; // Uncomment if initial empty save is not desired
+        console.log('Initial state: No announcements, save button might be disabled if configured.');
+    }
+
+
+    if (tbody && !hasSortableInitialized) {
+        console.log('SortableJS initializing...');
+        new Sortable(tbody, {
+            animation: 150,
+            handle: '.drag-handle',
+            onEnd: function (evt) {
+                console.log('SortableJS onEnd event triggered.');
+                updateCurrentOrder(); // Update the order after drag
+            }
+        });
+        hasSortableInitialized = true;
+    }
+
+    if (saveOrderBtn && !saveButtonListenerAttached) {
+        saveOrderBtn.addEventListener('click', function() {
+            console.log('Save button clicked. Current currentOrderForSaving:', JSON.stringify(currentOrderForSaving));
+            
+            // The check for null is removed as currentOrderForSaving is always an array now.
+            // If you want to prevent saving if no actual drag has occurred since load or last save,
+            // you might need a more complex state (e.g., a 'dirty' flag).
+            // For now, it saves the current state of the table rows' data-index attributes.
+
+            saveOrderBtn.disabled = true;
+            console.log('Proceeding to fetch, currentOrderForSaving:', JSON.stringify(currentOrderForSaving));
+
+            fetch(reorderUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ new_order: currentOrderForSaving })
+            })
+            .then(response => {
+                console.log('Fetch response received:', response.status);
+                if (!response.ok) { // Check for non-2xx responses
+                    return response.json().then(errData => { 
+                        throw new Error(errData.message || `HTTP error! status: ${response.status}`); 
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Fetch data received:', data);
+                if (data.success) {
+                    console.log('Order updated successfully via fetch.');
+                    const successAlert = document.createElement('div');
+                    successAlert.className = 'alert alert-success alert-dismissible fade show position-fixed bottom-0 end-0 m-3';
+                    successAlert.setAttribute('role', 'alert');
+                    successAlert.innerHTML = '公告顺序已成功保存！<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+                    document.body.appendChild(successAlert);
+                    setTimeout(() => {
+                        if (successAlert.parentElement) {
+                             try { bootstrap.Alert.getOrCreateInstance(successAlert).close(); } catch(e) { console.warn('Failed to close alert:', e); }
+                        }
+                    }, 3000);
+                    // No need to hide footer as it's always visible now
+                    // updateCurrentOrder(); // Re-capture the order, though it should be the same as what was saved.
+                                        // Or, if backend reassigns indices, we might need to update data-index attributes on rows.
+                    saveOrderBtn.disabled = false; // Re-enable after successful save
+                    console.log('Save process complete. currentOrderForSaving reflects saved state (or next state to save).');
+                } else {
+                    alert('更新顺序失败: ' + (data.message || '未知错误'));
+                    console.error('Failed to update order:', data.message);
+                    saveOrderBtn.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Error updating order (fetch catch):', error);
+                alert('更新顺序时发生错误: ' + error.message);
+                saveOrderBtn.disabled = false;
+            });
+        });
+        saveButtonListenerAttached = true;
+    }
+
+    // --- 以下是之前的编辑/取消/保存逻辑，需要调整以适应新的列结构 ---
+    document.querySelectorAll('.edit-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const index = this.dataset.index;
+            const row = document.getElementById(`announcement-row-${index}`);
+            // Hide view mode cells (title, url) and view-mode buttons/links
+            row.querySelector('.announcement-title-cell').style.display = 'none';
+            row.querySelector('.announcement-url-cell').style.display = 'none';
+            row.querySelectorAll('.view-mode').forEach(el => {
+                if (el.tagName === 'BUTTON' || el.tagName === 'FORM') { // Hide delete form too
+                     el.style.display = 'none';
+                }
+             });
+             // Hide the drag handle column cell
+             row.querySelector('td.drag-handle').style.display = 'none';
+
+            // Show edit mode cell and buttons
+            row.querySelector('td.edit-mode').style.display = 'table-cell';
+            row.querySelector('button.save-btn.edit-mode').style.display = 'inline-block';
+            row.querySelector('button.cancel-btn.edit-mode').style.display = 'inline-block';
+        });
+    });
+
+    document.querySelectorAll('.cancel-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const index = this.dataset.index;
+            const row = document.getElementById(`announcement-row-${index}`);
+            // Show view mode cells and buttons/links
+            row.querySelector('.announcement-title-cell').style.display = 'table-cell';
+            row.querySelector('.announcement-url-cell').style.display = 'table-cell';
+            row.querySelectorAll('.view-mode').forEach(el => {
+                 if (el.tagName === 'BUTTON' || el.tagName === 'FORM') { // Show delete form too
+                     el.style.display = 'inline-block';
+                 }
+            });
+            // Show the drag handle column cell
+            row.querySelector('td.drag-handle').style.display = 'table-cell';
+
+            // Hide edit mode cell and buttons
+            row.querySelector('td.edit-mode').style.display = 'none';
+            row.querySelector('button.save-btn.edit-mode').style.display = 'none';
+            row.querySelector('button.cancel-btn.edit-mode').style.display = 'none';
+        });
+    });
+
+    document.querySelectorAll('.save-btn').forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+            const index = this.dataset.index;
+            const row = document.getElementById(`announcement-row-${index}`);
+            const form = row.querySelector('.update-form');
+
+            const titleInput = form.querySelector('.edit-title');
+            if (!titleInput.value.trim()) {
+                alert('标题不能为空！');
+                titleInput.focus();
+                return;
+            }
+            form.submit();
+        });
+    });
+});
+</script>
+{% endblock %}
 {% endblock %} 

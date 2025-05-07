@@ -11,6 +11,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, SelectField, TextAreaField, IntegerField, BooleanField
 from wtforms.validators import DataRequired, Length, EqualTo, Optional, NumberRange
 import logging # 导入 logging
+from flask_wtf.csrf import CSRFProtect # 导入 CSRFProtect
 
 # --- 导入爬虫函数 ---
 from utils.scraper import run_scraper 
@@ -18,12 +19,14 @@ from utils.scraper import run_scraper
 app = Flask(__name__)
 # 设置一个密钥用于 session 加密，请在实际部署中替换为更安全的随机值
 app.config['SECRET_KEY'] = 'dev_secret_key_please_change'
+csrf = CSRFProtect(app) # 初始化 CSRFProtect
 
 # 定义数据文件路径
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SCHOOLS_DATA_PATH = os.path.join(BASE_DIR, "data", "schools.json")
 NATIONAL_LINES_PATH = os.path.join(BASE_DIR, "data", "national_lines.json")
 ANNOUNCEMENTS_PATH = os.path.join(BASE_DIR, "data", "announcements.json")
+EXAM_TYPE_RATIOS_PATH = os.path.join(BASE_DIR, "data", "exam_type_ratios.json")
 USERS_DIR = os.path.join(BASE_DIR, "data", "users")
 
 # --- 装饰器：要求管理员权限 ---
@@ -77,7 +80,7 @@ def save_schools_data(data):
 # 加载所有核心数据
 schools_data = load_json_data(SCHOOLS_DATA_PATH)
 national_lines_data = load_json_data(NATIONAL_LINES_PATH, default_value={}) # 默认空字典
-announcements_data = load_json_data(ANNOUNCEMENTS_PATH)
+# announcements_data = load_json_data(ANNOUNCEMENTS_PATH) # 不再全局加载公告数据
 
 # --- 辅助函数：用户数据读写 ---
 def get_user_data(username):
@@ -288,40 +291,20 @@ def get_national_line_others():
 
 @app.route('/api/stats/exam-type-ratio', methods=['GET'])
 def get_exam_type_ratio():
-    """计算并返回自命题与408统考的院校比例。"""
-    self_proposed_count = 0
-    unified_408_count = 0
-    unknown_count = 0
-
-    for school in schools_data:
-        exam_type = school.get("self_vs_408")
-        if exam_type == "自命题":
-            self_proposed_count += 1
-        elif exam_type == "408统考":
-            unified_408_count += 1
-        else:
-            if exam_type:
-                 unknown_count +=1
-            pass
-
-    total_valid = self_proposed_count + unified_408_count
-    if total_valid == 0:
-        ratio_data = [
-            {"value": 0, "name": "自命题"},
-            {"value": 0, "name": "408统考"}
-        ]
-    else:
-         ratio_data = [
-            {"value": self_proposed_count, "name": "自命题"},
-            {"value": unified_408_count, "name": "408统考"}
-        ]
-
+    """API: 返回存储的考试类型比例数据。"""
+    # 从新的JSON文件加载数据
+    ratio_data = load_json_data(EXAM_TYPE_RATIOS_PATH, default_value=[
+        {"value": 0, "name": "自命题"},
+        {"value": 0, "name": "408统考"}
+    ])
     return jsonify(ratio_data)
 
 @app.route('/api/announcements', methods=['GET'])
 def get_announcements():
-    """返回公告信息。"""
-    return jsonify(announcements_data)
+    """返回最新的公告信息。"""
+    # 每次请求时直接从文件加载最新数据
+    latest_announcements = load_json_data(ANNOUNCEMENTS_PATH, default_value=[])
+    return jsonify(latest_announcements)
 
 # --- 用户认证路由 ---
 
@@ -859,24 +842,50 @@ def admin_announcements():
     announcements = load_json_data(ANNOUNCEMENTS_PATH, default_value=[])
     return render_template('admin/announcements.html', announcements=announcements)
 
-@app.route('/admin/announcement/delete/<int:index>', methods=['POST'])
+@app.route('/admin/announcements/reorder', methods=['POST'])
 @admin_required
-def delete_announcement(index):
+def admin_reorder_announcements():
+    data = request.get_json()
+    if not data or 'new_order' not in data or not isinstance(data['new_order'], list):
+        return jsonify({"success": False, "message": "无效的请求数据。"}), 400
+
+    new_order_indices_str = data['new_order'] # This is a list of strings representing original indices
+    
+    try:
+        new_order_indices = [int(i) for i in new_order_indices_str]
+    except ValueError:
+         return jsonify({"success": False, "message": "索引必须是数字。"}), 400
+
     current_announcements = load_json_data(ANNOUNCEMENTS_PATH, default_value=[])
-    if 0 <= index < len(current_announcements):
-        try:
-            deleted_title = current_announcements.pop(index)['title']
-            with open(ANNOUNCEMENTS_PATH, 'w', encoding='utf-8') as f:
-                json.dump(current_announcements, f, ensure_ascii=False, indent=2)
-            flash(f'公告 "{deleted_title}" 已删除。', 'success')
-        except IndexError:
-             flash('无效的公告索引。', 'error')
-        except IOError as e:
-            flash(f'删除公告时出错: {e}', 'error')
-            # 可选：如果写入失败，尝试恢复数据？
-    else:
-        flash('无效的公告索引。', 'error')
-    return redirect(url_for('admin_announcements'))
+    
+    if len(new_order_indices) != len(current_announcements):
+         return jsonify({"success": False, "message": "提交的顺序长度与现有公告数量不符。"}), 400
+    
+    # Ensure all original indices are present exactly once
+    if set(new_order_indices) != set(range(len(current_announcements))):
+         return jsonify({"success": False, "message": "提交的顺序索引无效或重复。"}), 400
+        
+    # Reorder the list according to the new indices
+    reordered_announcements = []
+    try:
+        for index in new_order_indices:
+            reordered_announcements.append(current_announcements[index])
+    except IndexError:
+         # This shouldn't happen if the previous check passed, but for safety:
+         return jsonify({"success": False, "message": "处理顺序时出现索引错误。"}), 500
+
+    # Save the reordered list
+    try:
+        with open(ANNOUNCEMENTS_PATH, 'w', encoding='utf-8') as f:
+            json.dump(reordered_announcements, f, ensure_ascii=False, indent=2)
+        # Don't use flash here as it's an AJAX request, return JSON
+        return jsonify({"success": True, "message": "公告顺序已更新。"})
+    except IOError:
+        app.logger.error("保存重新排序的公告时出错。")
+        return jsonify({"success": False, "message": "保存公告顺序时出错。"}), 500
+    except Exception as e:
+         app.logger.error(f"重新排序公告时发生未知错误: {e}", exc_info=True)
+         return jsonify({"success": False, "message": "处理请求时发生内部错误。"}), 500
 
 @app.route('/admin/profile', methods=['GET', 'POST'])
 @admin_required
@@ -1062,6 +1071,164 @@ def get_region(province):
         else:
             return "未知地区" # 如果省份名称无效或不属于A/B区
 
+@app.route('/admin/edit-exam-ratios', methods=['GET']) # 保持GET，保存由save路由处理
+@admin_required
+def admin_edit_exam_ratios():
+    exam_ratios_data = load_json_data(EXAM_TYPE_RATIOS_PATH, default_value=[])
+    return render_template('admin/edit_exam_ratios.html', exam_ratios_data=exam_ratios_data)
+
+@app.route('/admin/save-exam-ratios', methods=['POST'])
+@admin_required
+def admin_save_exam_ratios():
+    try:
+        ratios_form = request.form.to_dict(flat=False) # 获取表单数据，包含列表
+        #  ratios_form will look something like:
+        # {'ratios[0][value]': ['150'], 'ratios[0][name]': ['自命题'], 
+        #  'ratios[1][value]': ['250'], 'ratios[1][name]': ['408统考']}
+        # Or, if not using flat=False for such names, you might need to iterate through form keys.
+        # A more robust way is to expect specific field names or structure.
+        
+        updated_ratios = []
+        # Assuming the form sends data indexed (e.g., ratios[0][name], ratios[0][value], ratios[1][name]...)
+        # This part needs careful parsing based on how edit_exam_ratios.html names its fields.
+        # The template uses: name="ratios[{{ loop.index0 }}][value]" and name="ratios[{{ loop.index0 }}][name]"
+        
+        i = 0
+        while True:
+            name_key = f'ratios[{i}][name]'
+            value_key = f'ratios[{i}][value]'
+            if name_key in request.form and value_key in request.form:
+                name = request.form[name_key]
+                try:
+                    value = int(request.form[value_key])
+                    updated_ratios.append({"name": name, "value": value})
+                except ValueError:
+                    flash(f'项目 "{name}" 的值为无效数字，已忽略。 ', 'warning')
+                    # Optionally, load the original value or skip
+                i += 1
+            else:
+                break
+
+        if not updated_ratios:
+            flash('没有提交有效的比例数据。', 'warning')
+            return redirect(url_for('admin_edit_exam_ratios'))
+
+        with open(EXAM_TYPE_RATIOS_PATH, 'w', encoding='utf-8') as f:
+            json.dump(updated_ratios, f, ensure_ascii=False, indent=2)
+        flash('考试类型比例已成功更新。', 'success')
+    except Exception as e:
+        app.logger.error(f"保存考试类型比例时出错: {e}", exc_info=True)
+        flash(f'保存考试类型比例时发生错误: {e}', 'danger')
+    return redirect(url_for('admin_edit_exam_ratios'))
+
+@app.route('/admin/edit-national-lines', methods=['GET'])
+@admin_required
+def admin_edit_national_lines():
+    national_lines_data = load_json_data(NATIONAL_LINES_PATH, default_value={})
+    return render_template('admin/edit_national_lines.html', national_lines_data=national_lines_data)
+
+@app.route('/admin/save-national-lines', methods=['POST'])
+@admin_required
+def admin_save_national_lines():
+    try:
+        form_data = request.form
+        updated_national_lines = {}
+        
+        # Determine categories present in the form (e.g., from year inputs)
+        # Example: form_data might have 'total_years[]', 'politics_years[]', etc.
+        categories_in_form = set()
+        for key in form_data.keys():
+            if key.endswith('_years[]'):
+                categories_in_form.add(key.split('_years[]')[0])
+        
+        for category in categories_in_form:
+            updated_national_lines[category] = {"years": [], "scores": {}}
+            
+            year_values = request.form.getlist(f'{category}_years[]')
+            # Filter out empty year strings that might be submitted by empty new fields
+            valid_years = [year for year in year_values if year.strip()]
+            updated_national_lines[category]["years"] = valid_years
+            
+            # Find score keys for this category, e.g., total_scores_A区[]
+            score_keys_for_category = [key for key in form_data.keys() if key.startswith(f'{category}_scores_') and key.endswith('[]')]
+            
+            area_names = set()
+            for skey in score_keys_for_category:
+                # Extract area name: category_scores_AREANAME[]
+                area_name_part = skey.replace(f'{category}_scores_', '').replace('[]', '')
+                area_names.add(area_name_part)
+                
+            for area in area_names:
+                score_values_str = request.form.getlist(f'{category}_scores_{area}[]')
+                # Convert scores to int/float, handling potential errors and empty strings
+                valid_scores = []
+                for s_val_str in score_values_str:
+                    if s_val_str.strip(): # Only process non-empty strings
+                        try:
+                            # National lines can be integers or have .5
+                            if '.' in s_val_str:
+                                valid_scores.append(float(s_val_str))
+                            else:
+                                valid_scores.append(int(s_val_str))
+                        except ValueError:
+                            app.logger.warning(f"Invalid score value '{s_val_str}' for {category} - {area}, skipping.")
+                            valid_scores.append(None) # Or skip, or use a default
+                    else:
+                        valid_scores.append(None) # Represent empty input as None or skip
+                
+                # Ensure scores list matches the length of valid_years for this category
+                updated_national_lines[category]["scores"][area] = (valid_scores + [None] * len(valid_years))[:len(valid_years)]
+
+        with open(NATIONAL_LINES_PATH, 'w', encoding='utf-8') as f:
+            json.dump(updated_national_lines, f, ensure_ascii=False, indent=2)
+        flash('国家线数据已成功更新。', 'success')
+    except Exception as e:
+        app.logger.error(f"保存国家线数据时出错: {e}", exc_info=True)
+        flash(f'保存国家线数据时发生错误: {e}', 'danger')
+    return redirect(url_for('admin_edit_national_lines'))
+
+@app.route('/admin/announcements/update/<int:index>', methods=['POST'])
+@admin_required 
+def admin_update_announcement(index):
+    if request.method == 'POST':
+        new_title = request.form.get('title')
+        new_url = request.form.get('url')
+        
+        current_announcements = load_json_data(ANNOUNCEMENTS_PATH, default_value=[])
+        
+        if 0 <= index < len(current_announcements):
+            current_announcements[index]['title'] = new_title
+            current_announcements[index]['url'] = new_url if new_url else '#'
+            
+            try:
+                with open(ANNOUNCEMENTS_PATH, 'w', encoding='utf-8') as f:
+                    json.dump(current_announcements, f, ensure_ascii=False, indent=2)
+                flash('公告已成功更新。', 'success')
+            except IOError:
+                flash('保存公告更新时出错。', 'error')
+        else:
+            flash('无效的公告索引，无法更新。', 'error')
+            
+        return redirect(url_for('admin_announcements'))
+
+@app.route('/admin/announcement/delete/<int:index>', methods=['POST']) # 使用 POST 方法
+@admin_required # 确保应用了权限控制装饰器
+def delete_announcement(index):
+    current_announcements = load_json_data(ANNOUNCEMENTS_PATH, default_value=[])
+    if 0 <= index < len(current_announcements):
+        try:
+            deleted_title = current_announcements.pop(index)['title']
+            with open(ANNOUNCEMENTS_PATH, 'w', encoding='utf-8') as f:
+                json.dump(current_announcements, f, ensure_ascii=False, indent=2)
+            flash(f'公告 "{deleted_title}" 已删除。', 'success')
+        except IndexError:
+             flash('删除时发生意外索引错误。', 'error')
+        except IOError as e:
+            flash(f'删除公告时写入文件出错: {e}', 'error')
+    else:
+        flash('无效的公告索引，无法删除。', 'error')
+    return redirect(url_for('admin_announcements'))
+
 if __name__ == '__main__':
     # 配置日志
     log_dir = os.path.join(BASE_DIR, 'logs')
@@ -1069,6 +1236,7 @@ if __name__ == '__main__':
     log_file = os.path.join(log_dir, 'app.log')
     logging.basicConfig(filename=log_file,
                         level=logging.INFO, # 可以调整级别 DEBUG, INFO, WARNING, ERROR, CRITICAL
-                        format='%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
+                        format='%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s',
+                        encoding='utf-8') # 添加 encoding
     app.logger.info("Flask 应用启动")
     app.run(debug=True, port=5001) 

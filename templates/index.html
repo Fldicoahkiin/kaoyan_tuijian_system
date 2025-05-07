@@ -1,25 +1,30 @@
 {% extends "base.html" %}
 {% block title %}首页 - 考研院校推荐系统{% endblock %}
 
+{% block main_container_class %}container-fluid px-3{% endblock %}
+
 {% block head_extra %}
     <!-- ECharts -->
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid mt-4">
+<!--
     <h1 class="mb-4 text-center">可视化数据面板</h1>
-
-    <div class="dashboard-grid">
+-->
+    <h1 class="mb-4 text-center">考研推荐系统</h1>
+    <div class="dashboard-grid d-flex">
         <!-- 第一列：国家线图表 -->
-        <div id="national-line-total" class="chart-container"></div>
-        <div id="national-line-politics" class="chart-container"></div>
+        <div class="left-column flex-shrink-0" style="min-width: 300px;">
+            <div id="national-line-total" class="chart-container mb-3"></div>
+            <div id="national-line-politics" class="chart-container mb-3"></div>
         <div id="national-line-others" class="chart-container"></div>
+        </div>
 
-        <!-- 第二列：院校滚动列表 (改为表格+分页) -->
-         <div id="school-list-container" class="dashboard-schools-list"> {# 保持 ID 和 Class #}
+        <!-- 第二列：院校滚动列表 - 占据剩余空间 -->
+        <div id="school-list-container" class="dashboard-schools-list flex-grow-1 mx-2">
              <h4 class="text-center p-3 mb-0 border-bottom border-secondary">院校速览</h4>
-             <div class="dashboard-schools-table-container"> {# 用于滚动的容器 #}
+             <div class="dashboard-schools-table-container">
                  <table class="table table-sm table-hover dashboard-schools-table align-middle">
                      <thead>
                          <tr>
@@ -41,15 +46,15 @@
          </div>
 
         <!-- 第三列：饼图和公告 -->
-        <div id="exam-type-pie" class="chart-container"></div>
-        <div id="announcements">
+        <div class="right-column flex-shrink-0 d-flex flex-column align-items-center" style="min-width: 300px;">
+            <div id="exam-type-pie" class="chart-container mb-3" style="width: 300px; max-width: 100%;"></div>
+            <div id="announcements" style="width: 300px; max-width: 100%;">
              <h4 class="text-center p-3 mb-0 border-bottom border-secondary">最新公告</h4>
             <ul id="announcement-list" class="list-group list-group-flush p-2">
                 <li class="list-group-item bg-transparent text-center p-5"><div class="spinner-border spinner-border-sm text-primary" role="status"><span class="visually-hidden">加载中...</span></div> 正在加载公告...</li>
             </ul>
         </div>
     </div>
-
 </div>
 {% endblock %}
 

@@ -1,0 +1,39 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}编辑考试类型比例 - 管理后台{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid px-4">
+    <h1 class="mt-4">编辑考试类型比例</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}">仪表盘</a></li>
+        <li class="breadcrumb-item active">编辑考试类型比例</li>
+    </ol>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-chart-pie me-1"></i>
+            自命题 vs 408统考 比例数据
+        </div>
+        <div class="card-body">
+            <p class="text-muted small">此数据用于首页"自命题 vs 408 比例"饼图。</p>
+            <form method="POST" action="{{ url_for('admin_save_exam_ratios') }}"> {# 假设保存路由为 admin_save_exam_ratios #}
+                {{ form.hidden_tag() if form else '' }} {# 如果使用 Flask-WTF #}
+                
+                {% for item in exam_ratios_data %} {# 假设后端传递的数据名为 exam_ratios_data #}
+                <div class="mb-3 row">
+                    <label for="ratio_{{ loop.index0 }}" class="col-sm-3 col-form-label">{{ item.name }} 数量:</label>
+                    <div class="col-sm-9">
+                        <input type="number" class="form-control" id="ratio_{{ loop.index0 }}" name="ratios[{{ loop.index0 }}][value]" value="{{ item.value }}" required>
+                        <input type="hidden" name="ratios[{{ loop.index0 }}][name]" value="{{ item.name }}">
+                    </div>
+                </div>
+                {% endfor %}
+
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary">保存更改</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 
