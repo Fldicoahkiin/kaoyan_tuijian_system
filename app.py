@@ -136,9 +136,8 @@ class AdminUserForm(FlaskForm):
 # --- 新增：编辑学校信息表单 ---
 class SchoolEditForm(FlaskForm):
     name = StringField('学校名称', validators=[DataRequired(), Length(max=100)])
-    level = SelectField('院校等级', choices=[('985', '985'), ('211', '211'), ('双一流', '双一流'), ('一般', '一般'), ('', '未知')], validators=[Optional()])
+    level = SelectField('院校等级', choices=[('', '未知'), ('985', '985'), ('211', '211'), ('双一流', '双一流'), ('一般', '一般')], validators=[Optional()], default='')
     province = StringField('省份', validators=[Optional(), Length(max=50)])
-    region = SelectField('区域', choices=[('A区', 'A区'), ('B区', 'B区'), ('未知地区', '未知地区')], validators=[Optional()])
     computer_rank = StringField('计算机等级', validators=[Optional(), Length(max=100)])
     intro = TextAreaField('简介', validators=[Optional()])
     submit = SubmitField('保存更改')
@@ -150,51 +149,103 @@ def index():
     """渲染主页 (可视化大面板)。"""
     return render_template('index.html') # 传递登录状态等信息到模板
 
-@app.route('/api/schools/list', methods=['GET'])
-def get_schools_list():
-    """返回用于滚动列表的学校基本信息。"""
-    school_list_for_dashboard = []
-    # 定义 A 区省份列表 (需要根据最新考研政策确认)
-    a_region_provinces = [
-        "北京", "天津", "河北", "山西", "辽宁", "吉林", "黑龙江", "上海", "江苏",
-        "浙江", "安徽", "福建", "江西", "山东", "河南", "湖北", "湖南", "广东",
-        "重庆", "四川", "陕西"
-    ]
-    for school in schools_data:
-        # 修改：不再从单个专业获取，因为不准确。提供占位符。
-        enrollment_24 = "见详情"
-        subjects = "见详情"
-
-        # 判断 A/B 区
-        province = school.get("province")
-        region_ab = "B区" if province and province not in a_region_provinces else "A区"
-
-        school_list_for_dashboard.append({
-            "name": school.get("name", "N/A"),
-            "level": school.get("level", "N/A"),
-            "computer_rank": school.get("computer_rank", "N/A"),
-            "enrollment_24": enrollment_24,
-            "subjects": subjects,
-            "region_ab": region_ab # 返回 A/B 区
+@app.route('/api/schools/list')
+def api_schools_list():
+    """API: 返回用于首页滚动列表的简化学校信息"""
+    schools = schools_data
+    simplified_schools = []
+    for school in schools:
+        simplified_schools.append({
+            'id': school.get('id'),
+            'name': school.get('name'),
+            'level': school.get('level'),
+            'province': school.get('province', '未知省份'),
+            'computer_rank': school.get('computer_rank', '暂无评级'),
+            'enrollment_24': "见详情",
+            'exam_subjects': "见详情"
         })
-    return jsonify(school_list_for_dashboard)
+    return jsonify(simplified_schools)
 
 # --- API 端点 (使用加载的数据) ---
 
-@app.route('/api/national-lines/total', methods=['GET'])
+@app.route('/api/national-lines/total')
 def get_national_line_total():
-    """返回近三年计算机考研总分国家线。"""
-    return jsonify(national_lines_data.get("total", {}))
+    lines_data = load_json_data(NATIONAL_LINES_PATH)
+    years = sorted(lines_data.keys())
+    scores = {
+        "A类考生总分": [lines_data[year].get('a_total', None) for year in years],
+        "B类考生总分": [lines_data[year].get('b_total', None) for year in years]
+    }
+    # 构造 ECharts 需要的格式
+    echarts_data = {
+        "years": years,
+        "legend": list(scores.keys()),
+        "series": [
+            {
+                "name": name,
+                "data": data,
+                "type": "line", # 指定图表类型
+                "smooth": True  # 平滑曲线
+            }
+            for name, data in scores.items()
+        ],
+        "yAxis": { # 添加 yAxis 配置
+            "min": "dataMin" # 设置 Y 轴最小值
+        }
+    }
+    return jsonify(echarts_data)
 
-@app.route('/api/national-lines/politics', methods=['GET'])
+@app.route('/api/national-lines/politics')
 def get_national_line_politics():
-    """返回近三年政治国家线。"""
-    return jsonify(national_lines_data.get("politics", {}))
+    lines_data = load_json_data(NATIONAL_LINES_PATH)
+    years = sorted(lines_data.keys())
+    scores = {
+        "A类政治/英语": [lines_data[year].get('a_politics_english', None) for year in years],
+        "B类政治/英语": [lines_data[year].get('b_politics_english', None) for year in years]
+    }
+    echarts_data = {
+        "years": years,
+        "legend": list(scores.keys()),
+        "series": [
+            {
+                "name": name,
+                "data": data,
+                "type": "bar", # 使用柱状图
+                "barMaxWidth": 30 # 控制柱子宽度
+            }
+            for name, data in scores.items()
+        ],
+         "yAxis": { # 添加 yAxis 配置
+             "min": "dataMin" # 设置 Y 轴最小值
+         }
+    }
+    return jsonify(echarts_data)
 
-@app.route('/api/national-lines/others', methods=['GET'])
+@app.route('/api/national-lines/others')
 def get_national_line_others():
-    """返回近三年英语、数学国家线。"""
-    return jsonify(national_lines_data.get("others", {}))
+    lines_data = load_json_data(NATIONAL_LINES_PATH)
+    years = sorted(lines_data.keys())
+    scores = {
+        "A类数学/专业课": [lines_data[year].get('a_math_major', None) for year in years],
+        "B类数学/专业课": [lines_data[year].get('b_math_major', None) for year in years]
+    }
+    echarts_data = {
+        "years": years,
+        "legend": list(scores.keys()),
+        "series": [
+            {
+                "name": name,
+                "data": data,
+                "type": "line",
+                "smooth": True
+            }
+            for name, data in scores.items()
+        ],
+         "yAxis": { # 添加 yAxis 配置
+             "min": "dataMin" # 设置 Y 轴最小值
+         }
+    }
+    return jsonify(echarts_data)
 
 @app.route('/api/stats/exam-type-ratio', methods=['GET'])
 def get_exam_type_ratio():
@@ -389,12 +440,25 @@ def school_list():
     if sort_by_favorites:
         filtered_schools.sort(key=lambda s: s.get('favorites_count', 0), reverse=True)
 
-    # 分页处理
+    # --- 分页处理 --- START ---
     total_schools = len(filtered_schools)
     total_pages = ceil(total_schools / per_page)
     start = (page - 1) * per_page
     end = start + per_page
     schools_paginated = filtered_schools[start:end]
+
+    # 定义分页数据字典 (确保总是在这里定义)
+    pagination = {
+        'page': page,
+        'per_page': per_page,
+        'total_pages': total_pages,
+        'total_items': total_schools,
+        'has_prev': page > 1,
+        'has_next': page < total_pages,
+        'prev_num': page - 1,
+        'next_num': page + 1
+    }
+    # --- 分页处理 --- END ---
 
     # 准备省份和等级列表用于下拉菜单
     provinces = sorted(list(set(s.get('province') for s in schools_data if s.get('province'))))
@@ -407,9 +471,7 @@ def school_list():
         provinces=provinces,
         levels=levels,
         ranks=ranks,
-        current_page=page,
-        total_pages=total_pages,
-        # 传递查询参数以便分页链接和表单回显
+        pagination=pagination, # 确保传递 pagination
         query_params={'region': region, 'level': level, 'name': name, 'rank': rank, 'sort': request.args.get('sort')}
     )
 
@@ -862,29 +924,24 @@ def toggle_admin_status(username):
 @app.route('/admin/schools')
 @admin_required
 def admin_schools():
-    page = request.args.get('page', 1, type=int)
-    per_page = 20 # 每页显示20条
+    """后台：查看院校列表 (增加搜索功能)"""
+    schools_data = schools_data
+    search_query = request.args.get('q', '') # 获取搜索查询参数
 
-    # 简单分页逻辑 (直接操作内存中的 schools_data)
-    total_schools = len(schools_data)
-    start_index = (page - 1) * per_page
-    end_index = start_index + per_page
-    schools_on_page = schools_data[start_index:end_index]
+    if search_query:
+        # 如果有搜索查询，过滤学校数据
+        filtered_schools = [
+            school for school in schools_data
+            if search_query.lower() in school.get('name', '').lower() or
+               search_query.lower() in school.get('province', '').lower()
+        ]
+        schools_to_display = filtered_schools
+        flash(f"搜索 \"{search_query}\" 的结果:", 'info')
+    else:
+        # 没有搜索查询，显示所有学校
+        schools_to_display = schools_data
 
-    # 计算总页数
-    total_pages = ceil(total_schools / per_page)
-
-    # 简单的分页导航数据
-    pagination = {
-        'page': page,
-        'per_page': per_page,
-        'total_pages': total_pages,
-        'total_items': total_schools
-    }
-
-    return render_template('admin/schools.html',
-                           schools=schools_on_page,
-                           pagination=pagination)
+    return render_template('admin/schools.html', schools=schools_to_display, search_query=search_query)
 
 @app.route('/admin/schools/trigger_crawler', methods=['POST'])
 @admin_required
@@ -907,35 +964,32 @@ def trigger_crawler():
 @app.route('/admin/edit_school/<school_id>', methods=['GET', 'POST'])
 @admin_required
 def admin_edit_school(school_id):
-    school_to_edit = next((s for s in schools_data if s.get('id') == school_id), None)
-    if not school_to_edit:
-        flash('未找到要编辑的学校', 'error')
+    """后台：编辑院校顶层信息"""
+    schools = schools_data
+    school = next((s for s in schools if s['id'] == school_id), None)
+
+    if not school:
+        flash('未找到该院校。', 'danger')
         return redirect(url_for('admin_schools'))
 
-    form = SchoolEditForm(obj=school_to_edit) # 使用 obj 填充表单初始值
+    form = SchoolEditForm(obj=school) # 使用 obj 填充表单
 
     if form.validate_on_submit():
-        # 更新 school_data 列表中的数据
-        school_index = next((i for i, s in enumerate(schools_data) if s.get('id') == school_id), -1)
-        if school_index != -1:
-            schools_data[school_index]['name'] = form.name.data
-            schools_data[school_index]['level'] = form.level.data
-            schools_data[school_index]['province'] = form.province.data
-            schools_data[school_index]['region'] = form.region.data # 可以考虑根据 province 重新计算 region
-            schools_data[school_index]['computer_rank'] = form.computer_rank.data
-            schools_data[school_index]['intro'] = form.intro.data
-            schools_data[school_index]['id'] = form.name.data # 如果名称改变，ID 也需要同步
+        try:
+            school['name'] = form.name.data
+            school['level'] = form.level.data
+            school['province'] = form.province.data
+            school['intro'] = form.intro.data
+            school['computer_rank'] = form.computer_rank.data
 
-            if save_user_data(school_to_edit['username'], schools_data[school_index]):
-                flash('学校信息更新成功!', 'success')
-                # 更新后重定向到新的 school_id (如果名称变了)
-                return redirect(url_for('admin_schools')) # 简化：直接回列表
-            else:
-                flash('保存学校信息时出错', 'error')
-        else:
-            flash('在数据列表中未找到学校进行更新', 'error')
+            save_schools_data(schools) # 保存整个列表
+            flash('院校信息更新成功!', 'success')
+            return redirect(url_for('admin_schools'))
+        except Exception as e:
+             flash(f'更新院校信息时出错: {e}', 'danger')
+             logging.error(f"Error updating school {school_id}: {e}")
 
-    return render_template('admin/edit_school.html', form=form, school=school_to_edit)
+    return render_template('admin/edit_school.html', form=form, school=school)
 
 def get_region(province):
     """根据省份判断 A/B 区。"""

@@ -1,54 +1,66 @@
 {% extends "base.html" %}
-{% block title %}可视化面板 - {{ super() }}{% endblock %}
+{% block title %}首页 - 考研院校推荐系统{% endblock %}
 
-{% block head_scripts %}
-    <!-- 引入 ECharts -->
-    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+{% block head_extra %}
+    <!-- ECharts -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
 {% endblock %}
 
 {% block content %}
-    {# <h1>计算机考研院校可视化推荐系统 - 主页</h1> #} {# 标题可以移到 base.html 或保留 #}
+<div class="container-fluid mt-4">
+    <h1 class="mb-4 text-center">可视化数据面板</h1>
 
     <div class="dashboard-grid">
-        <!-- 左侧区域 -->
-        <div class="chart-container" id="national-line-total"></div>
-        <div class="chart-container" id="national-line-politics"></div>
-        <div class="chart-container" id="national-line-others"></div>
+        <!-- 第一列：国家线图表 -->
+        <div id="national-line-total" class="chart-container"></div>
+        <div id="national-line-politics" class="chart-container"></div>
+        <div id="national-line-others" class="chart-container"></div>
 
-        <!-- 中间区域 (滚动列表) -->
-        <div id="school-list-container">  <!-- 保留原有ID，样式可能依赖它 -->
-            <h2>院校列表</h2>
-            <div class="scrollable-table">
-                <table id="school-table">
-                    <thead>
-                        <tr>
-                            <th>院校名称</th>
-                            <th>院校等级</th>
-                            <th>计算机等级</th>
-                            <th>24年招生人数</th> {# TODO: 确认数据源 #}
-                            <th>初试科目</th> {# TODO: 确认数据源 #}
-                            <th>地区</th>
-                        </tr>
-                    </thead>
-                    <tbody id="school-table-body">
-                        <!-- 数据将由 JavaScript 动态填充 -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        <!-- 第二列：院校滚动列表 (改为表格+分页) -->
+         <div id="school-list-container" class="dashboard-schools-list"> {# 保持 ID 和 Class #}
+             <h4 class="text-center p-3 mb-0 border-bottom border-secondary">院校速览</h4>
+             <div class="dashboard-schools-table-container"> {# 用于滚动的容器 #}
+                 <table class="table table-sm table-hover dashboard-schools-table align-middle">
+                     <thead>
+                         <tr>
+                             <th>院校名称</th>
+                             <th>等级</th>
+                             <th>省份</th>
+                             <th>计算机等级</th>
+                             {# <th>招生人数</th>
+                             <th>考试科目</th> #}
+                         </tr>
+                     </thead>
+                     <tbody id="dashboard-school-table-body">
+                         <!-- JS 动态填充 -->
+                         <tr><td colspan="4" class="text-center p-5"><div class="spinner-border spinner-border-sm text-primary" role="status"><span class="visually-hidden">加载中...</span></div> 正在加载院校数据...</td></tr>
+                     </tbody>
+                 </table>
+             </div>
+             <div id="dashboard-school-pagination" class="p-2 border-top border-secondary d-flex justify-content-center"></div>
+         </div>
 
-        <!-- 右侧区域 -->
-        <div class="chart-container" id="exam-type-pie"></div>
-        <div class="announcements-container" id="announcements">
-            <h2>公告通知</h2>
-            <ul id="announcement-list">
-                <!-- 公告将由 JavaScript 动态填充 -->
+        <!-- 第三列：饼图和公告 -->
+        <div id="exam-type-pie" class="chart-container"></div>
+        <div id="announcements">
+             <h4 class="text-center p-3 mb-0 border-bottom border-secondary">最新公告</h4>
+            <ul id="announcement-list" class="list-group list-group-flush p-2">
+                <li class="list-group-item bg-transparent text-center p-5"><div class="spinner-border spinner-border-sm text-primary" role="status"><span class="visually-hidden">加载中...</span></div> 正在加载公告...</li>
             </ul>
         </div>
     </div>
+
+</div>
 {% endblock %}
 
-{% block body_scripts %}
-    <!-- 引入自定义 JavaScript -->
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        initCharts(); // 初始化所有图表
+        fetchSchoolsForDashboard(); // 加载仪表盘院校列表（包含分页）
+        fetchAnnouncements(); // 加载公告
+    });
+</script>
 {% endblock %} 

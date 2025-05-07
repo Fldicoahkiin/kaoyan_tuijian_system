@@ -3,57 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block admin_title %}管理后台{% endblock %} - 考研推荐系统</title>
-    {# 可以使用 Bootstrap 或其他后台框架简化样式 #}
+    <title>{% block title %}管理后台{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- 引入自定义深色主题 -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/dark_theme.css') }}">
-    <style>
-        body {
-            display: flex;
-            min-height: 100vh;
-            flex-direction: column;
-        }
-        .sidebar {
-            width: 250px;
-            /* background-color: #343a40; */ /* 由 dark_theme.css 控制 */
-            padding-top: 20px;
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            left: 0;
-        }
-        .sidebar a {
-            /* color: #adb5bd; */ /* 由 dark_theme.css 控制 */
-            padding: 10px 15px;
-            text-decoration: none;
-            display: block;
-        }
-        .sidebar a:hover, .sidebar a.active {
-            /* color: white; */ /* 由 dark_theme.css 控制 */
-            /* background-color: #495057; */ /* 由 dark_theme.css 控制 */
-        }
-        .sidebar .nav-link i {
-            margin-right: 8px;
-        }
-        .main-admin-content {
-            margin-left: 250px; /* Same as sidebar width */
-            padding: 20px;
-            flex: 1;
-        }
-        .admin-header {
-            /* background-color: #f8f9fa; */ /* 由 dark_theme.css 控制 */
-            padding: 10px 20px;
-            /* border-bottom: 1px solid #dee2e6; */ /* 由 dark_theme.css 控制 */
-            margin-bottom: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     {% block admin_head_extra %}{% endblock %}
 </head>
 <body>
-    <nav class="sidebar">
-        <h4 class="text-center mb-4">管理后台</h4>
+    <div class="sidebar">
+        <h4><i class="fas fa-shield-alt"></i> 管理后台</h4>
         <ul class="nav flex-column">
             <li class="nav-item">
                 {# 使用 request.path 判断当前活动链接 #}
@@ -91,7 +49,7 @@
                 <a class="nav-link" href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> 登出</a>
             </li>
         </ul>
-    </nav>
+    </div>
 
     <main class="main-admin-content">
          <!-- 显示 Flash 消息 -->

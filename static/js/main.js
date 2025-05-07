@@ -1,11 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
-    setupThemeSwitcher(); // 初始化主题切换器
-    fetchSchools();
+    // setupThemeSwitcher(); // REMOVED:不再需要主题切换
+    fetchSchoolsForDashboard();
     initCharts();
     fetchAnnouncements();
 });
 
-// --- 主题切换逻辑 ---
+// REMOVED: 不再需要主题切换逻辑
+/*
 function setupThemeSwitcher() {
     const themeSwitch = document.getElementById('themeSwitch');
     const currentTheme = localStorage.getItem('theme') ? localStorage.getItem('theme') : null;
@@ -50,10 +51,10 @@ function setupThemeSwitcher() {
         });
     }
 }
+*/
 
-// 辅助函数：销毁 ECharts 实例 (防止重复初始化)
-// 注意: 这需要确保 chart 实例是全局可访问的，或者修改 initCharts 让其返回实例
-// 简单起见，我们假设 DOM 元素 ID 不变，直接 dispose
+// REMOVED: 不再需要销毁图表逻辑
+/*
 function destroyCharts() {
     const chartIds = ['national-line-total', 'national-line-politics', 'national-line-others', 'exam-type-pie'];
     chartIds.forEach(id => {
@@ -66,264 +67,366 @@ function destroyCharts() {
         }
     });
 }
+*/
 
-function fetchSchools() {
-    fetch('/api/schools/list') // 调用后端的 API
+// --- 全局变量 --- 
+let allDashboardSchools = []; // 存储从 API 获取的所有学校数据
+let dashboardCurrentPage = 1;
+const dashboardItemsPerPage = 15; // 仪表盘每页显示的数量
+
+// --- 加载和显示仪表盘院校列表 (含分页) ---
+function fetchSchoolsForDashboard() {
+    const tableBody = document.getElementById('dashboard-school-table-body');
+    const paginationContainer = document.getElementById('dashboard-school-pagination');
+    if (!tableBody || !paginationContainer) return;
+
+    // 显示加载状态
+    tableBody.innerHTML = `<tr><td colspan="4" class="text-center p-5"><div class="spinner-border spinner-border-sm text-primary" role="status"><span class="visually-hidden">加载中...</span></div> 正在加载院校数据...</td></tr>`;
+    paginationContainer.innerHTML = '';
+
+    fetch('/api/schools/list')
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            return response.json(); // 解析 JSON 数据
+            return response.json();
         })
-        .then(schools => {
-            populateSchoolTable(schools); // 使用获取的数据填充表格
+        .then(data => {
+            allDashboardSchools = data; // 存储所有数据
+            dashboardCurrentPage = 1; // 重置到第一页
+            renderDashboardSchoolPage(dashboardCurrentPage);
         })
         .catch(error => {
-            console.error('获取学校列表失败:', error);
-            const tableBody = document.getElementById('school-table-body');
-            if (tableBody) {
-                tableBody.innerHTML = '<tr><td colspan="6">加载学校列表失败，请稍后重试。</td></tr>';
-            }
+            console.error('Error fetching schools for dashboard:', error);
+            tableBody.innerHTML = `<tr><td colspan="4" class="text-center p-5 text-danger">加载院校数据失败: ${error.message}</td></tr>`;
         });
 }
 
-function populateSchoolTable(schools) {
-    const tableBody = document.getElementById('school-table-body');
-    if (!tableBody) return;
+function renderDashboardSchoolPage(page) {
+    const tableBody = document.getElementById('dashboard-school-table-body');
+    const paginationContainer = document.getElementById('dashboard-school-pagination');
+    if (!tableBody || !paginationContainer) return;
 
-    tableBody.innerHTML = ''; // 清空现有的表格内容
+    dashboardCurrentPage = page;
+    const startIndex = (page - 1) * dashboardItemsPerPage;
+    const endIndex = startIndex + dashboardItemsPerPage;
+    const schoolsToShow = allDashboardSchools.slice(startIndex, endIndex);
 
-    if (!schools || schools.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="6">暂无学校数据。</td></tr>';
-        return;
+    tableBody.innerHTML = ''; // 清空表格内容
+    if (schoolsToShow.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="4" class="text-center p-5 text-muted">没有更多院校数据</td></tr>`;
+    } else {
+        schoolsToShow.forEach(school => {
+            const row = `
+                <tr>
+                    <td><a href="/school/${encodeURIComponent(school.id)}" class="text-decoration-none link-light">${school.name || 'N/A'}</a></td>
+                    <td><span class="badge bg-secondary">${school.level || 'N/A'}</span></td>
+                    <td>${school.province || 'N/A'}</td>
+                    <td>${school.computer_rank || 'N/A'}</td>
+                    {# <td>${school.enrollment_24 || '-'}</td> #}
+                    {# <td>${school.exam_subjects || '-'}</td> #}
+                </tr>
+            `;
+            tableBody.innerHTML += row;
+        });
     }
 
-    schools.forEach(school => {
-        const row = tableBody.insertRow();
-        row.innerHTML = `
-            <td>${school.name || 'N/A'}</td>
-            <td>${school.level || 'N/A'}</td>
-            <td>${school.computer_rank || 'N/A'}</td>
-            <td>${school.enrollment_24 || 'N/A'}</td>
-            <td>${school.subjects || 'N/A'}</td>
-            <td>${school.region || 'N/A'}</td>
-        `;
-    });
+    renderDashboardPagination();
 }
 
-// --- 图表初始化和数据获取 ---
-function initCharts() {
-    // 获取 DOM 元素
-    const totalLineChartDom = document.getElementById('national-line-total');
-    const politicsBarChartDom = document.getElementById('national-line-politics');
-    const othersLineChartDom = document.getElementById('national-line-others');
-    const examTypePieChartDom = document.getElementById('exam-type-pie');
+function renderDashboardPagination() {
+    const paginationContainer = document.getElementById('dashboard-school-pagination');
+    if (!paginationContainer) return;
 
-    // 检查元素是否存在
-    if (!totalLineChartDom || !politicsBarChartDom || !othersLineChartDom || !examTypePieChartDom) {
-        console.error("One or more chart containers not found!");
-        return;
+    const totalPages = Math.ceil(allDashboardSchools.length / dashboardItemsPerPage);
+    paginationContainer.innerHTML = ''; // 清空分页
+
+    if (totalPages <= 1) return; // 如果只有一页或没有数据，不显示分页
+
+    const ul = document.createElement('ul');
+    ul.className = 'pagination pagination-sm mb-0'; // 使用 Bootstrap 分页样式
+
+    // 上一页按钮
+    const prevLi = document.createElement('li');
+    prevLi.className = `page-item ${dashboardCurrentPage === 1 ? 'disabled' : ''}`;
+    const prevLink = document.createElement('a');
+    prevLink.className = 'page-link';
+    prevLink.href = '#';
+    prevLink.innerHTML = '&laquo;';
+    prevLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (dashboardCurrentPage > 1) {
+            renderDashboardSchoolPage(dashboardCurrentPage - 1);
+        }
+    });
+    prevLi.appendChild(prevLink);
+    ul.appendChild(prevLi);
+
+    // 页码按钮 (简化版，只显示当前页附近几页)
+    const maxPagesToShow = 5;
+    let startPage = Math.max(1, dashboardCurrentPage - Math.floor(maxPagesToShow / 2));
+    let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+    if (endPage - startPage + 1 < maxPagesToShow) {
+         startPage = Math.max(1, endPage - maxPagesToShow + 1);
+     }
+
+    if (startPage > 1) {
+        const firstLi = document.createElement('li');
+        firstLi.className = 'page-item';
+        const firstLink = document.createElement('a');
+        firstLink.className = 'page-link';
+        firstLink.href = '#';
+        firstLink.innerText = '1';
+        firstLink.addEventListener('click', (e) => { e.preventDefault(); renderDashboardSchoolPage(1); });
+        firstLi.appendChild(firstLink);
+        ul.appendChild(firstLi);
+        if (startPage > 2) {
+             const ellipsisLi = document.createElement('li');
+             ellipsisLi.className = 'page-item disabled';
+             ellipsisLi.innerHTML = `<span class="page-link">...</span>`;
+             ul.appendChild(ellipsisLi);
+         }
     }
 
-    // 初始化 ECharts 实例，根据当前主题应用 'dark' 或 null
-    const currentTheme = document.body.classList.contains('dark-theme') ? 'dark' : null;
-    const totalLineChart = echarts.init(totalLineChartDom, currentTheme);
-    const politicsBarChart = echarts.init(politicsBarChartDom, currentTheme);
-    const othersLineChart = echarts.init(othersLineChartDom, currentTheme);
-    const examTypePieChart = echarts.init(examTypePieChartDom, currentTheme);
 
-    // 设置加载动画 (更新颜色以适应深色主题)
-    showLoading(totalLineChart, '加载总分国家线...');
-    showLoading(politicsBarChart, '加载政治国家线...');
-    showLoading(othersLineChart, '加载英数国家线...');
-    showLoading(examTypePieChart, '加载考试类型比例...');
+    for (let i = startPage; i <= endPage; i++) {
+        const li = document.createElement('li');
+        li.className = `page-item ${i === dashboardCurrentPage ? 'active' : ''}`;
+        const link = document.createElement('a');
+        link.className = 'page-link';
+        link.href = '#';
+        link.innerText = i;
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            renderDashboardSchoolPage(i);
+        });
+        li.appendChild(link);
+        ul.appendChild(li);
+    }
+    
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            const ellipsisLi = document.createElement('li');
+            ellipsisLi.className = 'page-item disabled';
+            ellipsisLi.innerHTML = `<span class="page-link">...</span>`;
+            ul.appendChild(ellipsisLi);
+        }
+        const lastLi = document.createElement('li');
+        lastLi.className = 'page-item';
+        const lastLink = document.createElement('a');
+        lastLink.className = 'page-link';
+        lastLink.href = '#';
+        lastLink.innerText = totalPages;
+        lastLink.addEventListener('click', (e) => { e.preventDefault(); renderDashboardSchoolPage(totalPages); });
+        lastLi.appendChild(lastLink);
+        ul.appendChild(lastLi);
+    }
 
-    // 获取并绘制总分国家线折线图
-    fetch('/api/national-lines/total')
-        .then(response => response.json())
-        .then(data => {
-            if (!data || !data.years || !data.scores) throw new Error("Invalid data format");
-            const option = {
-                title: { text: '近三年总分国家线 (计算机)', left: 'center' }, // 移除颜色设置
-                tooltip: { trigger: 'axis' },
-                legend: { data: Object.keys(data.scores), top: 30 }, // 移除颜色设置
-                grid: { left: '3%', right: '4%', top: '20%', bottom: '15%', containLabel: true }, // 恢复一些底部边距
-                xAxis: { type: 'category', boundaryGap: false, data: data.years }, // 移除颜色设置
-                yAxis: { type: 'value', name: '分数' }, // 移除颜色设置
-                series: Object.entries(data.scores).map(([name, values]) => ({
-                    name: name,
-                    type: 'line',
-                    data: values
-                }))
-            };
-            totalLineChart.setOption(option);
-            totalLineChart.hideLoading();
+    // 下一页按钮
+    const nextLi = document.createElement('li');
+    nextLi.className = `page-item ${dashboardCurrentPage === totalPages ? 'disabled' : ''}`;
+    const nextLink = document.createElement('a');
+    nextLink.className = 'page-link';
+    nextLink.href = '#';
+    nextLink.innerHTML = '&raquo;';
+    nextLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (dashboardCurrentPage < totalPages) {
+            renderDashboardSchoolPage(dashboardCurrentPage + 1);
+        }
+    });
+    nextLi.appendChild(nextLink);
+    ul.appendChild(nextLi);
+
+    paginationContainer.appendChild(ul);
+}
+
+// --- ECharts 初始化 --- 
+function initCharts() {
+    // 初始化国家线总分图表
+    const nationalLineTotalChartDom = document.getElementById('national-line-total');
+    if (nationalLineTotalChartDom) {
+        const nationalLineTotalChart = echarts.init(nationalLineTotalChartDom, 'dark');
+        fetchNationalLineData('/api/national-lines/total', nationalLineTotalChart, '国家线总分趋势');
+    }
+
+    // 初始化国家线政治英语图表
+    const nationalLinePoliticsChartDom = document.getElementById('national-line-politics');
+    if (nationalLinePoliticsChartDom) {
+        const nationalLinePoliticsChart = echarts.init(nationalLinePoliticsChartDom, 'dark');
+         fetchNationalLineData('/api/national-lines/politics', nationalLinePoliticsChart, '国家线政治/英语趋势');
+    }
+
+    // 初始化国家线其他科目图表
+     const nationalLineOthersChartDom = document.getElementById('national-line-others');
+     if (nationalLineOthersChartDom) {
+         const nationalLineOthersChart = echarts.init(nationalLineOthersChartDom, 'dark');
+         fetchNationalLineData('/api/national-lines/others', nationalLineOthersChart, '国家线数/专科趋势');
+     }
+
+    // 初始化考试类型比例饼图
+    const examTypePieChartDom = document.getElementById('exam-type-pie');
+    if (examTypePieChartDom) {
+        const examTypePieChart = echarts.init(examTypePieChartDom, 'dark');
+         fetchExamTypeRatio(examTypePieChart);
+    }
+}
+
+function fetchNationalLineData(apiUrl, chartInstance, title) {
+     showLoading(chartInstance);
+    fetch(apiUrl)
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
         })
-        .catch(error => handleError(error, totalLineChart, '加载总分国家线失败'));
-
-    // 获取并绘制政治国家线柱状图
-    fetch('/api/national-lines/politics')
-        .then(response => response.json())
         .then(data => {
-             if (!data || !data.years || !data.scores) throw new Error("Invalid data format");
             const option = {
-                title: { text: '近三年政治国家线', left: 'center' },
-                tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-                legend: { data: Object.keys(data.scores), top: 30 },
-                grid: { left: '3%', right: '4%', top: '18%', bottom: '15%', containLabel: true }, // 稍微增加底部边距
-                xAxis: { type: 'category', data: data.years },
-                yAxis: { type: 'value', name: '分数' },
-                series: Object.entries(data.scores).map(([name, values]) => ({
-                    name: name,
-                    type: 'bar',
-                    barMaxWidth: 30, // 控制柱子最大宽度
-                    data: values
-                }))
-            };
-            politicsBarChart.setOption(option);
-            politicsBarChart.hideLoading();
+                 title: { text: title, left: 'center', textStyle: { color: '#ccc' } },
+                 tooltip: { trigger: 'axis' },
+                 legend: { data: data.legend, bottom: 10, textStyle: { color: '#ccc' } },
+                 grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
+                 xAxis: { type: 'category', data: data.years, axisLabel: { color: '#ccc' } },
+                 yAxis: {
+                    type: 'value',
+                    min: 'dataMin', // 设置 Y 轴从数据最小值开始
+                    axisLabel: { color: '#ccc' }
+                 },
+                 series: data.series.map(s => ({ ...s, type: 'line', smooth: true }))
+             };
+            chartInstance.setOption(option);
+            chartInstance.hideLoading();
         })
-        .catch(error => handleError(error, politicsBarChart, '加载政治国家线失败'));
+        .catch(error => handleError(error, chartInstance, `加载 ${title} 数据失败`));
+}
 
-    // 获取并绘制英数国家线折线图
-    fetch('/api/national-lines/others')
-        .then(response => response.json())
-        .then(data => {
-            if (!data || !data.years || !data.scores) throw new Error("Invalid data format");
-            const option = {
-                title: { text: '近三年英/数国家线', left: 'center' },
-                tooltip: { trigger: 'axis' },
-                legend: { data: Object.keys(data.scores), top: 30, type: 'scroll', orient: 'horizontal' },
-                grid: { left: '3%', right: '4%', top: '20%', bottom: '15%', containLabel: true }, // 保持调整后的边距
-                xAxis: { type: 'category', boundaryGap: false, data: data.years },
-                yAxis: { type: 'value', name: '分数' },
-                series: Object.entries(data.scores).map(([name, values]) => ({
-                    name: name,
-                    type: 'line',
-                    data: values
-                }))
-            };
-            othersLineChart.setOption(option);
-            othersLineChart.hideLoading();
-        })
-        .catch(error => handleError(error, othersLineChart, '加载英数国家线失败'));
-
-    // 获取并绘制考试类型饼图
+function fetchExamTypeRatio(chartInstance) {
+    showLoading(chartInstance);
     fetch('/api/stats/exam-type-ratio')
-        .then(response => response.json())
+        .then(response => {
+             if (!response.ok) throw new Error('Network response was not ok');
+             return response.json();
+         })
         .then(data => {
-             if (!Array.isArray(data)) throw new Error("Invalid data format");
             const option = {
-                title: { text: '考试类型比例 (自命题 vs 408)', left: 'center' },
+                title: { text: '自命题 vs 408 比例', left: 'center', textStyle: { color: '#ccc' } },
                 tooltip: { trigger: 'item', formatter: '{a} <br/>{b} : {c} ({d}%)' },
-                legend: { orient: 'vertical', left: 10, top: 'center' }, // 图例移到左侧居中
+                legend: { orient: 'vertical', left: 'left', data: data.map(item => item.name), textStyle: { color: '#ccc' } },
                 series: [
                     {
                         name: '考试类型',
                         type: 'pie',
-                        radius: ['40%', '60%'], // 改为圆环图，更有科技感
-                        center: ['65%', '55%'], // 调整中心，给图例留空间
-                        avoidLabelOverlap: false,
-                        itemStyle: {
-                            borderRadius: 5, // 圆角
-                            borderColor: '#1a1a2e', // 边框颜色用背景色
-                            borderWidth: 2
-                        },
-                         label: {
-                            show: false, // 默认不显示标签
-                            position: 'center'
-                        },
+                        radius: '50%',
+                        center: ['50%', '60%'],
+                        data: data,
                         emphasis: {
-                             label: {
-                                show: true,
-                                fontSize: '20',
-                                fontWeight: 'bold',
-                                color: '#e0e0e0' // 强调时显示标签
-                            },
                             itemStyle: {
                                 shadowBlur: 10,
                                 shadowOffsetX: 0,
                                 shadowColor: 'rgba(0, 0, 0, 0.5)'
                             }
                         },
-                        labelLine: {
-                            show: false
-                        },
-                        data: data
+                         label: { color: '#ccc' },
+                         labelLine: { lineStyle: { color: '#aaa' } }
                     }
                 ]
             };
-            examTypePieChart.setOption(option);
-            examTypePieChart.hideLoading();
+            chartInstance.setOption(option);
+            chartInstance.hideLoading();
         })
-        .catch(error => handleError(error, examTypePieChart, '加载考试类型比例失败'));
+        .catch(error => handleError(error, chartInstance, '加载考试类型比例失败'));
 }
 
-// --- 公告数据获取和填充 ---
+// --- 加载和显示公告 ---
 function fetchAnnouncements() {
+    const announcementList = document.getElementById('announcement-list');
+    if (!announcementList) return;
+
     fetch('/api/announcements')
-        .then(response => response.json())
-        .then(announcements => {
-            populateAnnouncements(announcements);
+        .then(response => {
+             if (!response.ok) throw new Error('Network response was not ok');
+             return response.json();
+        })
+        .then(data => {
+            populateAnnouncements(data);
         })
         .catch(error => {
-            console.error('获取公告失败:', error);
-            const list = document.getElementById('announcement-list');
-            if (list) {
-                list.innerHTML = '<li>加载公告失败。</li>';
-            }
+            console.error('Error fetching announcements:', error);
+             announcementList.innerHTML = `<li class="list-group-item bg-transparent text-danger">加载公告失败: ${error.message}</li>`;
         });
 }
 
 function populateAnnouncements(announcements) {
-    const list = document.getElementById('announcement-list');
-    if (!list) return;
-    list.innerHTML = '';
-    if (!announcements || announcements.length === 0) {
-        list.innerHTML = '<li>暂无公告。</li>';
-        return;
+    const announcementList = document.getElementById('announcement-list');
+    if (!announcementList) return;
+
+    announcementList.innerHTML = ''; // 清空现有列表
+
+    if (announcements && announcements.length > 0) {
+        announcements.forEach(announcement => {
+            const li = document.createElement('li');
+             li.className = 'list-group-item bg-transparent border-bottom border-secondary'; // 使用深色主题样式
+
+            const titleSpan = document.createElement('span');
+            titleSpan.textContent = announcement.title;
+
+            if (announcement.url) {
+                const link = document.createElement('a');
+                link.href = announcement.url;
+                link.target = '_blank'; // 在新标签页打开
+                link.rel = 'noopener noreferrer';
+                link.className = 'text-decoration-none'; // 移除下划线
+                link.appendChild(titleSpan);
+                li.appendChild(link);
+            } else {
+                li.appendChild(titleSpan);
+            }
+
+             // 添加时间戳 (如果数据中有)
+             if (announcement.timestamp) {
+                 const timeSpan = document.createElement('small');
+                 timeSpan.className = 'text-muted float-end';
+                 // 简单格式化时间，可以根据需要改进
+                 const date = new Date(announcement.timestamp);
+                 timeSpan.textContent = date.toLocaleDateString();
+                 li.appendChild(timeSpan);
+             }
+
+            announcementList.appendChild(li);
+        });
+    } else {
+        announcementList.innerHTML = '<li class="list-group-item bg-transparent text-muted text-center">暂无公告</li>';
     }
-    announcements.forEach(announce => {
-        const listItem = document.createElement('li');
-        // 如果有 URL，创建链接
-        if (announce.url && announce.url !== '#') {
-            listItem.innerHTML = `<a href="${announce.url}" target="_blank">${announce.title}</a>`;
-        } else {
-            listItem.textContent = announce.title;
-        }
-        list.appendChild(listItem);
-    });
 }
 
-// --- 辅助函数 (更新样式) ---
+// --- ECharts 辅助函数 ---
 function showLoading(chartInstance, text = '加载中...') {
-    chartInstance.showLoading('default', {
-        text: text,
-        color: '#478eff', // 主题亮色
-        textColor: '#e0e0e0', // 主要文字颜色
-        maskColor: 'rgba(26, 26, 46, 0.8)', // 使用深色背景的半透明遮罩
-        zlevel: 0
-    });
+     if (chartInstance && typeof chartInstance.showLoading === 'function') {
+         chartInstance.showLoading('default', {
+             text: text,
+             color: '#00bcd4',
+             textColor: '#ccc',
+             maskColor: 'rgba(0, 0, 0, 0.3)',
+             zlevel: 0
+         });
+     }
 }
 
 function handleError(error, chartInstance, message) {
-    console.error(message + ':', error);
-    chartInstance.hideLoading();
-    // 在图表区域显示错误信息
-    chartInstance.setOption({ // 使用 setOption 清除可能存在的旧图形
-        title: {
-            text: message + '，请稍后重试。',
-            left: 'center',
-            top: 'center'
-        }
-    });
-     // 可以选择不显示 loading 图标，只显示文字
-    /*
-    chartInstance.showLoading('default', {
-        text: message + '，请稍后重试。',
-        color: '#dc3545', // 危险色
-        textColor: '#dc3545',
-        maskColor: 'rgba(26, 26, 46, 0.8)',
-    });
-    */
-} 
+     console.error(`${message}:`, error);
+     if (chartInstance && typeof chartInstance.hideLoading === 'function') {
+         chartInstance.hideLoading();
+         // 可选：在图表上显示错误信息
+          chartInstance.showLoading('default', {
+              text: `${message}\n${error.message}`,
+              color: '#dc3545', // 红色
+              textColor: '#f8d7da',
+              maskColor: 'rgba(0, 0, 0, 0.5)',
+              zlevel: 0
+          });
+     }
+}
+
+// (可能需要的旧 fetchSchools 函数 - 如有其他地方调用)
+// function fetchSchools() {
+//     // ... 旧的实现 ... 
+// } 

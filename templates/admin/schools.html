@@ -1,101 +1,93 @@
 {% extends "admin/base_admin.html" %}
 
-{% block admin_title %}院校数据管理{% endblock %}
+{% block title %}管理院校列表 - {{ super() }}{% endblock %}
 
 {% block admin_content %}
-<div class="container-fluid">
-    <h1 class="mt-4">院校数据管理</h1>
-
-    <div class="alert alert-info" role="alert">
-        注意：当前系统直接读取 `data/schools.json` 文件。直接编辑此文件风险较高。建议通过爬虫或数据处理脚本更新数据。
-    </div>
-
-    <div class="card mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <span>
-                <i class="fas fa-database me-1"></i>
-                院校列表 (共 {{ pagination.total_items }} 条，当前第 {{ pagination.page }} / {{ pagination.total_pages }} 页)
-            </span>
-            {# 触发爬虫按钮占位符 #}
-            <form action="{{ url_for('trigger_crawler') }}" method="POST" style="display: inline;" onsubmit="return confirm('将尝试启动爬虫更新任务（占位符），确定吗？');">
-                 <button type="submit" class="btn btn-warning btn-sm"><i class="fas fa-sync-alt me-1"></i> 触发爬虫更新 (占位)</button>
-            </form>
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>院校数据管理</h2>
+        <div>
+             <button class="btn btn-info btn-sm me-2" data-bs-toggle="modal" data-bs-target="#triggerCrawlerModal">
+                 <i class="fas fa-spider"></i> 触发爬虫更新
+             </button>
+             {# 可以添加 "添加新学校" 的按钮 #}
         </div>
-        <div class="card-body">
-             <div class="table-responsive">
-                <table class="table table-bordered table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th>名称</th>
-                            <th>等级</th>
-                            <th>计算机等级</th>
-                            <th>省份</th>
-                            <th>地区</th>
-                            <th>操作</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% if schools %}
-                            {% for school in schools %}
-                                <tr>
-                                    <td>{{ school.name }}</td>
-                                    <td>{{ school.level }}</td>
-                                    <td>{{ school.computer_rank }}</td>
-                                    <td>{{ school.province }}</td>
-                                    <td>{{ school.region }}</td>
-                                    <td>
-                                        <a href="{{ url_for('school_detail', school_id=school.id) }}" target="_blank" class="btn btn-sm btn-info">查看前台</a>
-                                        <a href="{{ url_for('admin_edit_school', school_id=school.id) }}" class="btn btn-sm btn-warning">编辑</a>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        {% else %}
-                            <tr>
-                                <td colspan="6" class="text-center">没有找到院校数据。</td>
-                            </tr>
-                        {% endif %}
-                    </tbody>
-                </table>
+    </div>
+    <hr>
+
+     <!-- 搜索表单 -->
+    <form method="GET" action="{{ url_for('admin_schools') }}" class="mb-4">
+        <div class="input-group">
+            <input type="text" name="q" class="form-control" placeholder="按名称或省份搜索..." value="{{ search_query }}">
+            <button class="btn btn-outline-primary" type="submit"><i class="fas fa-search"></i> 搜索</button>
+             {% if search_query %}
+                 <a href="{{ url_for('admin_schools') }}" class="btn btn-outline-secondary"><i class="fas fa-times"></i> 清除</a>
+             {% endif %}
+        </div>
+    </form>
+
+    {% include '_flash_messages.html' %}
+
+    {% if schools %}
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>ID (学校名称)</th>
+                    <th>省份</th>
+                    <th>等级</th>
+                    <th>计算机等级</th>
+                    <th>简介 (部分)</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for school in schools %}
+                <tr>
+                    <td>{{ school.id }}</td>
+                    <td>{{ school.province | default('N/A') }}</td>
+                    <td>{{ school.level | default('N/A') }}</td>
+                    <td>{{ school.computer_rank | default('N/A') }}</td>
+                    <td>{{ (school.intro | striptags | truncate(100)) if school.intro else '无' }}</td>
+                    <td>
+                        <a href="{{ url_for('admin_edit_school', school_id=school.id) }}" class="btn btn-sm btn-warning me-1" title="编辑">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        {# 可以添加删除按钮，但需谨慎处理 #}
+                        {# <button class="btn btn-sm btn-danger" ... > <i class="fas fa-trash"></i></button> #}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+        <div class="alert alert-info">{% if search_query %}找不到匹配 "{{ search_query }}" 的院校。{% else %}院校数据库为空。{% endif %}</div>
+    {% endif %}
+
+    {# 分页逻辑可以稍后添加，如果学校数量很多 #}
+
+    <!-- 触发爬虫模态框 -->
+    <div class="modal fade" id="triggerCrawlerModal" tabindex="-1" aria-labelledby="triggerCrawlerModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="triggerCrawlerModalLabel">确认触发爬虫</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>确定要触发爬虫更新四川大学和电子科技大学的最新数据吗？</p>
+                    <p class="text-warning"><small>此过程可能需要一些时间，并且会覆盖现有数据。</small></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <form action="{{ url_for('admin_trigger_crawler') }}" method="post" style="display: inline;">
+                         <button type="submit" class="btn btn-primary">确认触发</button>
+                    </form>
+                </div>
             </div>
-
-            <!-- 分页导航 -->
-            {% if pagination.total_pages > 1 %}
-            <nav aria-label="Page navigation">
-                <ul class="pagination justify-content-center">
-                    {# 上一页 #}
-                    <li class="page-item {% if pagination.page == 1 %}disabled{% endif %}">
-                        <a class="page-link" href="{{ url_for('admin_schools', page=pagination.page - 1) }}">上一页</a>
-                    </li>
-
-                    {# 显示部分页码 #}
-                    {% set start_page = [1, pagination.page - 2] | max %}
-                    {% set end_page = [pagination.total_pages, pagination.page + 2] | min %}
-
-                    {% if start_page > 1 %}
-                        <li class="page-item"><a class="page-link" href="{{ url_for('admin_schools', page=1) }}">1</a></li>
-                        {% if start_page > 2 %}<li class="page-item disabled"><span class="page-link">...</span></li>{% endif %}
-                    {% endif %}
-
-                    {% for p in range(start_page, end_page + 1) %}
-                        <li class="page-item {% if p == pagination.page %}active{% endif %}">
-                            <a class="page-link" href="{{ url_for('admin_schools', page=p) }}">{{ p }}</a>
-                        </li>
-                    {% endfor %}
-
-                    {% if end_page < pagination.total_pages %}
-                        {% if end_page < pagination.total_pages - 1 %}<li class="page-item disabled"><span class="page-link">...</span></li>{% endif %}
-                         <li class="page-item"><a class="page-link" href="{{ url_for('admin_schools', page=pagination.total_pages) }}">{{ pagination.total_pages }}</a></li>
-                    {% endif %}
-
-                    {# 下一页 #}
-                    <li class="page-item {% if pagination.page == pagination.total_pages %}disabled{% endif %}">
-                        <a class="page-link" href="{{ url_for('admin_schools', page=pagination.page + 1) }}">下一页</a>
-                    </li>
-                </ul>
-            </nav>
-            {% endif %}
-
         </div>
     </div>
+
 </div>
 {% endblock %} 

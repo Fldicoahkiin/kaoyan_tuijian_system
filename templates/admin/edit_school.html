@@ -39,17 +39,7 @@
                     </div>
                  {% endif %}
              </div>
-            <div class="col-md-4">
-                {{ form.region.label(class="form-label") }}
-                {{ form.region(class="form-select" + (" is-invalid" if form.region.errors else "")) }}
-                 {% if form.region.errors %}
-                    <div class="invalid-feedback">
-                        {% for error in form.region.errors %}{{ error }}{% endfor %}
-                    </div>
-                {% endif %}
-            </div>
         </div>
-
 
         <div class="mb-3">
             {{ form.computer_rank.label(class="form-label") }}
