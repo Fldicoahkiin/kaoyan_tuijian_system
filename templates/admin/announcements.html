@@ -101,174 +101,178 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const tbody = document.getElementById('announcement-tbody');
-    const reorderUrl = document.getElementById('announcements-table').dataset.reorderUrl;
-    const saveOrderBtn = document.getElementById('save-order-btn');
-    let currentOrderForSaving = []; // Stores the order to be saved, initialized with current state
-    let hasSortableInitialized = false; // Flag to ensure Sortable is initialized only once
-    let saveButtonListenerAttached = false; // Flag to ensure listener is attached only once
+if (typeof window.announcementScriptInitialized === 'undefined') {
+    window.announcementScriptInitialized = true;
 
-    function updateCurrentOrder() {
-        currentOrderForSaving = [];
-        if (tbody) {
-            tbody.querySelectorAll('tr').forEach(row => {
-                currentOrderForSaving.push(row.dataset.index);
-            });
+    document.addEventListener('DOMContentLoaded', function () {
+        const tbody = document.getElementById('announcement-tbody');
+        const reorderUrl = document.getElementById('announcements-table').dataset.reorderUrl;
+        const saveOrderBtn = document.getElementById('save-order-btn');
+        let currentOrderForSaving = []; // Stores the order to be saved, initialized with current state
+        let hasSortableInitialized = false; // Flag to ensure Sortable is initialized only once
+        let saveButtonListenerAttached = false; // Flag to ensure listener is attached only once
+
+        function updateCurrentOrder() {
+            currentOrderForSaving = [];
+            if (tbody) {
+                tbody.querySelectorAll('tr').forEach(row => {
+                    currentOrderForSaving.push(row.dataset.index);
+                });
+            }
+            console.log('Order updated internally. currentOrderForSaving is now:', JSON.stringify(currentOrderForSaving));
+            // Enable save button only if there are items or if saving an empty list is allowed.
+            // For now, let's assume saving empty is fine, or button is enabled by default.
+            if(saveOrderBtn) saveOrderBtn.disabled = false; 
         }
-        console.log('Order updated internally. currentOrderForSaving is now:', JSON.stringify(currentOrderForSaving));
-        // Enable save button only if there are items or if saving an empty list is allowed.
-        // For now, let's assume saving empty is fine, or button is enabled by default.
-        if(saveOrderBtn) saveOrderBtn.disabled = false; 
-    }
 
-    // Initialize current order on page load
-    updateCurrentOrder(); 
-    // Disable button if no announcements initially, and we don't want to save empty order implicitly
-    if (saveOrderBtn && currentOrderForSaving.length === 0 && tbody && tbody.children.length === 0) { 
-        // saveOrderBtn.disabled = true; // Uncomment if initial empty save is not desired
-        console.log('Initial state: No announcements, save button might be disabled if configured.');
-    }
+        // Initialize current order on page load
+        updateCurrentOrder(); 
+        // Disable button if no announcements initially, and we don't want to save empty order implicitly
+        if (saveOrderBtn && currentOrderForSaving.length === 0 && tbody && tbody.children.length === 0) { 
+            // saveOrderBtn.disabled = true; // Uncomment if initial empty save is not desired
+            console.log('Initial state: No announcements, save button might be disabled if configured.');
+        }
 
 
-    if (tbody && !hasSortableInitialized) {
-        console.log('SortableJS initializing...');
-        new Sortable(tbody, {
-            animation: 150,
-            handle: '.drag-handle',
-            onEnd: function (evt) {
-                console.log('SortableJS onEnd event triggered.');
-                updateCurrentOrder(); // Update the order after drag
-            }
-        });
-        hasSortableInitialized = true;
-    }
-
-    if (saveOrderBtn && !saveButtonListenerAttached) {
-        saveOrderBtn.addEventListener('click', function() {
-            console.log('Save button clicked. Current currentOrderForSaving:', JSON.stringify(currentOrderForSaving));
-            
-            // The check for null is removed as currentOrderForSaving is always an array now.
-            // If you want to prevent saving if no actual drag has occurred since load or last save,
-            // you might need a more complex state (e.g., a 'dirty' flag).
-            // For now, it saves the current state of the table rows' data-index attributes.
-
-            saveOrderBtn.disabled = true;
-            console.log('Proceeding to fetch, currentOrderForSaving:', JSON.stringify(currentOrderForSaving));
-
-            fetch(reorderUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({ new_order: currentOrderForSaving })
-            })
-            .then(response => {
-                console.log('Fetch response received:', response.status);
-                if (!response.ok) { // Check for non-2xx responses
-                    return response.json().then(errData => { 
-                        throw new Error(errData.message || `HTTP error! status: ${response.status}`); 
-                    });
+        if (tbody && !hasSortableInitialized) {
+            console.log('SortableJS initializing...');
+            new Sortable(tbody, {
+                animation: 150,
+                handle: '.drag-handle',
+                onEnd: function (evt) {
+                    console.log('SortableJS onEnd event triggered.');
+                    updateCurrentOrder(); // Update the order after drag
                 }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Fetch data received:', data);
-                if (data.success) {
-                    console.log('Order updated successfully via fetch.');
-                    const successAlert = document.createElement('div');
-                    successAlert.className = 'alert alert-success alert-dismissible fade show position-fixed bottom-0 end-0 m-3';
-                    successAlert.setAttribute('role', 'alert');
-                    successAlert.innerHTML = '公告顺序已成功保存！<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
-                    document.body.appendChild(successAlert);
-                    setTimeout(() => {
-                        if (successAlert.parentElement) {
-                             try { bootstrap.Alert.getOrCreateInstance(successAlert).close(); } catch(e) { console.warn('Failed to close alert:', e); }
-                        }
-                    }, 3000);
-                    // No need to hide footer as it's always visible now
-                    // updateCurrentOrder(); // Re-capture the order, though it should be the same as what was saved.
-                                        // Or, if backend reassigns indices, we might need to update data-index attributes on rows.
-                    saveOrderBtn.disabled = false; // Re-enable after successful save
-                    console.log('Save process complete. currentOrderForSaving reflects saved state (or next state to save).');
-                } else {
-                    alert('更新顺序失败: ' + (data.message || '未知错误'));
-                    console.error('Failed to update order:', data.message);
+            });
+            hasSortableInitialized = true;
+        }
+
+        if (saveOrderBtn && !saveButtonListenerAttached) {
+            saveOrderBtn.addEventListener('click', function() {
+                console.log('Save button clicked. Current currentOrderForSaving:', JSON.stringify(currentOrderForSaving));
+                
+                // The check for null is removed as currentOrderForSaving is always an array now.
+                // If you want to prevent saving if no actual drag has occurred since load or last save,
+                // you might need a more complex state (e.g., a 'dirty' flag).
+                // For now, it saves the current state of the table rows' data-index attributes.
+
+                saveOrderBtn.disabled = true;
+                console.log('Proceeding to fetch, currentOrderForSaving:', JSON.stringify(currentOrderForSaving));
+
+                fetch(reorderUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ new_order: currentOrderForSaving })
+                })
+                .then(response => {
+                    console.log('Fetch response received:', response.status);
+                    if (!response.ok) { // Check for non-2xx responses
+                        return response.json().then(errData => { 
+                            throw new Error(errData.message || `HTTP error! status: ${response.status}`); 
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Fetch data received:', data);
+                    if (data.success) {
+                        console.log('Order updated successfully via fetch.');
+                        const successAlert = document.createElement('div');
+                        successAlert.className = 'alert alert-success alert-dismissible fade show position-fixed bottom-0 end-0 m-3';
+                        successAlert.setAttribute('role', 'alert');
+                        successAlert.innerHTML = '公告顺序已成功保存！<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+                        document.body.appendChild(successAlert);
+                        setTimeout(() => {
+                            if (successAlert.parentElement) {
+                                 try { bootstrap.Alert.getOrCreateInstance(successAlert).close(); } catch(e) { console.warn('Failed to close alert:', e); }
+                            }
+                        }, 3000);
+                        // No need to hide footer as it's always visible now
+                        // updateCurrentOrder(); // Re-capture the order, though it should be the same as what was saved.
+                                            // Or, if backend reassigns indices, we might need to update data-index attributes on rows.
+                        saveOrderBtn.disabled = false; // Re-enable after successful save
+                        console.log('Save process complete. currentOrderForSaving reflects saved state (or next state to save).');
+                    } else {
+                        alert('更新顺序失败: ' + (data.message || '未知错误'));
+                        console.error('Failed to update order:', data.message);
+                        saveOrderBtn.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating order (fetch catch):', error);
+                    alert('更新顺序时发生错误: ' + error.message);
                     saveOrderBtn.disabled = false;
-                }
-            })
-            .catch(error => {
-                console.error('Error updating order (fetch catch):', error);
-                alert('更新顺序时发生错误: ' + error.message);
-                saveOrderBtn.disabled = false;
+                });
+            });
+            saveButtonListenerAttached = true;
+        }
+
+        // --- 以下是之前的编辑/取消/保存逻辑，需要调整以适应新的列结构 ---
+        document.querySelectorAll('.edit-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const index = this.dataset.index;
+                const row = document.getElementById(`announcement-row-${index}`);
+                // Hide view mode cells (title, url) and view-mode buttons/links
+                row.querySelector('.announcement-title-cell').style.display = 'none';
+                row.querySelector('.announcement-url-cell').style.display = 'none';
+                row.querySelectorAll('.view-mode').forEach(el => {
+                     if (el.tagName === 'BUTTON' || el.tagName === 'FORM') { // Hide delete form too
+                         el.style.display = 'none';
+                     }
+                });
+                // Hide the drag handle column cell
+                row.querySelector('td.drag-handle').style.display = 'none';
+
+                // Show edit mode cell and buttons
+                row.querySelector('td.edit-mode').style.display = 'table-cell';
+                row.querySelector('button.save-btn.edit-mode').style.display = 'inline-block';
+                row.querySelector('button.cancel-btn.edit-mode').style.display = 'inline-block';
             });
         });
-        saveButtonListenerAttached = true;
-    }
 
-    // --- 以下是之前的编辑/取消/保存逻辑，需要调整以适应新的列结构 ---
-    document.querySelectorAll('.edit-btn').forEach(button => {
-        button.addEventListener('click', function () {
-            const index = this.dataset.index;
-            const row = document.getElementById(`announcement-row-${index}`);
-            // Hide view mode cells (title, url) and view-mode buttons/links
-            row.querySelector('.announcement-title-cell').style.display = 'none';
-            row.querySelector('.announcement-url-cell').style.display = 'none';
-            row.querySelectorAll('.view-mode').forEach(el => {
-                if (el.tagName === 'BUTTON' || el.tagName === 'FORM') { // Hide delete form too
-                     el.style.display = 'none';
-                }
-             });
-             // Hide the drag handle column cell
-             row.querySelector('td.drag-handle').style.display = 'none';
+        document.querySelectorAll('.cancel-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const index = this.dataset.index;
+                const row = document.getElementById(`announcement-row-${index}`);
+                // Show view mode cells and buttons/links
+                row.querySelector('.announcement-title-cell').style.display = 'table-cell';
+                row.querySelector('.announcement-url-cell').style.display = 'table-cell';
+                row.querySelectorAll('.view-mode').forEach(el => {
+                     if (el.tagName === 'BUTTON' || el.tagName === 'FORM') { // Show delete form too
+                         el.style.display = 'inline-block';
+                     }
+                });
+                // Show the drag handle column cell
+                row.querySelector('td.drag-handle').style.display = 'table-cell';
 
-            // Show edit mode cell and buttons
-            row.querySelector('td.edit-mode').style.display = 'table-cell';
-            row.querySelector('button.save-btn.edit-mode').style.display = 'inline-block';
-            row.querySelector('button.cancel-btn.edit-mode').style.display = 'inline-block';
-        });
-    });
-
-    document.querySelectorAll('.cancel-btn').forEach(button => {
-        button.addEventListener('click', function () {
-            const index = this.dataset.index;
-            const row = document.getElementById(`announcement-row-${index}`);
-            // Show view mode cells and buttons/links
-            row.querySelector('.announcement-title-cell').style.display = 'table-cell';
-            row.querySelector('.announcement-url-cell').style.display = 'table-cell';
-            row.querySelectorAll('.view-mode').forEach(el => {
-                 if (el.tagName === 'BUTTON' || el.tagName === 'FORM') { // Show delete form too
-                     el.style.display = 'inline-block';
-                 }
+                // Hide edit mode cell and buttons
+                row.querySelector('td.edit-mode').style.display = 'none';
+                row.querySelector('button.save-btn.edit-mode').style.display = 'none';
+                row.querySelector('button.cancel-btn.edit-mode').style.display = 'none';
             });
-            // Show the drag handle column cell
-            row.querySelector('td.drag-handle').style.display = 'table-cell';
+        });
 
-            // Hide edit mode cell and buttons
-            row.querySelector('td.edit-mode').style.display = 'none';
-            row.querySelector('button.save-btn.edit-mode').style.display = 'none';
-            row.querySelector('button.cancel-btn.edit-mode').style.display = 'none';
+        document.querySelectorAll('.save-btn').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                const index = this.dataset.index;
+                const row = document.getElementById(`announcement-row-${index}`);
+                const form = row.querySelector('.update-form');
+
+                const titleInput = form.querySelector('.edit-title');
+                if (!titleInput.value.trim()) {
+                    alert('标题不能为空！');
+                    titleInput.focus();
+                    return;
+                }
+                form.submit();
+            });
         });
     });
-
-    document.querySelectorAll('.save-btn').forEach(button => {
-        button.addEventListener('click', function(event) {
-            event.preventDefault();
-            const index = this.dataset.index;
-            const row = document.getElementById(`announcement-row-${index}`);
-            const form = row.querySelector('.update-form');
-
-            const titleInput = form.querySelector('.edit-title');
-            if (!titleInput.value.trim()) {
-                alert('标题不能为空！');
-                titleInput.focus();
-                return;
-            }
-            form.submit();
-        });
-    });
-});
+} // End of window.announcementScriptInitialized check
 </script>
 {% endblock %}
 {% endblock %} 

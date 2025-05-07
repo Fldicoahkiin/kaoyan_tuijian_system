@@ -12,6 +12,8 @@ from wtforms import StringField, PasswordField, SubmitField, SelectField, TextAr
 from wtforms.validators import DataRequired, Length, EqualTo, Optional, NumberRange
 import logging # 导入 logging
 from flask_wtf.csrf import CSRFProtect # 导入 CSRFProtect
+# import fcntl # 移除 fcntl
+import portalocker # 导入 portalocker
 
 # --- 导入爬虫函数 ---
 from utils.scraper import run_scraper 
@@ -849,43 +851,94 @@ def admin_reorder_announcements():
     if not data or 'new_order' not in data or not isinstance(data['new_order'], list):
         return jsonify({"success": False, "message": "无效的请求数据。"}), 400
 
-    new_order_indices_str = data['new_order'] # This is a list of strings representing original indices
-    
+    new_order_indices_str = data['new_order']
     try:
         new_order_indices = [int(i) for i in new_order_indices_str]
     except ValueError:
          return jsonify({"success": False, "message": "索引必须是数字。"}), 400
 
-    current_announcements = load_json_data(ANNOUNCEMENTS_PATH, default_value=[])
-    
-    if len(new_order_indices) != len(current_announcements):
-         return jsonify({"success": False, "message": "提交的顺序长度与现有公告数量不符。"}), 400
-    
-    # Ensure all original indices are present exactly once
-    if set(new_order_indices) != set(range(len(current_announcements))):
-         return jsonify({"success": False, "message": "提交的顺序索引无效或重复。"}), 400
-        
-    # Reorder the list according to the new indices
-    reordered_announcements = []
+    # --- 文件锁开始 (使用 portalocker) ---
+    lock_file_path = ANNOUNCEMENTS_PATH + ".lock"
+    fp_lock = None
+    lock_acquired = False
     try:
-        for index in new_order_indices:
-            reordered_announcements.append(current_announcements[index])
-    except IndexError:
-         # This shouldn't happen if the previous check passed, but for safety:
-         return jsonify({"success": False, "message": "处理顺序时出现索引错误。"}), 500
+        # 以追加模式打开锁文件 (创建如果不存在)
+        fp_lock = open(lock_file_path, 'a')
 
-    # Save the reordered list
-    try:
-        with open(ANNOUNCEMENTS_PATH, 'w', encoding='utf-8') as f:
-            json.dump(reordered_announcements, f, ensure_ascii=False, indent=2)
-        # Don't use flash here as it's an AJAX request, return JSON
+        # --- 尝试获取锁 ---
+        portalocker.lock(fp_lock, portalocker.LOCK_EX | portalocker.LOCK_NB)
+        lock_acquired = True
+        app.logger.debug(f"成功获取锁文件 {lock_file_path}")
+
+        # --- Lock acquired, perform read-modify-write ---
+        current_announcements = load_json_data(ANNOUNCEMENTS_PATH, default_value=[])
+
+        # Length and index checks (repeat as file could have changed before lock)
+        if len(new_order_indices) != len(current_announcements):
+            return jsonify({"success": False, "message": "数据已更改，请刷新重试 (长度不符)。"}), 409 # Conflict
+
+        original_indices_set = set(range(len(current_announcements)))
+        new_indices_set = set(new_order_indices)
+        if new_indices_set != original_indices_set:
+            return jsonify({"success": False, "message": "数据已更改，请刷新重试 (索引无效)。"}), 409 # Conflict
+
+        reordered_announcements = []
+        try:
+            for index in new_order_indices:
+                reordered_announcements.append(current_announcements[index])
+        except IndexError:
+             app.logger.error("重新排序时出现意外的索引错误。")
+             return jsonify({"success": False, "message": "处理顺序时出现索引错误。"}), 500
+
+        # --- Write the new data --- (Inside lock context)
+        app.logger.info(f"[DEBUG] 即将写入公告文件的内容:") # Log before dump
+        app.logger.info(json.dumps(reordered_announcements, ensure_ascii=False, indent=2))
+        try:
+            # Use a separate handle for writing the actual data file
+            with open(ANNOUNCEMENTS_PATH, 'w', encoding='utf-8') as f_write:
+                json.dump(reordered_announcements, f_write, ensure_ascii=False, indent=2)
+                f_write.flush() # Force Python's internal buffer to be written to OS
+                os.fsync(f_write.fileno()) # Ask OS to write buffer to disk
+        except IOError as write_e:
+            app.logger.error(f"写入公告文件时发生 IO 错误: {write_e}", exc_info=True)
+            return jsonify({"success": False, "message": "保存公告顺序时出错 (写入失败)。"}), 500
+
+        # --- DEBUG Log --- (Keep this)
+        app.logger.info(f"[DEBUG]公告文件 {ANNOUNCEMENTS_PATH} 保存后的内容:")
+        try:
+            # Read with a new handle, lock is still held on fp_lock
+            with open(ANNOUNCEMENTS_PATH, 'r', encoding='utf-8') as f_read:
+                saved_content = json.load(f_read)
+                app.logger.info(json.dumps(saved_content, ensure_ascii=False, indent=2))
+        except Exception as e_read:
+            app.logger.error(f"[DEBUG] 读取刚保存的公告文件失败: {e_read}")
+
+        # --- Operation successful --- Return success before releasing lock in finally
         return jsonify({"success": True, "message": "公告顺序已更新。"})
-    except IOError:
-        app.logger.error("保存重新排序的公告时出错。")
+
+    except portalocker.LockException as le:
+        app.logger.warning(f"无法获取锁文件 {lock_file_path} ({type(le).__name__})，其他请求可能正在写入。")
+        return jsonify({"success": False, "message": "服务器正忙，请稍后重试。"}), 503
+    except IOError as e: # Catch errors like opening the lock file itself
+        app.logger.error(f"处理公告排序时发生文件 IO 错误: {e}", exc_info=True)
         return jsonify({"success": False, "message": "保存公告顺序时出错。"}), 500
     except Exception as e:
          app.logger.error(f"重新排序公告时发生未知错误: {e}", exc_info=True)
          return jsonify({"success": False, "message": "处理请求时发生内部错误。"}), 500
+    finally:
+        # --- 文件锁结束 --- Ensure lock is always released if acquired
+        if lock_acquired and fp_lock:
+             try:
+                 portalocker.unlock(fp_lock)
+                 fp_lock.close()
+                 app.logger.debug(f"释放锁文件 {lock_file_path} (finally)")
+             except Exception as e_unlock:
+                 app.logger.error(f"Finally块释放文件锁时出错: {e_unlock}")
+        elif fp_lock: # If lock wasn't acquired but file handle exists (e.g., error during lock attempt)
+            try:
+                fp_lock.close() # Just close the handle
+            except Exception as e_close:
+                 app.logger.error(f"Finally块关闭锁文件句柄时出错: {e_close}")
 
 @app.route('/admin/profile', methods=['GET', 'POST'])
 @admin_required
