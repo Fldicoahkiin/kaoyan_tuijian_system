@@ -17,6 +17,7 @@ import portalocker # 导入 portalocker
 import fcntl # 添加导入
 import time # 添加导入
 from logging.handlers import RotatingFileHandler
+import pandas as pd # 导入 pandas 用于 replace_nan_with_none 函数
 
 # --- 导入爬虫函数 ---
 from utils.scraper import run_scraper 
@@ -56,10 +57,15 @@ def inject_current_year():
 
 # --- 数据加载函数 ---
 def load_json_data(file_path, default_value=[]):
-    """通用 JSON 数据加载函数。"""
+    """通用 JSON 数据加载函数，带共享文件锁。"""
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
-            return json.load(f)
+            fcntl.flock(f.fileno(), fcntl.LOCK_SH)  # 获取共享锁
+            try:
+                data = json.load(f)
+            finally:
+                fcntl.flock(f.fileno(), fcntl.LOCK_UN) # 确保在任何情况下都释放锁
+            return data
     except FileNotFoundError:
         # 使用 app.logger 记录错误
         app.logger.error(f"数据文件未找到: {file_path}")
@@ -67,25 +73,59 @@ def load_json_data(file_path, default_value=[]):
     except json.JSONDecodeError:
         app.logger.error(f"解析数据文件时出错: {file_path}")
         return default_value
+    except IOError as e_io:
+        app.logger.error(f"读取或锁定文件 {file_path} 时发生IO错误: {e_io}", exc_info=True)
+        return default_value # 或者根据情况决定是否抛出异常
+    except Exception as e:
+        app.logger.error(f"加载 JSON 数据 {file_path} 时发生意外错误: {e}", exc_info=True)
+        return default_value
 
 # --- 数据保存函数 (新增) ---
 def save_schools_data(data):
-    """保存院校数据到 schools.json 文件。"""
+    """将学校数据（列表）保存到 JSON 文件，带文件锁。"""
     try:
+        # 确保目录存在
+        os.makedirs(os.path.dirname(SCHOOLS_DATA_PATH), exist_ok=True)
+        
+        # --- 文件锁开始 ---
         with open(SCHOOLS_DATA_PATH, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=2) # 使用 indent=2 提高可读性
-        return True
-    except IOError as e:
-        app.logger.error(f"无法写入学校数据文件 {SCHOOLS_DATA_PATH}: {e}")
+            fcntl.flock(f.fileno(), fcntl.LOCK_EX) # 获取排他锁
+            try:
+                # 确保数据是干净的（没有 NaN 等 JSON 不支持的类型）
+                cleaned_data = replace_nan_with_none(data) # 假设 replace_nan_with_none 已定义
+                json.dump(cleaned_data, f, ensure_ascii=False, indent=2)
+                f.flush()
+                os.fsync(f.fileno()) # 确保写入磁盘
+                app.logger.info(f"学校数据已成功写入 {SCHOOLS_DATA_PATH}")
+                # fcntl.flock(f.fileno(), fcntl.LOCK_UN) # with 语句会自动解锁
+                return True
+            except Exception as e_write:
+                app.logger.error(f"在持有锁的情况下写入学校数据时出错: {e_write}", exc_info=True)
+                # 锁会自动释放
+                return False
+        # --- 文件锁结束 ---
+        
+    except IOError as e_io:
+        app.logger.error(f"打开或锁定学校数据文件 {SCHOOLS_DATA_PATH} 时发生IO错误: {e_io}", exc_info=True)
         return False
     except Exception as e:
-        app.logger.error(f"保存学校数据时发生未知错误: {e}")
+        app.logger.error(f"保存学校数据到 {SCHOOLS_DATA_PATH} 时发生意外错误: {e}", exc_info=True)
         return False
 
-# 加载所有核心数据
-schools_data = load_json_data(SCHOOLS_DATA_PATH)
-national_lines_data = load_json_data(NATIONAL_LINES_PATH, default_value={}) # 默认空字典
-# announcements_data = load_json_data(ANNOUNCEMENTS_PATH) # 不再全局加载公告数据
+# --- 需要确保 replace_nan_with_none 函数存在于 app.py 中 --- 
+# 如果它只在 data_processor.py 中，需要移过来或导入
+def replace_nan_with_none(obj):
+    if isinstance(obj, list):
+        return [replace_nan_with_none(item) for item in obj]
+    elif isinstance(obj, dict):
+        return {key: replace_nan_with_none(value) for key, value in obj.items()}
+    elif isinstance(obj, float) and pd.isna(obj): # 需要导入 pandas as pd
+        # 如果不想依赖 pandas，可以检查 math.isnan(obj)
+        import math 
+        if math.isnan(obj):
+           return None
+    # 可以添加对其他 NaN 类型（如 numpy.nan）的处理
+    return obj
 
 # --- 辅助函数：用户数据读写 ---
 def get_user_data(username):
@@ -175,7 +215,7 @@ def index():
 @app.route('/api/schools/list')
 def api_schools_list():
     """API: 返回用于首页滚动列表的简化学校信息"""
-    schools = schools_data
+    schools = load_json_data(SCHOOLS_DATA_PATH)
     simplified_schools = []
     for school in schools:
         simplified_schools.append({
@@ -468,72 +508,79 @@ def profile():
 @app.route('/school-list')
 def school_list():
     # 获取查询参数和页码
-    region = request.args.get('region')
-    level = request.args.get('level')
-    name = request.args.get('name')
-    rank = request.args.get('rank')
+    search_query = request.args.get('q', '')
+    province_filter = request.args.get('province', '')
+    level_filter = request.args.get('level', '')
+    rank_filter = request.args.get('rank', '') # 新增：计算机等级筛选
+    sort_by = request.args.get('sort', 'default') # 新增：排序参数
     page = request.args.get('page', 1, type=int)
-    per_page = 15 # 每页显示数量
+    per_page = 20 # 每页显示数量
 
-    # 获取收藏计数
-    favorites_counts = get_favorites_count()
+    # --- 加载最新数据 ---
+    all_schools = load_json_data(SCHOOLS_DATA_PATH)
+    if not all_schools:
+        flash('无法加载学校数据。', 'warning')
+        all_schools = []
+    # --- 加载结束 ---
 
-    # 筛选学校数据
-    filtered_schools = schools_data
-    if region:
-        filtered_schools = [s for s in filtered_schools if s.get('province') == region]
-    if level:
-        filtered_schools = [s for s in filtered_schools if s.get('level') == level]
-    if name:
-        # 使用模糊搜索 (大小写不敏感)
-        filtered_schools = [s for s in filtered_schools if name.lower() in s.get('name', '').lower()]
-    if rank:
-        filtered_schools = [s for s in filtered_schools if s.get('computer_rank') == rank]
+    # 过滤学校
+    filtered_schools = all_schools
+    if search_query:
+        filtered_schools = [
+            s for s in filtered_schools
+            if search_query.lower() in s.get('name', '').lower()
+        ]
+    if province_filter:
+        filtered_schools = [s for s in filtered_schools if s.get('province') == province_filter]
+    if level_filter:
+        filtered_schools = [s for s in filtered_schools if s.get('level') == level_filter]
+    if rank_filter:
+        # 对 computer_rank 进行过滤，可能需要更复杂的逻辑来处理 A+/A/A- 等
+        filtered_schools = [s for s in filtered_schools if s.get('computer_rank') and s.get('computer_rank').startswith(rank_filter)]
+        
+    # --- 排序逻辑 ---
+    if sort_by == 'favorites':
+        # 获取收藏数 (这可能需要优化，如果学校数量很大)
+        favorites_counts = get_favorites_count()
+        # print(f"DEBUG: Favorites Counts: {favorites_counts}") # 调试
+        # 添加 favorites_count 字段到学校数据，如果不存在则为 0
+        for school in filtered_schools:
+            school['temp_favorites_count'] = favorites_counts.get(school['id'], 0)
+        # 按收藏数降序排序
+        filtered_schools.sort(key=lambda x: x.get('temp_favorites_count', 0), reverse=True)
+        # print(f"DEBUG: Sorted by favorites: {[s['name'] for s in filtered_schools[:5]]}") # 调试
+    #elif sort_by == 'rank':
+        # 排序逻辑：根据 computer_rank (可能需要自定义排序函数处理 A+, A, A-)
+        # ... 实现 rank 排序 ...
+    # 默认排序 (可以按名称)
+    elif sort_by == 'default' or True:
+        filtered_schools.sort(key=lambda x: x.get('name', ''))
 
-    # 添加收藏人数到筛选结果
-    for school in filtered_schools:
-        school_id = school.get('id', school.get('name')) # Use name as fallback ID
-        school['favorites_count'] = favorites_counts.get(school_id, 0)
-
-    # 按收藏人数排序 (默认降序)
-    sort_by_favorites = request.args.get('sort') == 'favorites' # Example: ?sort=favorites
-    if sort_by_favorites:
-        filtered_schools.sort(key=lambda s: s.get('favorites_count', 0), reverse=True)
-
-    # --- 分页处理 --- START ---
+    # 分页处理
     total_schools = len(filtered_schools)
     total_pages = ceil(total_schools / per_page)
-    start = (page - 1) * per_page
-    end = start + per_page
-    schools_paginated = filtered_schools[start:end]
+    start_index = (page - 1) * per_page
+    end_index = start_index + per_page
+    paginated_schools = filtered_schools[start_index:end_index]
 
-    # 定义分页数据字典 (确保总是在这里定义)
-    pagination = {
-        'page': page,
-        'per_page': per_page,
-        'total_pages': total_pages,
-        'total_items': total_schools,
-        'has_prev': page > 1,
-        'has_next': page < total_pages,
-        'prev_num': page - 1,
-        'next_num': page + 1
-    }
-    # --- 分页处理 --- END ---
+    # 获取所有省份和等级用于筛选下拉菜单
+    all_provinces = sorted(list(set(s.get('province', '未知省份') for s in all_schools if s.get('province'))))
+    all_levels = sorted(list(set(s.get('level', '一般') for s in all_schools)), key=lambda x: (x != '985', x != '211', x != '双一流', x)) # 自定义排序
+    all_ranks = sorted(list(set(s.get('computer_rank', '') for s in all_schools if s.get('computer_rank')))) # 收集所有计算机等级
 
-    # 准备省份和等级列表用于下拉菜单
-    provinces = sorted(list(set(s.get('province') for s in schools_data if s.get('province'))))
-    levels = sorted(list(set(s.get('level') for s in schools_data if s.get('level'))), key=lambda x: ('985' not in x, '211' not in x, x)) # Custom sort
-    ranks = sorted(list(set(s.get('computer_rank') for s in schools_data if s.get('computer_rank'))))
-
-    return render_template(
-        'school_list.html',
-        schools=schools_paginated,
-        provinces=provinces,
-        levels=levels,
-        ranks=ranks,
-        pagination=pagination, # 确保传递 pagination
-        query_params={'region': region, 'level': level, 'name': name, 'rank': rank, 'sort': request.args.get('sort')}
-    )
+    return render_template('school_list.html',
+                           schools=paginated_schools,
+                           page=page,
+                           total_pages=total_pages,
+                           total_schools=total_schools,
+                           all_provinces=all_provinces,
+                           all_levels=all_levels,
+                           all_ranks=all_ranks, # 传递等级列表
+                           current_province=province_filter,
+                           current_level=level_filter,
+                           current_rank=rank_filter, # 传递当前等级
+                           current_sort=sort_by,
+                           search_query=search_query)
 
 @app.route('/recommend', methods=['GET'])
 def recommend():
@@ -583,106 +630,80 @@ def recommend():
 @app.route('/school/<path:school_id>') # 使用 path 转换器允许 school_id 包含斜杠 (虽然可能不需要)
 def school_detail(school_id):
     # 通过 id 或 name 查找学校数据
-    school = next((s for s in schools_data if s.get('id') == school_id or s.get('name') == school_id), None)
+    # --- 加载最新数据 ---
+    schools_data_list = load_json_data(SCHOOLS_DATA_PATH)
+    if not schools_data_list:
+        abort(404, description="无法加载学校数据") # 或显示错误页面
+    # --- 加载结束 ---
+    
+    school = next((s for s in schools_data_list if s.get('id') == school_id), None)
 
-    if school:
-        user_favorites = []
-        if 'username' in session:
-            user_data = get_user_data(session['username'])
-            if user_data and 'favorites' in user_data:
-                user_favorites = user_data['favorites']
+    if school is None:
+        # 如果按ID找不到，尝试按名称匹配 (不精确，可能需要改进)
+        school = next((s for s in schools_data_list if s.get('name') == school_id), None)
 
-        # 准备要传递给模板的数据
-        template_data = school.copy()
-        template_data['id'] = template_data.get('id') or template_data.get('name')
+    if school is None:
+        app.logger.warning(f"尝试访问不存在的学校: {school_id}")
+        abort(404, description=f"未找到ID或名称为 {school_id} 的学校")
+        
+    is_favorite = False
+    if 'username' in session:
+        user_data = get_user_data(session['username'])
+        if user_data and school.get('id') in user_data.get('favorites', []):
+            is_favorite = True
 
-        # 尝试为四川院校提取近三年分数线数据用于图表
-        sichuan_score_chart_data = None
-        if template_data.get('province') == '四川省':
-            # 假设分数线在第一个系的第一个专业里 (可能需要更复杂的逻辑)
-            try:
-                if template_data.get('departments') and template_data['departments'][0].get('majors'):
-                     major_scores = template_data['departments'][0]['majors'][0].get('score_lines', {})
-                     years = sorted([y for y in major_scores.keys() if y.isdigit() and int(y) >= 2022], reverse=True)[:3] # 取近三年
-                     scores = []
-                     valid_years = []
-                     if len(years) >= 2: # 至少需要两年数据才能画线
-                         for year in reversed(years): # 按年份升序
-                            score_str = major_scores.get(year)
-                            if score_str:
-                                # 尝试提取总分
-                                score_val = None
-                                match = re.search(r'总分[:：]?\s*(\d+)', score_str)
-                                if match:
-                                    score_val = int(match.group(1))
-                                else:
-                                    numbers = re.findall(r'\d+', score_str)
-                                    if numbers:
-                                        score_val = int(numbers[-1]) # 取最后一个数字
-                                if score_val is not None:
-                                     scores.append(score_val)
-                                     valid_years.append(year)
-                         if len(scores) >= 2:
-                             sichuan_score_chart_data = {'years': valid_years, 'scores': scores}
-            except (AttributeError, IndexError, ValueError, TypeError) as e:
-                 app.logger.warning(f"为四川院校 {template_data['name']} 提取分数线图表数据时出错: {e}")
-
-        return render_template('school_detail.html', 
-                               school=template_data, 
-                               user_favorites=user_favorites,
-                               sichuan_score_chart_data=sichuan_score_chart_data) # 传递图表数据
-    else:
-        flash('未找到指定的学校。', 'error')
-        return redirect(url_for('school_list')) # 重定向到院校库
+    return render_template('school_detail.html', school=school, is_favorite=is_favorite)
 
 # --- 新增：收藏 API ---
 @app.route('/api/school/favorite/<path:school_id>', methods=['POST'])
 def toggle_favorite(school_id):
     if 'username' not in session:
-        return jsonify({"success": False, "message": "需要登录"}), 401 # Unauthorized
+        return jsonify({'status': 'error', 'message': '请先登录'}), 401
 
     username = session['username']
     user_data = get_user_data(username)
+    if not user_data:
+        return jsonify({'status': 'error', 'message': '无法加载用户信息'}), 500
 
-    if user_data is None:
-        return jsonify({"success": False, "message": "无法加载用户数据"}), 500
+    # --- 加载最新数据 ---
+    schools_data_list = load_json_data(SCHOOLS_DATA_PATH)
+    if not schools_data_list:
+        return jsonify({'status': 'error', 'message': '无法加载学校数据'}), 500
+    # --- 加载结束 ---
+    
+    # 验证 school_id 是否有效
+    school_exists = any(s.get('id') == school_id for s in schools_data_list)
+    if not school_exists:
+        return jsonify({'status': 'error', 'message': '无效的学校ID'}), 404
 
-    # 检查请求体，期望 { "favorite": true/false }
-    req_data = request.get_json()
-    if req_data is None or 'favorite' not in req_data:
-         return jsonify({"success": False, "message": "无效的请求"}), 400
-
-    should_favorite = req_data['favorite']
-
-    # 初始化收藏列表（如果不存在）
-    if 'favorites' not in user_data:
-        user_data['favorites'] = []
-
-    # 执行操作
-    action_performed = False
-    if should_favorite:
-        # 添加收藏
-        if school_id not in user_data['favorites']:
-            user_data['favorites'].append(school_id)
-            action_performed = True
+    favorites = user_data.get('favorites', [])
+    action = 'added' # 默认动作
+    if school_id in favorites:
+        favorites.remove(school_id)
+        action = 'removed'
     else:
-        # 取消收藏
-        if school_id in user_data['favorites']:
-            user_data['favorites'].remove(school_id)
-            action_performed = True
-
-    if action_performed:
-        if save_user_data(username, user_data):
-            return jsonify({"success": True, "is_favorited": should_favorite, "message": "操作成功"})
-        else:
-            return jsonify({"success": False, "message": "保存用户数据失败"}), 500
+        favorites.append(school_id)
+        action = 'added'
+        
+    user_data['favorites'] = favorites
+    if save_user_data(username, user_data):
+        return jsonify({'status': 'success', 'action': action, 'school_id': school_id})
     else:
-        # 如果状态未改变（例如，重复添加已存在的收藏）
-        return jsonify({"success": True, "is_favorited": school_id in user_data['favorites'], "message": "状态未改变"})
+        return jsonify({'status': 'error', 'message': '保存收藏夹时出错'}), 500
 
 # --- 推荐算法核心逻辑 ---
 def calculate_recommendations(target_score, target_level, target_rank, target_location, favorites_counts):
-    """根据用户偏好计算推荐院校列表。"""
+    """根据用户偏好计算推荐结果"""
+    # --- 加载最新数据 ---
+    schools = load_json_data(SCHOOLS_DATA_PATH)
+    if not schools:
+        app.logger.error("计算推荐时无法加载学校数据！")
+        return [], [], []
+    # --- 加载结束 ---
+
+    target_score = int(target_score) if target_score else 0
+    # ... (其余代码不变)
+
     recommendations = []
 
     # 定义评分参数 (来自 README)
@@ -690,7 +711,7 @@ def calculate_recommendations(target_score, target_level, target_rank, target_lo
     rank_scores = {"A+": 100, "A": 80, "A-": 70, "B+": 60, "B": 50, "B-": 40, "C+": 30, "C": 20, "C-": 10, "无": 0}
     weights = {"score": 0.4, "level": 0.2, "rank": 0.2, "location": 0.2}
 
-    for school in schools_data:
+    for school in schools:
         school_id = school.get('id', school.get('name'))
         score = 0
 
@@ -1039,26 +1060,42 @@ def toggle_admin_status(username):
 @app.route('/admin/schools')
 @admin_required
 def admin_schools():
-    """后台：查看院校列表 (增加搜索功能)"""
-    search_query = request.args.get('q', '') # 获取搜索查询参数
+    # 每次请求时加载最新数据
+    schools_data_list_full = load_json_data(SCHOOLS_DATA_PATH)
+    if schools_data_list_full is None:
+        flash('无法加载学校数据文件！', 'danger')
+        schools_data_list_full = [] # 使用空列表继续，避免后续错误
 
-    # 直接使用全局的 schools_data
-    current_schools_data = schools_data 
-
+    # 获取搜索查询
+    search_query = request.args.get('q', '').strip()
+    
+    filtered_schools = schools_data_list_full
     if search_query:
-        # 如果有搜索查询，过滤学校数据
+        query_lower = search_query.lower()
         filtered_schools = [
-            school for school in current_schools_data # 使用 current_schools_data
-            if search_query.lower() in school.get('name', '').lower() or
-               search_query.lower() in school.get('province', '').lower()
+            school for school in schools_data_list_full 
+            if (school.get('name') and isinstance(school.get('name'), str) and query_lower in school.get('name').lower()) or \
+               (school.get('id') and query_lower in str(school.get('id')).lower()) or # ID might not always be string, convert safely
+               (school.get('province') and isinstance(school.get('province'), str) and query_lower in school.get('province').lower()) or \
+               (school.get('computer_rank') and isinstance(school.get('computer_rank'), str) and query_lower in school.get('computer_rank').lower())
         ]
-        schools_to_display = filtered_schools
-        flash(f"搜索 \"{search_query}\" 的结果:", 'info')
-    else:
-        # 没有搜索查询，显示所有学校
-        schools_to_display = current_schools_data # 使用 current_schools_data
 
-    return render_template('admin/schools.html', schools=schools_to_display, search_query=search_query)
+    total_schools = len(filtered_schools)
+    page = request.args.get('page', 1, type=int)
+    per_page = 50 # 每页显示数量
+    
+    start = (page - 1) * per_page
+    end = start + per_page
+    paginated_schools = filtered_schools[start:end]
+    
+    total_pages = ceil(total_schools / per_page) if total_schools > 0 else 1
+
+    return render_template('admin/schools.html',
+                           schools=paginated_schools,
+                           page=page,
+                           total_pages=total_pages,
+                           total_schools=total_schools,
+                           search_query=search_query) # 将 search_query 传给模板
 
 @app.route('/admin/schools/trigger_crawler', methods=['POST'])
 @admin_required
@@ -1082,26 +1119,46 @@ def trigger_crawler():
 @admin_required
 def admin_edit_school(school_id):
     """后台：编辑院校顶层信息"""
-    # 在 POST 和 GET 中都尝试找到学校
-    school_to_edit = next((s for s in schools_data if s.get('id') == school_id), None)
+    # --- Start: Load current data --- 
+    schools_data_current = load_json_data(SCHOOLS_DATA_PATH)
+    if not schools_data_current:
+        flash('无法加载学校数据文件！', 'danger')
+        return redirect(url_for('admin_schools'))
+    # --- End: Load current data ---
+
+    # 在当前加载的数据中查找学校
+    school_to_edit = next((s for s in schools_data_current if s.get('id') == school_id), None)
+    app.logger.debug(f"[admin_edit_school] Found school_to_edit for ID '{school_id}': {school_to_edit}") # 调试日志
 
     if not school_to_edit:
-        flash('未找到该院校。 ({school_id})', 'danger')
+        flash(f'未找到该院校。 ({school_id})', 'danger')
         return redirect(url_for('admin_schools'))
 
-    form = SchoolEditForm(obj=school_to_edit) # GET 请求时预填充
+    # 使用加载到的数据填充表单
+    form = SchoolEditForm(data=school_to_edit)
+    app.logger.debug(f"[admin_edit_school] Form data after init with data: name={form.name.data}, level={form.level.data}, province={form.province.data}") # 调试日志
 
     if form.validate_on_submit(): # 处理 POST 请求
         try:
-            # 使用 form.populate_obj 更新字典 (更简洁)
-            form.populate_obj(school_to_edit) 
+            # --- Start: Find index in current data --- 
+            school_index = -1
+            for i, school in enumerate(schools_data_current):
+                if school.get('id') == school_id:
+                    school_index = i
+                    break
+            # --- End: Find index in current data ---
+
+            if school_index == -1:
+                # Should not happen if school_to_edit was found earlier, but defensive check
+                flash('保存时未能找到学校索引，更新失败。', 'danger')
+                return render_template('admin/edit_school.html', form=form, school=school_to_edit)
+
+            # 更新找到的对象 (它仍然是 schools_data_current 列表中的引用)
+            form.populate_obj(schools_data_current[school_index]) 
 
             # 保存更新后的整个列表到文件
-            if save_schools_data(schools_data):
+            if save_schools_data(schools_data_current):
                 flash('院校信息更新成功!', 'success')
-                # 重新加载数据到内存，确保后续请求拿到最新数据 (可选，取决于应用是否需要立即反映)
-                # global schools_data
-                # schools_data = load_json_data(SCHOOLS_DATA_PATH)
             else:
                  flash('院校信息已在内存中更新，但写入文件失败！', 'danger')
 
@@ -1109,9 +1166,8 @@ def admin_edit_school(school_id):
         except Exception as e:
              app.logger.error(f"更新学校 {school_id} 时出错: {e}", exc_info=True)
              flash(f'更新院校信息时发生内部错误，请查看服务器日志。({e})', 'danger')
-             # 不重定向，留在编辑页面显示错误
 
-    # GET 请求渲染模板，传递 form (已填充数据) 和 school (用于显示标题等)
+    # GET 请求渲染模板
     return render_template('admin/edit_school.html', form=form, school=school_to_edit)
 
 def get_region(province):
@@ -1367,9 +1423,14 @@ if __name__ == '__main__':
     log_dir = os.path.join(BASE_DIR, 'logs')
     os.makedirs(log_dir, exist_ok=True)
     log_file = os.path.join(log_dir, 'app.log')
-    logging.basicConfig(filename=log_file,
-                        level=logging.INFO, # 可以调整级别 DEBUG, INFO, WARNING, ERROR, CRITICAL
-                        format='%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s',
-                        encoding='utf-8') # 添加 encoding
+
+    # 使用 RotatingFileHandler
+    file_handler = RotatingFileHandler(log_file, maxBytes=1024*1024*5, backupCount=5, encoding='utf-8')
+    file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s'))
+    
+    # 设置日志级别为 DEBUG
+    app.logger.setLevel(logging.DEBUG)
+    app.logger.addHandler(file_handler)
+
     app.logger.info("Flask 应用启动")
     app.run(debug=True, port=5001) 
