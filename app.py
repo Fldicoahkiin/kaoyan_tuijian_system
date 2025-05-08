@@ -754,7 +754,13 @@ def school_list():
             school['temp_favorites_count'] = favorites_counts.get(school['id'], 0)
         filtered_schools.sort(key=lambda x: x.get('temp_favorites_count', 0), reverse=True)
     elif sort_by == 'default' or True:
-        filtered_schools.sort(key=lambda x: (x.get('region', ''), x.get('province', ''), x.get('name', '')))
+        # Sorting logic
+        # Apply the same fix for NoneType comparison as in data_processor.py
+        filtered_schools.sort(key=lambda x: (
+            x.get('region') or '', 
+            x.get('province') or '', 
+            x.get('name') or ''
+        ))
 
     total_schools = len(filtered_schools)
     total_pages = ceil(total_schools / per_page)

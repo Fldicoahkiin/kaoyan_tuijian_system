@@ -205,13 +205,34 @@ def get_first_value_from_row(row, primary_col_name, secondary_col_name=None):
     return chosen_val # 如果 chosen_val 不是系列 (即它是标量、None 或 pd.NA), get_multiline_str 会处理 pd.isna()
 
 def parse_enrollment(value):
-    """解析招生人数，处理数字、'若干'等文本。"""
-    if pd.isna(value): return None
-    enroll_str = str(value).strip()
-    match_num = re.search(r'(\d+)', enroll_str)
-    if match_num: return int(match_num.group(1))
-    if enroll_str.lower() in ['若干', '见官网', '待定', '见招生简章', '-']: return enroll_str
-    return None # Return None if it's something else unexpected
+    if pd.isna(value):
+        return 0
+    if isinstance(value, (int, float)):
+        return int(value)
+    
+    if isinstance(value, str):
+        value_str = value.strip()
+        if not value_str:
+            return 0
+
+        # Handle specific non-numeric strings that imply zero or should be treated as zero
+        # For example, "无", "未知", "待定", "查看简章", "-", "/"
+        # This list can be expanded based on observed data.
+        known_non_enrollment_strings = ["无", "未知", "待定", "查看简章", "-", "/"]
+        if value_str.lower() in [s.lower() for s in known_non_enrollment_strings]: # Case-insensitive check
+            return 0
+        
+        # Attempt to extract the first sequence of digits
+        # This handles cases like "100【含推免】" -> 100 or "专业共93" -> 93 or "35【3】" -> 35
+        match = re.search(r'\d+', value_str)
+        if match:
+            return int(match.group(0))
+        else:
+            # If no numbers are found after checking known strings, it implies 0.
+            return 0
+            
+    # For any other types or if logic somehow misses, default to 0.
+    return 0
 
 def process_single_csv(csv_path, filename_hint, all_schools_data):
     print(f"  Attempting to process CSV file: {os.path.basename(csv_path)} (Hint for region/other: {filename_hint})") # Added more explicit start message
@@ -283,12 +304,13 @@ def process_single_csv(csv_path, filename_hint, all_schools_data):
         actual_school_name_col = next((col for col in df.columns if '校' in col or '大学' in col or '学院' in col), None)
         if actual_school_name_col: print(f"    启发式地选择列 '{actual_school_name_col}' 作为学校名称列。")
         if actual_major_code_col is None:
-        # Try to avoid picking '学校代码' or '院校代码'
-        potential_codes = [col for col in df.columns if '代码' in col]
-        code_col_candidates = [col for col in potential_codes if '学校代码' not in col and '院校代码' not in col]
-        if code_col_candidates:
-             actual_major_code_col = code_col_candidates[0] # Pick first likely candidate
-             print(f"    启发式地选择列 '{actual_major_code_col}' 作为专业代码列。")
+            # Try to avoid picking '学校代码' or '院校代码'
+            potential_codes = [col for col in df.columns if '代码' in col]
+            code_col_candidates = [col for col in potential_codes if '学校代码' not in col and '院校代码' not in col]
+            if code_col_candidates:
+                actual_major_code_col = code_col_candidates[0] # Pick first likely candidate
+            # else:
+            #     print(f"Warning: Could not confidently determine major code column for {filename_hint}")
 
     if not actual_school_name_col: 
         print(f"    严重警告: 文件 \'{os.path.basename(csv_path)}\' 中未找到学校名称列。跳过。")
@@ -390,14 +412,15 @@ def process_single_csv(csv_path, filename_hint, all_schools_data):
                 # --- End of Refined Computer Rank Extraction ---
 
                 all_schools_data[school_name_cleaned] = {
-                    "id": school_name_cleaned, "name": school_name_cleaned,
+                    "id": school_name_cleaned, # Use cleaned name as ID for now
+                    "name": school_name_cleaned,
                     "level": extract_school_level(school_name_cleaned, level_val, intro_for_level_check),
-                    "province": province if province else "未知省份",
-                    "region": current_sheet_region,
-                    "intro": get_multiline_str(intro_for_level_check),
+                    "province": province,
+                    "region": current_sheet_region if current_sheet_region else "未知分区",
+                    "intro": get_multiline_str(intro_raw),
                     "computer_rank": computer_rank_cleaned,
-                    "departments": {}, 
-                    "enrollment_24_school_total": "未知",
+                    "departments": [], # Initialize list for departments
+                    "exam_subjects_summary": "" # Will be populated later
                 }
                 print(f"DEBUG: After assigning '{school_name_cleaned}' to all_schools_data. Check presence now:")
                 if school_name_cleaned not in all_schools_data:
@@ -411,7 +434,7 @@ def process_single_csv(csv_path, filename_hint, all_schools_data):
             dept_name_val = get_first_value_from_row(row, find_actual_col(dept_cols_l))
             department_name = get_multiline_str(dept_name_val) or '未知院系'
             if department_name not in school_entry['departments']:
-                school_entry['departments'][department_name] = {"department_name": department_name, "majors": []}
+                school_entry['departments'].append({"department_name": department_name, "majors": []})
 
             # --- Extract Major Info --- 
             major_code_raw = row.get(actual_major_code_col, '')
@@ -431,24 +454,64 @@ def process_single_csv(csv_path, filename_hint, all_schools_data):
 
             # --- Extract Enrollment History ---
             enrollment_history = {}
-            enroll_val_24 = get_first_value_from_row(row, find_actual_col(enroll_24_cols_l))
-            enroll_val_23 = get_first_value_from_row(row, find_actual_col(enroll_23_cols_l))
-            enroll_val_22 = get_first_value_from_row(row, find_actual_col(enroll_22_cols_l))
-            enroll_val_gen = get_first_value_from_row(row, find_actual_col(enroll_generic_cols_l))
+            actual_enroll_24_col = find_actual_col(enroll_24_cols_l)
+            actual_enroll_23_col = find_actual_col(enroll_23_cols_l)
+            actual_enroll_22_col = find_actual_col(enroll_22_cols_l)
+            actual_enroll_generic_col = find_actual_col(enroll_generic_cols_l)
 
-            parsed_24 = parse_enrollment(enroll_val_24)
-            if parsed_24 is not None: enrollment_history["2024"] = parsed_24
+            # Initialize with 0 directly
+            enrollment_history["2024"] = 0
+            enrollment_history["2023"] = 0
+            enrollment_history["2022"] = 0
+
+            raw_enroll_24 = None
+            if actual_enroll_24_col:
+                raw_enroll_24 = get_first_value_from_row(row, actual_enroll_24_col)
+                if pd.notna(raw_enroll_24) and str(raw_enroll_24).strip():
+                    # DEBUG: Print raw value and its type before parsing 2024 enrollment
+                    # print(f"DEBUG_ENROLL_RAW_24: School='{school_name_cleaned}', MajorCode='{major_code_cleaned}', RawValue='{raw_enroll_24}', Type='{type(raw_enroll_24)}'")
+                    parsed_val_24 = parse_enrollment(raw_enroll_24)
+                    # DEBUG: Print parsed value for 2024 enrollment
+                    print(f"DEBUG_ENROLL_PARSED_24: School='{school_name_cleaned}', MajorCode='{major_code_str}', Raw='{raw_enroll_24}', Parsed='{parsed_val_24}'")
+                    enrollment_history["2024"] = parsed_val_24
             
-            parsed_23 = parse_enrollment(enroll_val_23)
-            if parsed_23 is not None: enrollment_history["2023"] = parsed_23
+            # Fallback to generic if 24 specific is still 0 (or was not found/parsed)
+            if enrollment_history["2024"] == 0: 
+                if actual_enroll_generic_col:
+                    raw_enroll_generic = get_first_value_from_row(row, actual_enroll_generic_col)
+                    if pd.notna(raw_enroll_generic) and str(raw_enroll_generic).strip():
+                        parsed_generic = parse_enrollment(raw_enroll_generic)
+                        if parsed_generic != 0: 
+                            enrollment_history["2024"] = parsed_generic
+                            # If generic was used for 24, it might also be relevant for 23/22 if they are 0
+                            if enrollment_history["2023"] == 0: enrollment_history["2023"] = parsed_generic 
+                            if enrollment_history["2022"] == 0: enrollment_history["2022"] = parsed_generic
+
+            # Process 23 and 22 if they are still 0 and specific columns exist
+            if enrollment_history["2023"] == 0 and actual_enroll_23_col: 
+                raw_enroll_23 = get_first_value_from_row(row, actual_enroll_23_col)
+                if pd.notna(raw_enroll_23) and str(raw_enroll_23).strip():
+                     enrollment_history["2023"] = parse_enrollment(raw_enroll_23)
+
+            if enrollment_history["2022"] == 0 and actual_enroll_22_col: 
+                raw_enroll_22 = get_first_value_from_row(row, actual_enroll_22_col)
+                if pd.notna(raw_enroll_22) and str(raw_enroll_22).strip():
+                     enrollment_history["2022"] = parse_enrollment(raw_enroll_22)
             
-            parsed_22 = parse_enrollment(enroll_val_22)
-            if parsed_22 is not None: enrollment_history["2022"] = parsed_22
-            
-            # Use generic only if no specific year found yet
-            if not enrollment_history and enroll_val_gen is not None:
-                 parsed_gen = parse_enrollment(enroll_val_gen)
-                 if parsed_gen is not None: enrollment_history["unknown_year"] = parsed_gen # Or try to guess year?
+            # Final cleanup: Ensure all enrollment fields are integers.
+            # parse_enrollment already returns int (or 0), so this is more of a safeguard 
+            # if any other logic path could have introduced non-integers.
+            for year_key in ['2024', '2023', '2022']:
+                current_val = enrollment_history.get(year_key)
+                if not isinstance(current_val, int):
+                    # DEBUG: Print value before final cleanup if it's "未知"
+                    if isinstance(current_val, str) and current_val == "未知":
+                        print(f"DEBUG_ENROLL_CLEANUP: School='{school_name_cleaned}', MajorCode='{major_code_str}', Year='{year_key}', Found '未知', converting to 0.")
+                    
+                    if isinstance(current_val, str) and current_val.isdigit():
+                        enrollment_history[year_key] = int(current_val)
+                    else:
+                        enrollment_history[year_key] = 0 # Default for None, non-digit strings, etc.
 
             # --- Extract Score Lines ---
             score_lines = {}
@@ -486,7 +549,7 @@ def process_single_csv(csv_path, filename_hint, all_schools_data):
                 "admission_info_24": get_multiline_str(get_first_value_from_row(row, find_actual_col(adm_info_24_cols_l)))
             }
             
-            school_entry['departments'][department_name]['majors'].append(major_info)
+            school_entry['departments'][-1]['majors'].append(major_info)
         except Exception as e_row:
             print(f"    处理文件 \'{os.path.basename(csv_path)}\' 的行 (CSV index {index}) 时发生错误: {e_row}")
             if is_b_region_file: print(f"    [B区 DEBUG] Error processing row {index}: {e_row}")
@@ -520,55 +583,65 @@ def main_process_all_csvs(csv_files_directory, output_json_path):
         process_single_csv(csv_full_path, hint_name, all_schools_data)
 
     # After processing all CSVs, convert departments from dict to list for JSON compatibility
-    final_school_list = []
-    for school_name, school_data in all_schools_data.items():
-        # Ensure departments is a list of dictionaries
-        if isinstance(school_data.get('departments'), dict):
-            school_data['departments'] = list(school_data['departments'].values())
-            for dept in school_data['departments']:
-                if isinstance(dept.get('majors'), dict):
-                    dept['majors'] = list(dept['majors'].values())
-        
-        # Aggregate exam subjects summary
-        unique_exam_subjects = set()
-        if isinstance(school_data.get('departments'), list):
-            for dept_data in school_data['departments']:
-                if isinstance(dept_data.get('majors'), list):
-                    for major in dept_data['majors']:
-                        subjects_str = major.get('exam_subjects')
-                        if subjects_str and isinstance(subjects_str, str) and subjects_str.strip():
-                            # Clean up and split subjects, assuming they might be newline or semicolon separated
-                            # Handle cases like "①政治理论②英语一..." or "政治;英语;数学"
-                            cleaned_subjects = subjects_str.strip()
-                            # Attempt to split by common delimiters or just use the whole string if it's one block
-                            # This is a simple approach; more sophisticated parsing might be needed for complex formats
-                            parts = []
-                            if ';' in cleaned_subjects:
-                                parts = [s.strip() for s in cleaned_subjects.split(';') if s.strip()]
-                            elif '\n' in cleaned_subjects:
-                                parts = [s.strip() for s in cleaned_subjects.split('\n') if s.strip()]
-                            else:
-                                # If no obvious delimiter, consider it as one block or look for numbered items
-                                # For now, let's add the whole cleaned string, or refine if needed
-                                parts = [cleaned_subjects] # Could be further split if numbered like ①②③
-                            
-                            for part in parts:
-                                unique_exam_subjects.add(part)
-
-        if unique_exam_subjects:
-            summary = " | ".join(sorted(list(unique_exam_subjects)))
-            if len(summary) > 150: # Increased limit slightly
-                summary = summary[:147] + "..."
-            school_data['exam_subjects_summary'] = summary
-        else:
-            school_data['exam_subjects_summary'] = "见各专业详情"
-
-        final_school_list.append(school_data)
+    final_school_list = list(all_schools_data.values())
 
     # Sort the final list by school name for consistent output (optional)
-    final_school_list.sort(key=lambda x: (x.get('region', ''), x.get('province', ''), x.get('name', '')))
+    final_school_list.sort(key=lambda x: (x.get('region') or '', x.get('province') or '', x.get('name') or ''))
 
     cleaned_school_list = replace_nan_with_none(final_school_list)
+    os.makedirs(DATA_DIR, exist_ok=True)
+    try:
+        with open(output_json_path, 'w', encoding='utf-8') as f:
+            json.dump(cleaned_school_list, f, ensure_ascii=False, indent=2)
+        print(f"\n成功将处理后的数据写入到: {output_json_path}")
+    except IOError as e: print(f"写入 JSON 文件时出错: {e}")
+    except Exception as e: print(f"转换或写入 JSON 时发生未知错误: {e}")
+
+    # --- Final Processing & Output --- 
+    print(f"\nTotal schools processed: {len(all_schools_data)}")
+
+    # --- Calculate total enrollment and summarize exam subjects --- 
+    for school_name, school_data in all_schools_data.items():
+        total_enrollment_24 = 0
+        exam_subjects_list = set()
+        try:
+            if 'departments' in school_data and isinstance(school_data['departments'], list):
+                for department in school_data['departments']:
+                    if 'majors' in department and isinstance(department['majors'], list):
+                        for major in department['majors']:
+                            # Sum enrollment
+                            enrollment_data = major.get('enrollment', {})
+                            enrollment_24 = enrollment_data.get('2024', 0)
+                            if isinstance(enrollment_24, int):
+                                total_enrollment_24 += enrollment_24
+                            else: # Handle potential non-int data just in case
+                                try:
+                                    total_enrollment_24 += int(enrollment_24) 
+                                except (ValueError, TypeError):
+                                    pass # Ignore if conversion fails
+                            
+                            # Collect exam subjects
+                            subjects_str = major.get('exam_subjects')
+                            if subjects_str and isinstance(subjects_str, str):
+                                # Split potentially multi-line subjects and clean them
+                                subjects = [s.strip() for s in subjects_str.split('\n') if s.strip()] 
+                                exam_subjects_list.update(subjects)
+
+            # Assign calculated total enrollment
+            school_data['enrollment_24_school_total'] = total_enrollment_24
+            
+            # Assign summarized exam subjects
+            school_data['exam_subjects_summary'] = " | ".join(sorted(list(exam_subjects_list)))
+        except Exception as e_post:
+            print(f"Error during post-processing (enrollment sum/subject summary) for school '{school_name}': {e_post}")
+            school_data['enrollment_24_school_total'] = 0 # Default to 0 on error
+            school_data['exam_subjects_summary'] = "处理错误" # Indicate error in summary
+
+    # Convert the dictionary to a list for JSON output
+    output_list = list(all_schools_data.values())
+
+    # --- Write to JSON --- 
+    cleaned_school_list = replace_nan_with_none(output_list)
     os.makedirs(DATA_DIR, exist_ok=True)
     try:
         with open(output_json_path, 'w', encoding='utf-8') as f:
