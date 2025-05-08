@@ -6,10 +6,10 @@ import math # For isnan check if not using pandas
 
 # 定义文件路径
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) # 获取项目根目录
-# EXCEL_PATH = os.path.join(BASE_DIR, "择校文档.xlsx") # No longer primary input
+EXCEL_PATH = os.path.join(BASE_DIR, "择校文档.xlsx") # Primary input Excel file
 OUTPUT_JSON_PATH = os.path.join(BASE_DIR, "data", "schools.json")
 DATA_DIR = os.path.join(BASE_DIR, "data")
-CSV_SOURCE_DIR = BASE_DIR # Assuming CSVs are in the root project directory for now
+# CSV_SOURCE_DIR = BASE_DIR # No longer needed
 
 # --- 省份数据 (用于 extract_province_smart IF it needs to validate provinces) ---
 VALID_PROVINCES = [
@@ -234,135 +234,116 @@ def parse_enrollment(value):
     # For any other types or if logic somehow misses, default to 0.
     return 0
 
-def process_single_csv(csv_path, filename_hint, all_schools_data):
-    print(f"  Attempting to process CSV file: {os.path.basename(csv_path)} (Hint for region/other: {filename_hint})") # Added more explicit start message
-    current_sheet_region = determine_region_from_filename_hint(filename_hint)
+def process_excel_sheet(df_sheet, sheet_name, all_schools_data):
+    print(f"  Attempting to process Excel sheet: {sheet_name}")
+    current_sheet_region = determine_region_from_filename_hint(sheet_name) # Use sheet_name as hint
     is_b_region_file = current_sheet_region == "B区" # Flag for B-region debugging
     
-    if is_b_region_file: print(f"    [B区 DEBUG] Identified as B-region file.")
+    if is_b_region_file: print(f"    [B区 DEBUG] Identified as B-region sheet.")
 
-    try:
-        # Try to detect header dynamically, similar to Excel processing
-        df_peek = pd.read_csv(csv_path, nrows=20, header=None, on_bad_lines='skip', encoding='utf-8')
-        header_keywords = ['学校', '代码', '专业', '院系', '科目', '名称', '招生', '录取', '复试', '考试', '省份', '简介', '等级', '评级', '院校', '学费']
-        identified_header_idx = find_header_row(df_peek, header_keywords)
-
-        if identified_header_idx != -1:
-            if is_b_region_file: print(f"    [B区 DEBUG] Dynamically found header at row index {identified_header_idx}.")
-            df = pd.read_csv(csv_path, header=identified_header_idx, on_bad_lines='skip', encoding='utf-8', dtype=str) # Read all as string initially
-        else:
-            if is_b_region_file: print(f"    [B区 DEBUG] Header not found dynamically, using default header=0.")
-            df = pd.read_csv(csv_path, header=0, on_bad_lines='skip', encoding='utf-8', dtype=str) # Read all as string
-        
-        df = clean_column_names(df)
-        # Create lower case column map for easier lookup
-        df_cols_lower = {col.lower(): col for col in df.columns} 
-        print(f"    文件 \'{os.path.basename(csv_path)}\' 清理后的列名: {list(df.columns)}")
-        if is_b_region_file: print(f"    [B区 DEBUG] Cleaned columns: {list(df.columns)}")
-
-    except Exception as e:
-        print(f"读取或预处理 CSV 文件 \'{os.path.basename(csv_path)}\' 时出错: {e}")
-        if is_b_region_file: print(f"    [B区 DEBUG] Error during file read/preprocess: {e}")
-        return
+    # DataFrame is already passed in, cleaned, and header-processed by main_process_excel_file
+    # df_sheet is assumed to have correct headers and string dtypes.
+    df_cols_lower = {col.lower(): col for col in df_sheet.columns}
+    print(f"    Sheet \'{sheet_name}\' 使用的列名: {list(df_sheet.columns)}")
+    if is_b_region_file: print(f"    [B区 DEBUG] Columns for sheet '{sheet_name}': {list(df_sheet.columns)}")
 
     # --- Define possible column names (lowercase for matching) --- 
     school_name_cols_l = ['院校名称', '院校', '学校名称', '学校']
     intro_cols_l = ['简介', '院校简介']
     level_cols_l = ['院校等级', '等级']
-    province_cols_l = ['省份'] # Added for explicit check
+    province_cols_l = ['省份'] 
     rank_cols_l = ['计算机等级', '计算机评级', '学科评估', '评估等级']
     dept_cols_l = ['招生院系', '院系名称', '院系', '学院']
     major_code_cols_l = ['专业代码', '代码', '专业代码及名称'] 
-    major_name_cols_l = ['专业名称', '专业方向', '研究方向'] # Added 研究方向
+    major_name_cols_l = ['专业名称', '专业方向', '研究方向']
     exam_subj_cols_l = ['初试科目', '考试科目']
     ref_book_cols_l = ['参考书', '参考书目']
     retrial_subj_cols_l = ['复试科目']
     enroll_24_cols_l = ['24招生人数', '招生人数(24)', '24招生', '24年招生人数']
     enroll_23_cols_l = ['23招生人数', '招生人数(23)', '23招生', '23年招生人数']
-    enroll_22_cols_l = ['22招生人数', '招生人数(22)', '22招生', '22年招生人数'] # Added 22
-    enroll_generic_cols_l = ['招生人数', '招生'] # Generic fallback
+    enroll_22_cols_l = ['22招生人数', '招生人数(22)', '22招生', '22年招生人数']
+    enroll_generic_cols_l = ['招生人数', '招生']
     tuition_cols_l = ['学费学制', '学制与学费', '学费', '学制']
     score_24_cols_l = ['24复试线', '24分数线', '复试线(24)', '分数线(24)']
     score_23_cols_l = ['23复试线', '23分数线', '复试线(23)', '分数线(23)']
-    score_22_cols_l = ['22复试线', '22分数线', '复试线(22)', '分数线(22)'] # Added 22
+    score_22_cols_l = ['22复试线', '22分数线', '复试线(22)', '分数线(22)']
     adm_info_23_cols_l = ['23拟录取情况', '23录取', '录取情况(23)']
     adm_info_24_cols_l = ['24拟录取情况', '24录取', '24复试名单', '24拟录取', '录取情况(24)']
 
-    # Helper to find the first matching actual column name (case-insensitive)
     def find_actual_col(possible_lower_names):
         for name_l in possible_lower_names:
             if name_l.lower() in df_cols_lower:
                 return df_cols_lower[name_l.lower()]
         return None
 
-    # --- Find actual column names used in this CSV --- 
     actual_school_name_col = find_actual_col(school_name_cols_l)
     actual_major_code_col = find_actual_col(major_code_cols_l)
 
-    # Heuristic fallbacks if standard names aren't found
     if actual_school_name_col is None:
-        actual_school_name_col = next((col for col in df.columns if '校' in col or '大学' in col or '学院' in col), None)
-        if actual_school_name_col: print(f"    启发式地选择列 '{actual_school_name_col}' 作为学校名称列。")
-        if actual_major_code_col is None:
-            # Try to avoid picking '学校代码' or '院校代码'
-            potential_codes = [col for col in df.columns if '代码' in col]
-            code_col_candidates = [col for col in potential_codes if '学校代码' not in col and '院校代码' not in col]
-            if code_col_candidates:
-                actual_major_code_col = code_col_candidates[0] # Pick first likely candidate
-            # else:
-            #     print(f"Warning: Could not confidently determine major code column for {filename_hint}")
-
+        actual_school_name_col = next((col for col in df_sheet.columns if '校' in col or '大学' in col or '学院' in col), None)
+        if actual_school_name_col: print(f"    启发式地选择列 '{actual_school_name_col}' 作为学校名称列 (Sheet: {sheet_name})。")
+    if actual_major_code_col is None:
+        potential_codes = [col for col in df_sheet.columns if '代码' in col]
+        code_col_candidates = [col for col in potential_codes if '学校代码' not in col and '院校代码' not in col]
+        if code_col_candidates:
+            actual_major_code_col = code_col_candidates[0]
+            print(f"    启发式地选择列 '{actual_major_code_col}' 作为专业代码列 (Sheet: {sheet_name})。")
+        
     if not actual_school_name_col: 
-        print(f"    严重警告: 文件 \'{os.path.basename(csv_path)}\' 中未找到学校名称列。跳过。")
-        if is_b_region_file: print(f"    [B区 DEBUG] Skipping due to missing school name column.")
+        print(f"    严重警告: 工作表 \'{sheet_name}\' 中未找到学校名称列。跳过。")
+        if is_b_region_file: print(f"    [B区 DEBUG] Skipping sheet '{sheet_name}' due to missing school name column.")
         return
     if not actual_major_code_col: 
-        print(f"    警告: 文件 \'{os.path.basename(csv_path)}\' 中未找到专业代码列。跳过。")
-        if is_b_region_file: print(f"    [B区 DEBUG] Skipping due to missing major code column.")
+        print(f"    警告: 工作表 \'{sheet_name}\' 中未找到专业代码列。跳过。")
+        if is_b_region_file: print(f"    [B区 DEBUG] Skipping sheet '{sheet_name}' due to missing major code column.")
         return
-    print(f"    使用 '{actual_school_name_col}' 作为学校名称列, '{actual_major_code_col}' 作为专业代码列。")
+    print(f"    Sheet '{sheet_name}': 使用 '{actual_school_name_col}' 作为学校名称列, '{actual_major_code_col}' 作为专业代码列。")
 
-    # --- Preprocessing --- 
-    df[actual_school_name_col] = df[actual_school_name_col].ffill()
-    df.dropna(subset=[actual_major_code_col], how='all', inplace=True)
-    df = df[df[actual_major_code_col].astype(str).str.strip().str.len() > 0].copy() # Keep if major code not empty string
-    df.reset_index(drop=True, inplace=True)
-    df.dropna(how='all', inplace=True)
+    # --- Preprocessing (Forward fill for merged cells) --- 
+    if actual_school_name_col in df_sheet.columns:
+        df_sheet[actual_school_name_col] = df_sheet[actual_school_name_col].ffill()
     
-    if df.empty: 
-        print(f"    文件 \'{os.path.basename(csv_path)}\' 数据在预处理后为空 (例如，所有行没有专业代码)，跳过。") 
-        if is_b_region_file: print(f"    [B区 DEBUG] File empty after preprocessing, skipping.")
+    actual_dept_col = find_actual_col(dept_cols_l) 
+    if actual_dept_col and actual_dept_col in df_sheet.columns:
+        print(f"    对列 \'{actual_dept_col}\' (Sheet: {sheet_name}) 进行向前填充以处理合并单元格导致的院系缺失问题。")
+        df_sheet[actual_dept_col] = df_sheet[actual_dept_col].ffill()
+    else:
+        print(f"    警告: 工作表 \'{sheet_name}\' 中未找到明确的院系列 ('{actual_dept_col}') 进行填充，院系信息可能不完整。")
+
+    df_sheet.dropna(subset=[actual_major_code_col], how='all', inplace=True)
+    # Ensure major code column exists before trying to filter on it
+    if actual_major_code_col in df_sheet.columns:
+        df_sheet = df_sheet[df_sheet[actual_major_code_col].astype(str).str.strip().str.len() > 0].copy()
+    df_sheet.reset_index(drop=True, inplace=True)
+    df_sheet.dropna(how='all', inplace=True) # Drop rows where ALL values are NaN
+    
+    if df_sheet.empty: 
+        print(f"    工作表 \'{sheet_name}\' 数据在预处理后为空，跳过。") 
+        if is_b_region_file: print(f"    [B区 DEBUG] Sheet '{sheet_name}' empty after preprocessing, skipping.")
         return
         
-    if is_b_region_file: print(f"    [B区 DEBUG] Found {len(df)} rows after preprocessing.")
+    if is_b_region_file: print(f"    [B区 DEBUG] Sheet '{sheet_name}' has {len(df_sheet)} rows after preprocessing.")
 
-    # --- Row-by-row processing --- 
-    for index, row in df.iterrows():
+    for index, row in df_sheet.iterrows():
         try:
-            # --- Extract School Info (once per school) ---
             school_name_raw = row.get(actual_school_name_col)
             if pd.isna(school_name_raw) or not str(school_name_raw).strip(): continue
             school_name_cleaned = str(school_name_raw).split('\n')[0].strip()
 
-            print(f"DEBUG: Processing CSV row index {index}, school_name_cleaned: '{school_name_cleaned}'") # Added CSV Index
+            # print(f"DEBUG: Processing Excel sheet '{sheet_name}' row index {index}, school_name_cleaned: '{school_name_cleaned}'")
 
             if school_name_cleaned not in all_schools_data:
-                print(f"DEBUG: School '{school_name_cleaned}' not in all_schools_data. Creating new entry.")
-                print(f"DEBUG: Before assigning '{school_name_cleaned}' to all_schools_data.")
+                # print(f"DEBUG: School '{school_name_cleaned}' not in all_schools_data. Creating new entry from sheet '{sheet_name}'.")
                 intro_raw = get_first_value_from_row(row, find_actual_col(intro_cols_l))
                 level_val = get_first_value_from_row(row, find_actual_col(level_cols_l))
                 province = extract_province_smart(row, school_name_cleaned, intro_raw) 
-                
                 intro_for_level_check = get_multiline_str(intro_raw)
-
-                # --- Refined Computer Rank Extraction ---
                 rank_val_raw = get_first_value_from_row(row, find_actual_col(rank_cols_l))
-                computer_rank_cleaned = "未提供" # Default
+                computer_rank_cleaned = "未提供" 
 
                 if pd.notna(rank_val_raw):
                     rank_str_original = str(rank_val_raw).strip()
                     rank_str_upper = rank_str_original.upper()
-
                     if not rank_str_upper or rank_str_upper == "-" :
                         computer_rank_cleaned = "无评级"
                     elif any(no_rank_indicator in rank_str_upper for no_rank_indicator in ["无评级", "未评估", "不参评", "未参与评估", "不参与评估"]):
@@ -371,130 +352,119 @@ def process_single_csv(csv_path, filename_hint, all_schools_data):
                         ORDERED_VALID_RANKS = ['A+', 'A-', 'A', 'B+', 'B-', 'B', 'C+', 'C-', 'C']
                         found_rank_flag = False
                         for r_check in ORDERED_VALID_RANKS:
-                            # Regex to find rank as a whole word or with typical surrounding, non-alphanumeric characters
-                            # This handles "A+", "(A+)", "A+等", "评级A+" but not "学科A" if 'A' is the rank.
-                            # It prioritizes ranks that are clearly demarcated.
                             if re.search(r'(?:^|[^A-Z0-9\w])' + re.escape(r_check) + r'(?:$|[^A-Z0-9\w])', rank_str_upper):
-                                computer_rank_cleaned = r_check
-                                found_rank_flag = True
-                                break
-                            # Simpler check if the above is too strict, for ranks that might be embedded
-                            elif r_check in rank_str_upper: # Check if 'A+' is simply in 'BLABLA A+ BLABLA'
-                                computer_rank_cleaned = r_check 
-                                found_rank_flag = True
-                                # Don't break immediately for this simpler check if a more specific one (like A+ vs A) might follow for a substring
-                                # However, our ORDERED_VALID_RANKS handles A+ before A. So, first simple 'in' match is good.
-                                break 
-                        
+                                computer_rank_cleaned = r_check; found_rank_flag = True; break
+                            elif r_check in rank_str_upper: 
+                                computer_rank_cleaned = r_check; found_rank_flag = True; break
                         if not found_rank_flag:
-                            # If no standard A/B/C rank found directly, try cleaning common verbose terms
-                            # and see if a valid rank emerges or the string becomes manageable.
                             temp_rank_cleaned_str = rank_str_original
                             noise_patterns = [
                                 r"^(第四轮评级：|学科评估：|评估等级：|计算机等级：|计算机评级：|评级：)",
-                                r"第[一二三四五六七八九十]轮评估?",
-                                r"第四轮",
-                                r"学科评估结果?",
-                                r"计算机科学与技术",
-                                r"软件工程",
-                                r"等级",
-                                r"[：:]" # Colons
+                                r"第[一二三四五六七八九十]轮评估?", r"第四轮", r"学科评估结果?",
+                                r"计算机科学与技术", r"软件工程", r"等级", r"[：:]"
                             ]
                             for pattern in noise_patterns:
                                 temp_rank_cleaned_str = re.sub(pattern, "", temp_rank_cleaned_str, flags=re.IGNORECASE).strip()
-                            
-                            # After cleaning, check again if it matches a standard rank
                             if temp_rank_cleaned_str.upper() in ORDERED_VALID_RANKS:
                                 computer_rank_cleaned = temp_rank_cleaned_str.upper()
-                            elif temp_rank_cleaned_str : # If something non-empty remains after cleaning
-                                computer_rank_cleaned = temp_rank_cleaned_str # Use the cleaned, possibly non-standard, string
-                            # If temp_rank_cleaned_str is empty, it defaults to "未提供" (or "无评级" if set earlier)
-                # --- End of Refined Computer Rank Extraction ---
-
+                            elif temp_rank_cleaned_str : computer_rank_cleaned = temp_rank_cleaned_str
+                
                 all_schools_data[school_name_cleaned] = {
-                    "id": school_name_cleaned, # Use cleaned name as ID for now
-                    "name": school_name_cleaned,
+                    "id": school_name_cleaned, "name": school_name_cleaned,
                     "level": extract_school_level(school_name_cleaned, level_val, intro_for_level_check),
                     "province": province,
                     "region": current_sheet_region if current_sheet_region else "未知分区",
                     "intro": get_multiline_str(intro_raw),
                     "computer_rank": computer_rank_cleaned,
-                    "departments": [], # Initialize list for departments
-                    "exam_subjects_summary": "" # Will be populated later
+                    "departments": [], "exam_subjects_summary": ""
                 }
-                print(f"DEBUG: After assigning '{school_name_cleaned}' to all_schools_data. Check presence now:")
-                if school_name_cleaned not in all_schools_data:
-                    print(f"FATAL DEBUG: School '{school_name_cleaned}' STILL NOT in all_schools_data after assignment at row index {index}!")
-                else:
-                     print(f"DEBUG: School '{school_name_cleaned}' successfully added to all_schools_data.")
+                # if school_name_cleaned not in all_schools_data:
+                #     print(f"FATAL DEBUG: School '{school_name_cleaned}' STILL NOT in all_schools_data after assignment (sheet '{sheet_name}', row {index})!")
+                # else:
+                #      print(f"DEBUG: School '{school_name_cleaned}' successfully added from sheet '{sheet_name}'.")
             
             school_entry = all_schools_data[school_name_cleaned]
 
-            # --- 新增：更新已存在学校的区域信息 ---
-            # 如果当前文件提供了明确的区域信息，并且与现有记录不同，则更新它
             if current_sheet_region and current_sheet_region != school_entry.get('region'):
-                print(f"    更新学校 '{school_name_cleaned}' 的区域从 '{school_entry.get('region')}' 到 '{current_sheet_region}' (来自文件 {os.path.basename(csv_path)})")
+                print(f"    更新学校 '{school_name_cleaned}' 的区域从 '{school_entry.get('region')}' 到 '{current_sheet_region}' (来自工作表 {sheet_name})")
                 school_entry['region'] = current_sheet_region
-            # --- 结束新增逻辑 ---
 
-            # --- Extract Department Info --- 
             dept_name_val = get_first_value_from_row(row, find_actual_col(dept_cols_l))
             department_name = get_multiline_str(dept_name_val) or '未知院系'
-            if department_name not in school_entry['departments']:
-                school_entry['departments'].append({"department_name": department_name, "majors": []})
+            
+            # Find or create department entry
+            dept_entry = next((d for d in school_entry['departments'] if d["department_name"] == department_name), None)
+            if not dept_entry:
+                dept_entry = {"department_name": department_name, "majors": []}
+                school_entry['departments'].append(dept_entry)
 
-            # --- Extract Major Info --- 
+
+            # --- Refined Major Info Extraction ---
             major_code_raw = row.get(actual_major_code_col, '')
-            major_code_str = str(major_code_raw).strip() if pd.notna(major_code_raw) else ''
-            major_name_val = get_first_value_from_row(row, find_actual_col(major_name_cols_l))
-            major_name = str(major_name_val).strip() if pd.notna(major_name_val) else ''
+            # raw_code_field_value holds the original string from the '专业代码' or '专业代码及名称' column
+            raw_code_field_value = str(major_code_raw).strip() if pd.notna(major_code_raw) else ''
 
-            if actual_major_code_col == '专业代码及名称' and major_code_str:
-                match_code_name = re.match(r'(\d{6})\s*(.*)', major_code_str)
-                if match_code_name:
-                    major_code_str = match_code_name.group(1)
-                    if not major_name: major_name = match_code_name.group(2).strip()
-                elif not re.match(r'^\d+$', major_code_str.split()[0] if major_code_str else '') and not major_name:
-                    major_name = major_code_str; major_code_str = '' 
+            major_name_val = get_first_value_from_row(row, find_actual_col(major_name_cols_l))
+            # major_name_from_dedicated_col is from columns like '专业名称', '专业方向'
+            major_name_from_dedicated_col = str(major_name_val).strip() if pd.notna(major_name_val) else ''
+
+            parsed_major_code = ''
+            parsed_name_from_code_field = ''
+
+            if raw_code_field_value:
+                # Try to match '000000 Name Part'
+                match_code_and_name = re.match(r'(\\d{6})\\s*(.+)', raw_code_field_value)
+                if match_code_and_name:
+                    parsed_major_code = match_code_and_name.group(1)
+                    parsed_name_from_code_field = match_code_and_name.group(2).strip()
+                # Try to match if it's just a 6-digit code '000000'
+                elif re.match(r'^\\d{6}$', raw_code_field_value):
+                    parsed_major_code = raw_code_field_value
+                # If not a 6-digit code and not code+name, it might be just a name in the code field,
+                # or a non-6-digit code.
+                elif not re.match(r'^\\d+$', raw_code_field_value): # If it's not purely numeric
+                    parsed_name_from_code_field = raw_code_field_value # Treat as potential name
+                else: # It's purely numeric but not 6 digits, treat as code
+                    parsed_major_code = raw_code_field_value
+
+
+            # Determine the final major_name
+            # Priority: 1. Dedicated name column (if specific) -> 2. Name parsed from code field
+            final_major_name = major_name_from_dedicated_col
+            if parsed_name_from_code_field and (not final_major_name or final_major_name in ['-', '未知专业', '查看详情', '待定']):
+                final_major_name = parsed_name_from_code_field
+            
+            # Determine the final major_code
+            final_major_code = parsed_major_code
+            # If no code was parsed but the raw field was purely digits, use that raw field as code
+            if not final_major_code and re.match(r'^\\d+$', raw_code_field_value):
+                final_major_code = raw_code_field_value
+
+            major_code_str = final_major_code
+            major_name = final_major_name
             
             if not major_code_str and not major_name: continue # Skip if no major identifier
 
-            # --- Extract Enrollment History ---
-            enrollment_history = {}
+            enrollment_history = {"2024": 0, "2023": 0, "2022": 0}
             actual_enroll_24_col = find_actual_col(enroll_24_cols_l)
             actual_enroll_23_col = find_actual_col(enroll_23_cols_l)
             actual_enroll_22_col = find_actual_col(enroll_22_cols_l)
             actual_enroll_generic_col = find_actual_col(enroll_generic_cols_l)
 
-            # Initialize with 0 directly
-            enrollment_history["2024"] = 0
-            enrollment_history["2023"] = 0
-            enrollment_history["2022"] = 0
-
-            raw_enroll_24 = None
-            if actual_enroll_24_col:
-                raw_enroll_24 = get_first_value_from_row(row, actual_enroll_24_col)
-                if pd.notna(raw_enroll_24) and str(raw_enroll_24).strip():
-                    # DEBUG: Print raw value and its type before parsing 2024 enrollment
-                    # print(f"DEBUG_ENROLL_RAW_24: School='{school_name_cleaned}', MajorCode='{major_code_cleaned}', RawValue='{raw_enroll_24}', Type='{type(raw_enroll_24)}'")
-                    parsed_val_24 = parse_enrollment(raw_enroll_24)
-                    # DEBUG: Print parsed value for 2024 enrollment
-                    print(f"DEBUG_ENROLL_PARSED_24: School='{school_name_cleaned}', MajorCode='{major_code_str}', Raw='{raw_enroll_24}', Parsed='{parsed_val_24}'")
-                    enrollment_history["2024"] = parsed_val_24
+            raw_enroll_24 = get_first_value_from_row(row, actual_enroll_24_col) if actual_enroll_24_col else None
+            if pd.notna(raw_enroll_24) and str(raw_enroll_24).strip():
+                # print(f"DEBUG_ENROLL_PARSED_24 (Excel): School='{school_name_cleaned}', Major='{major_code_str}', Sheet='{sheet_name}', Raw='{raw_enroll_24}', Parsed='{parse_enrollment(raw_enroll_24)}'")
+                enrollment_history["2024"] = parse_enrollment(raw_enroll_24)
             
-            # Fallback to generic if 24 specific is still 0 (or was not found/parsed)
-            if enrollment_history["2024"] == 0: 
-                if actual_enroll_generic_col:
-                    raw_enroll_generic = get_first_value_from_row(row, actual_enroll_generic_col)
-                    if pd.notna(raw_enroll_generic) and str(raw_enroll_generic).strip():
-                        parsed_generic = parse_enrollment(raw_enroll_generic)
-                        if parsed_generic != 0: 
-                            enrollment_history["2024"] = parsed_generic
-                            # If generic was used for 24, it might also be relevant for 23/22 if they are 0
-                            if enrollment_history["2023"] == 0: enrollment_history["2023"] = parsed_generic 
-                            if enrollment_history["2022"] == 0: enrollment_history["2022"] = parsed_generic
+            if enrollment_history["2024"] == 0 and actual_enroll_generic_col: 
+                raw_enroll_generic = get_first_value_from_row(row, actual_enroll_generic_col)
+                if pd.notna(raw_enroll_generic) and str(raw_enroll_generic).strip():
+                    parsed_generic = parse_enrollment(raw_enroll_generic)
+                    if parsed_generic != 0: 
+                        enrollment_history["2024"] = parsed_generic
+                        if enrollment_history["2023"] == 0: enrollment_history["2023"] = parsed_generic 
+                        if enrollment_history["2022"] == 0: enrollment_history["2022"] = parsed_generic
 
-            # Process 23 and 22 if they are still 0 and specific columns exist
             if enrollment_history["2023"] == 0 and actual_enroll_23_col: 
                 raw_enroll_23 = get_first_value_from_row(row, actual_enroll_23_col)
                 if pd.notna(raw_enroll_23) and str(raw_enroll_23).strip():
@@ -505,22 +475,11 @@ def process_single_csv(csv_path, filename_hint, all_schools_data):
                 if pd.notna(raw_enroll_22) and str(raw_enroll_22).strip():
                      enrollment_history["2022"] = parse_enrollment(raw_enroll_22)
             
-            # Final cleanup: Ensure all enrollment fields are integers.
-            # parse_enrollment already returns int (or 0), so this is more of a safeguard 
-            # if any other logic path could have introduced non-integers.
             for year_key in ['2024', '2023', '2022']:
                 current_val = enrollment_history.get(year_key)
                 if not isinstance(current_val, int):
-                    # DEBUG: Print value before final cleanup if it's "未知"
-                    if isinstance(current_val, str) and current_val == "未知":
-                        print(f"DEBUG_ENROLL_CLEANUP: School='{school_name_cleaned}', MajorCode='{major_code_str}', Year='{year_key}', Found '未知', converting to 0.")
-                    
-                    if isinstance(current_val, str) and current_val.isdigit():
-                        enrollment_history[year_key] = int(current_val)
-                    else:
-                        enrollment_history[year_key] = 0 # Default for None, non-digit strings, etc.
+                    enrollment_history[year_key] = int(current_val) if isinstance(current_val, str) and current_val.isdigit() else 0
 
-            # --- Extract Score Lines ---
             score_lines = {}
             score_val_24 = get_first_value_from_row(row, find_actual_col(score_24_cols_l))
             if score_val_24: score_lines["2024"] = get_multiline_str(score_val_24)
@@ -529,10 +488,8 @@ def process_single_csv(csv_path, filename_hint, all_schools_data):
             score_val_22 = get_first_value_from_row(row, find_actual_col(score_22_cols_l))
             if score_val_22: score_lines["2022"] = get_multiline_str(score_val_22)
 
-
             exam_subjects_val = get_first_value_from_row(row, find_actual_col(exam_subj_cols_l))
             
-            # Standardize major name if still missing
             if not major_name or major_name in ['-', '未知专业', '查看详情', '待定']:
                 temp_major_name = "未知专业方向"; code = major_code_str
                 subjects = str(get_multiline_str(exam_subjects_val)).lower() if exam_subjects_val else ""
@@ -544,25 +501,25 @@ def process_single_csv(csv_path, filename_hint, all_schools_data):
                 elif '0839' in code or '网络空间安全' in subjects: temp_major_name = '网络空间安全'
                 major_name = temp_major_name
                 
-                major_info = {
+            major_info = {
                 "major_code": major_code_str, "major_name": major_name,
                 "exam_subjects": get_multiline_str(exam_subjects_val),
                 "reference_books": get_multiline_str(get_first_value_from_row(row, find_actual_col(ref_book_cols_l))),
                 "retrial_subjects": get_multiline_str(get_first_value_from_row(row, find_actual_col(retrial_subj_cols_l))),
-                "enrollment": enrollment_history, # Use the history dict
+                "enrollment": enrollment_history,
                 "tuition_duration": get_multiline_str(get_first_value_from_row(row, find_actual_col(tuition_cols_l))),
-                    "score_lines": score_lines, # Use the score history dict
+                "score_lines": score_lines,
                 "admission_info_23": get_multiline_str(get_first_value_from_row(row, find_actual_col(adm_info_23_cols_l))),
                 "admission_info_24": get_multiline_str(get_first_value_from_row(row, find_actual_col(adm_info_24_cols_l)))
             }
             
-            school_entry['departments'][-1]['majors'].append(major_info)
+            dept_entry['majors'].append(major_info)
         except Exception as e_row:
-            print(f"    处理文件 \'{os.path.basename(csv_path)}\' 的行 (CSV index {index}) 时发生错误: {e_row}")
-            if is_b_region_file: print(f"    [B区 DEBUG] Error processing row {index}: {e_row}")
+            print(f"    处理工作表 \'{sheet_name}\' 的行 (Excel index {index}) 时发生错误: {e_row}")
+            if is_b_region_file: print(f"    [B区 DEBUG] Error processing row {index} in sheet '{sheet_name}': {e_row}")
             import traceback; traceback.print_exc()
             continue
-    print(f"    文件 \'{os.path.basename(csv_path)}\' 处理完成。")
+    print(f"    工作表 \'{sheet_name}\' 处理完成。")
 
 def replace_nan_with_none(obj): # Keep this helper (now at top level)
     if isinstance(obj, list): return [replace_nan_with_none(item) for item in obj]
@@ -571,43 +528,51 @@ def replace_nan_with_none(obj): # Keep this helper (now at top level)
     if obj is pd.NA: return None
     return obj
 
-def main_process_all_csvs(csv_files_directory, output_json_path):
+def main_process_excel_file(excel_file_path, output_json_path):
     all_schools_data = {}
     
-    # Define mapping for CSV filenames to a "hint name" used for region/province logic
-    # This assumes CSVs are named like "择校文档_安徽.csv", "择校文档_B区.csv", etc.
-    # And "择校文档_Sheet1.csv" for the general sheet.
-    csv_files_to_process = [f for f in os.listdir(csv_files_directory) if f.startswith("择校文档_") and f.endswith(".csv")]
+    if not os.path.exists(excel_file_path):
+        print(f"错误: Excel 文件 {excel_file_path} 未找到。程序将退出。")
+        return
 
-    for csv_filename in csv_files_to_process:
-        hint_name = csv_filename.replace("择校文档_", "").replace(".csv", "") # e.g., "安徽", "B区", "Sheet1"
-        csv_full_path = os.path.join(csv_files_directory, csv_filename)
-        
-        if not os.path.exists(csv_full_path):
-            print(f"警告: CSV 文件 {csv_full_path} 未找到。跳过。")
-            continue
-        
-        process_single_csv(csv_full_path, hint_name, all_schools_data)
+    print(f"开始从 Excel 文件: {excel_file_path} 处理数据...")
+    header_keywords = ['学校', '代码', '专业', '院系', '科目', '名称', '招生', '录取', '复试', '考试', '省份', '简介', '等级', '评级', '院校', '学费']
 
-    # After processing all CSVs, convert departments from dict to list for JSON compatibility
-    final_school_list = list(all_schools_data.values())
-
-    # Sort the final list by school name for consistent output (optional)
-    final_school_list.sort(key=lambda x: (x.get('region') or '', x.get('province') or '', x.get('name') or ''))
-
-    cleaned_school_list = replace_nan_with_none(final_school_list)
-    os.makedirs(DATA_DIR, exist_ok=True)
     try:
-        with open(output_json_path, 'w', encoding='utf-8') as f:
-            json.dump(cleaned_school_list, f, ensure_ascii=False, indent=2)
-        print(f"\n成功将处理后的数据写入到: {output_json_path}")
-    except IOError as e: print(f"写入 JSON 文件时出错: {e}")
-    except Exception as e: print(f"转换或写入 JSON 时发生未知错误: {e}")
+        xls = pd.ExcelFile(excel_file_path)
+        sheet_names = xls.sheet_names
+        print(f"发现工作表: {sheet_names}")
 
-    # --- Final Processing & Output --- 
-    print(f"\nTotal schools processed: {len(all_schools_data)}")
+        for sheet_name in sheet_names:
+            print(f"\n正在处理工作表: {sheet_name}...")
+            try:
+                # Peek at the sheet to find the header row
+                df_peek = pd.read_excel(xls, sheet_name, nrows=20, header=None, dtype=str)
+                identified_header_idx = find_header_row(df_peek, header_keywords)
 
-    # --- Calculate total enrollment and summarize exam subjects --- 
+                if identified_header_idx != -1:
+                    print(f"    在工作表 '{sheet_name}' 的第 {identified_header_idx + 1} 行找到表头。")
+                    df_sheet = pd.read_excel(xls, sheet_name, header=identified_header_idx, dtype=str)
+                else:
+                    print(f"    警告: 在工作表 '{sheet_name}' 未能动态找到表头，将使用第一行作为表头。")
+                    df_sheet = pd.read_excel(xls, sheet_name, header=0, dtype=str)
+                
+                df_sheet = clean_column_names(df_sheet)
+                process_excel_sheet(df_sheet, sheet_name, all_schools_data)
+
+            except Exception as e_sheet:
+                print(f"    处理工作表 '{sheet_name}' 时发生错误: {e_sheet}")
+                import traceback; traceback.print_exc()
+                continue
+        
+    except Exception as e_file:
+        print(f"读取或处理 Excel 文件 '{excel_file_path}' 时发生严重错误: {e_file}")
+        import traceback; traceback.print_exc()
+        return # Stop processing if the Excel file itself has issues
+
+    # --- Final Processing & Output ---
+    print(f"\nTotal unique schools processed: {len(all_schools_data)}")
+
     for school_name, school_data in all_schools_data.items():
         total_enrollment_24 = 0
         exam_subjects_list = set()
@@ -616,39 +581,30 @@ def main_process_all_csvs(csv_files_directory, output_json_path):
                 for department in school_data['departments']:
                     if 'majors' in department and isinstance(department['majors'], list):
                         for major in department['majors']:
-                            # Sum enrollment
                             enrollment_data = major.get('enrollment', {})
                             enrollment_24 = enrollment_data.get('2024', 0)
-                            if isinstance(enrollment_24, int):
-                                total_enrollment_24 += enrollment_24
-                            else: # Handle potential non-int data just in case
-                                try:
-                                    total_enrollment_24 += int(enrollment_24) 
-                                except (ValueError, TypeError):
-                                    pass # Ignore if conversion fails
+                            total_enrollment_24 += int(enrollment_24) if isinstance(enrollment_24, (int, float)) or (isinstance(enrollment_24, str) and enrollment_24.isdigit()) else 0
                             
-                            # Collect exam subjects
                             subjects_str = major.get('exam_subjects')
                             if subjects_str and isinstance(subjects_str, str):
-                                # Split potentially multi-line subjects and clean them
-                                subjects = [s.strip() for s in subjects_str.split('\n') if s.strip()] 
-                                exam_subjects_list.update(subjects)
+                                subjects = [s.strip() for s in subjects_str.split('\\n') if s.strip()] # Handle escaped newlines if any, or direct
+                                subjects_flat = []
+                                for s_part in subjects: # Further split if multiple subjects are in one line, e.g. "subj1 subj2"
+                                    subjects_flat.extend(s_part.split()) # Basic split, might need refinement
+                                exam_subjects_list.update(subjects_flat)
 
-            # Assign calculated total enrollment
+
             school_data['enrollment_24_school_total'] = total_enrollment_24
-            
-            # Assign summarized exam subjects
-            school_data['exam_subjects_summary'] = " | ".join(sorted(list(exam_subjects_list)))
+            school_data['exam_subjects_summary'] = " | ".join(sorted(list(exam_subjects_list))) if exam_subjects_list else "未提供"
         except Exception as e_post:
-            print(f"Error during post-processing (enrollment sum/subject summary) for school '{school_name}': {e_post}")
-            school_data['enrollment_24_school_total'] = 0 # Default to 0 on error
-            school_data['exam_subjects_summary'] = "处理错误" # Indicate error in summary
+            print(f"Error during post-processing for school '{school_name}': {e_post}")
+            school_data['enrollment_24_school_total'] = 0 
+            school_data['exam_subjects_summary'] = "处理错误"
 
-    # Convert the dictionary to a list for JSON output
-    output_list = list(all_schools_data.values())
+    final_school_list = list(all_schools_data.values())
+    final_school_list.sort(key=lambda x: (x.get('region') or '', x.get('province') or '', x.get('name') or ''))
+    cleaned_school_list = replace_nan_with_none(final_school_list) # Ensure this function is defined globally
 
-    # --- Write to JSON --- 
-    cleaned_school_list = replace_nan_with_none(output_list)
     os.makedirs(DATA_DIR, exist_ok=True)
     try:
         with open(output_json_path, 'w', encoding='utf-8') as f:
@@ -657,7 +613,7 @@ def main_process_all_csvs(csv_files_directory, output_json_path):
     except IOError as e: print(f"写入 JSON 文件时出错: {e}")
     except Exception as e: print(f"转换或写入 JSON 时发生未知错误: {e}")
 
+
 if __name__ == "__main__":
-    # Assuming CSVs are in the BASE_DIR (project root) for now
-    print(f"开始从目录 {CSV_SOURCE_DIR} 处理所有 CSV 文件...")
-    main_process_all_csvs(CSV_SOURCE_DIR, OUTPUT_JSON_PATH) 
+    print(f"开始从 Excel 文件 {EXCEL_PATH} 处理数据...")
+    main_process_excel_file(EXCEL_PATH, OUTPUT_JSON_PATH) 
