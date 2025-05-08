@@ -2086,7 +2086,7 @@ def get_recent_n_years_data(data_category, n=3):
 
 # --- 辅助函数：计算 ECharts Y 轴范围（带缓冲）---
 def calculate_y_axis_range(series_data, min_buffer_value=5, buffer_percentage=0.1):
-    """根据 series 数据计算 Y 轴的 min 和 max，并添加缓冲。"""
+    """根据 series 数据计算 Y 轴的 min 和 max，并添加缓冲。增加默认最小缓冲值。"""
     all_values = []
     if not series_data:
         return {'min': 0, 'max': 100} # 默认范围

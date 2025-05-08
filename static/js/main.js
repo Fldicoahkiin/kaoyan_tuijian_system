@@ -336,13 +336,20 @@ function fetchNationalLineData(apiUrl, chartInstance, title) {
                  tooltip: { trigger: 'axis' },
                  legend: { data: data.legend, bottom: 10, textStyle: { color: '#ccc' } },
                  grid: { left: '3%', right: '4%', top: '50px', bottom: '40px', containLabel: true },
-                 xAxis: { type: 'category', data: data.years, axisLabel: { color: '#ccc' } },
+                 xAxis: {
+                    type: 'category',
+                    boundaryGap: data.series && data.series.some(s => s.type === 'bar'), // True for bar charts
+                    data: data.years || [], // Use years data from API
+                    axisLabel: { color: '#ccc' }
+                 },
                  yAxis: {
                     type: 'value',
-                    min: 'dataMin', // 设置 Y 轴从数据最小值开始
-                    axisLabel: { color: '#ccc' } // X轴文字颜色 -> Y轴文字颜色
+                    // Use min AND max values from API if provided, otherwise default (null lets ECharts decide)
+                    min: data.yAxis && data.yAxis.min !== null ? data.yAxis.min : null,
+                    max: data.yAxis && data.yAxis.max !== null ? data.yAxis.max : null,
+                    axisLabel: { color: '#ccc' }
                  },
-                 series: data.series // 直接使用从API获取的series配置
+                 series: data.series || [] // Use series data from API
              };
             chartInstance.setOption(option);
             chartInstance.hideLoading();
