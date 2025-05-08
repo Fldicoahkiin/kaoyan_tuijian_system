@@ -17,7 +17,7 @@
         <div class="card-body">
             <p class="text-muted small">此数据用于首页的国家线相关图表。</p>
             <form method="POST" action="{{ url_for('admin_save_national_lines') }}">
-                {{ form.hidden_tag() if form else '' }}
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
                 {% if national_lines_data %}
                     {# 定义一个字典用于映射英文类别名到中文显示名 #}

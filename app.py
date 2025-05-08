@@ -404,36 +404,31 @@ def get_announcements():
 def register():
     if 'username' in session:
         return redirect(url_for('index')) # 如果已登录，重定向到首页
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        confirm_password = request.form.get('confirm_password')
-
-        if not username or not password or not confirm_password:
-            flash('所有字段都是必填项！', 'error')
-            return redirect(url_for('register'))
-
-        if password != confirm_password:
-            flash('两次输入的密码不一致！', 'error')
-            return redirect(url_for('register'))
+    
+    form = RegistrationForm() # 实例化表单
+    if form.validate_on_submit(): # POST 请求，且数据有效
+        username = form.username.data
+        password = form.password.data
+        # confirm_password 的校验由 EqualTo validator 在 form.validate_on_submit() 中处理
 
         if get_user_data(username) is not None:
             flash('用户名已存在！', 'error')
-            return redirect(url_for('register'))
+            # 当验证失败或逻辑错误时，重新渲染表单，并传递form对象
+            return render_template('register.html', form=form)
 
-        # 创建用户数据结构
         hashed_password = generate_password_hash(password)
         user_data = {
             "username": username,
             "password_hash": hashed_password,
-            "profile": { # 用户的基本信息和偏好
+            "profile": { 
                 "education_background": "",
                 "major_area": "",
                 "target_location": "",
-                "target_level": "", # 985, 211, etc.
+                "target_level": "", 
+                "target_rank": "", #确保新用户也有此字段
                 "expected_score": None
             },
-            "favorites": [] # 收藏的学校 ID 列表
+            "favorites": []
         }
 
         if save_user_data(username, user_data):
@@ -441,37 +436,38 @@ def register():
             return redirect(url_for('login'))
         else:
             flash('注册过程中发生错误，请稍后再试。', 'error')
-            return redirect(url_for('register'))
+            # 保存失败也应重新渲染表单
+            return render_template('register.html', form=form)
 
-    return render_template('register.html')
+    # GET 请求或 POST 数据无效时
+    return render_template('register.html', form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if 'username' in session:
         return redirect(url_for('index'))
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-
-        if not username or not password:
-            flash('用户名和密码不能为空！', 'error')
-            return redirect(url_for('login'))
+    
+    form = LoginForm() # 实例化表单
+    if form.validate_on_submit(): # POST 请求且数据有效
+        username = form.username.data
+        password = form.password.data
 
         user_data = get_user_data(username)
 
         if user_data is None:
             flash('用户名不存在！', 'error')
-            return redirect(url_for('login'))
-
-        if check_password_hash(user_data.get('password_hash', ''), password):
-            session['username'] = username # 登录成功，记录 session
+        elif check_password_hash(user_data.get('password_hash', ''), password):
+            session['username'] = username
             flash('登录成功！', 'success')
-            return redirect(url_for('index'))
+            return redirect(request.args.get('next') or url_for('index')) # 跳转到 next 或首页
         else:
             flash('密码错误！', 'error')
-            return redirect(url_for('login'))
+        
+        # 如果登录失败（用户名不存在或密码错误），重新渲染登录表单并传递form对象
+        return render_template('login.html', form=form)
 
-    return render_template('login.html')
+    # GET 请求或 POST 数据无效时
+    return render_template('login.html', form=form)
 
 @app.route('/logout')
 def logout():

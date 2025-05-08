@@ -14,6 +14,7 @@
         </div>
         <div class="card-body">
             <form action="{{ url_for('admin_profile') }}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                  {# 可以取消注释以要求输入当前密码 #}
                 {# <div class="mb-3">
                     <label for="current_password" class="form-label">当前密码</label>

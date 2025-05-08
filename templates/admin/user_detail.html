@@ -17,11 +17,13 @@
                 {% if user.is_admin %}
                     <span class="badge bg-success">是</span>
                     <form action="{{ url_for('toggle_admin_status', username=user.username) }}" method="POST" style="display: inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                         <button type="submit" class="btn btn-sm btn-warning ms-2">设为普通用户</button>
                     </form>
                 {% else %}
                     <span class="badge bg-secondary">否</span>
                      <form action="{{ url_for('toggle_admin_status', username=user.username) }}" method="POST" style="display: inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                         <button type="submit" class="btn btn-sm btn-success ms-2">设为管理员</button>
                     </form>
                 {% endif %}

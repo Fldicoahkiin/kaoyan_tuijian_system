@@ -16,10 +16,10 @@
         </div>
         <div class="card-body">
             <p class="text-muted small">此数据用于首页"自命题 vs 408 比例"饼图。</p>
-            <form method="POST" action="{{ url_for('admin_save_exam_ratios') }}"> {# 假设保存路由为 admin_save_exam_ratios #}
-                {{ form.hidden_tag() if form else '' }} {# 如果使用 Flask-WTF #}
+            <form method="POST" action="{{ url_for('admin_save_exam_ratios') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 
-                {% for item in exam_ratios_data %} {# 假设后端传递的数据名为 exam_ratios_data #}
+                {% for item in exam_ratios_data %}
                 <div class="mb-3 row">
                     <label for="ratio_{{ loop.index0 }}" class="col-sm-3 col-form-label">{{ item.name }} 数量:</label>
                     <div class="col-sm-9">
