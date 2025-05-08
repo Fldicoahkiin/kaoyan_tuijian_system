@@ -335,7 +335,7 @@ function fetchNationalLineData(apiUrl, chartInstance, title) {
                  title: { text: title, left: 'center', top: 10, textStyle: { color: '#ccc' } },
                  tooltip: { trigger: 'axis' },
                  legend: { data: data.legend, bottom: 10, textStyle: { color: '#ccc' } },
-                 grid: { left: '3%', right: '4%', top: '50px', bottom: '40px', containLabel: true },
+                 grid: { left: '3%', right: '4%', top: '50px', bottom: '60px', containLabel: true },
                  xAxis: {
                     type: 'category',
                     boundaryGap: data.series && data.series.some(s => s.type === 'bar'), // True for bar charts
@@ -368,7 +368,7 @@ function fetchExamTypeRatio(chartInstance) {
             const option = {
                 title: { text: '自命题 vs 408 比例', left: 'center', top: 10, textStyle: { color: '#ccc' } },
                 tooltip: { trigger: 'item', formatter: '{a} <br/>{b} : {c} ({d}%)' },
-                legend: { orient: 'horizontal', bottom: 10, data: data.map(item => item.name), textStyle: { color: '#ccc' } },
+                legend: { orient: 'horizontal', bottom: 15, data: data.map(item => item.name), textStyle: { color: '#ccc', overflow: 'breakAll' } },
                 series: [
                     {
                         name: '考试类型',
@@ -383,7 +383,7 @@ function fetchExamTypeRatio(chartInstance) {
                                 shadowColor: 'rgba(0, 0, 0, 0.5)'
                             }
                         },
-                         label: { color: '#ccc', fontSize: 11 },
+                         label: { color: '#ccc', fontSize: 11, overflow: 'breakAll' },
                          labelLine: { lineStyle: { color: '#aaa' }, length: 4, length2: 8 }
                     }
                 ]
