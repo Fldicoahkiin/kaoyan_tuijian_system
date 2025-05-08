@@ -203,6 +203,7 @@ class SchoolEditForm(FlaskForm):
     province = StringField('省份', validators=[Optional(), Length(max=50)])
     computer_rank = StringField('计算机等级', validators=[Optional(), Length(max=100)])
     intro = TextAreaField('简介', validators=[Optional()])
+    enrollment_24_school_total = StringField('24年总招生人数', validators=[Optional()])
     submit = SubmitField('保存更改')
 
 # --- 视图函数 / 路由 ---
@@ -1121,13 +1122,19 @@ def admin_schools():
 
     total_schools = len(filtered_schools)
     page = request.args.get('page', 1, type=int)
-    per_page = 50
+    per_page = 20 # 改为和院校库一致的每页20条，方便对比
     
     start = (page - 1) * per_page
     end = start + per_page
     paginated_schools = filtered_schools[start:end]
     
     total_pages = ceil(total_schools / per_page) if total_schools > 0 else 1
+
+    # 为每个学校计算院系和专业数量
+    for school_item in paginated_schools: # 使用 school_item 避免与外层 school 变量冲突 (如果存在)
+        departments = school_item.get('departments', [])
+        school_item['department_count'] = len(departments)
+        school_item['major_count'] = sum(len(dept.get('majors', [])) for dept in departments)
 
     return render_template('admin/schools.html',
                            schools=paginated_schools,
@@ -1165,9 +1172,10 @@ def admin_edit_school(school_id):
         flash(f'未找到该院校。 ({school_id})', 'danger')
         return redirect(url_for('admin_schools'))
 
-    form = SchoolEditForm(data=school_to_edit)
+    # 使用 school_to_edit 初始化 form 对象 (避免直接用 data= 覆盖)
+    form = SchoolEditForm()
 
-    if form.validate_on_submit():
+    if form.validate_on_submit(): # POST 请求
         try:
             school_index = -1
             for i, school_iter in enumerate(schools_data_current):
@@ -1177,12 +1185,45 @@ def admin_edit_school(school_id):
             
             if school_index == -1:
                 flash('保存时未能找到学校索引，更新失败。', 'danger')
-                return render_template('admin/edit_school.html', form=form, school=school_to_edit)
+                # 在POST失败时，也需要传递 departments_json_str 以便重新渲染模板
+                departments_json_str_for_template = json.dumps(school_to_edit.get('departments', []), ensure_ascii=False, indent=2)
+                return render_template('admin/edit_school.html', form=form, school=school_to_edit, departments_json_str=departments_json_str_for_template)
 
-            form.populate_obj(schools_data_current[school_index]) 
+            # 手动更新表单中的字段到 schools_data_current[school_index]
+            target_school_in_list = schools_data_current[school_index]
+            target_school_in_list['name'] = form.name.data
+            target_school_in_list['level'] = form.level.data
+            target_school_in_list['province'] = form.province.data
+            target_school_in_list['computer_rank'] = form.computer_rank.data
+            target_school_in_list['intro'] = form.intro.data
+            target_school_in_list['enrollment_24_school_total'] = form.enrollment_24_school_total.data
+            # 注意：'region' 是只读的，不应在此更新。
+            # 注意：'id' 也不应在此更改。
 
+            # 处理 departments JSON
+            departments_json_input = request.form.get('departments_json_str')
+            json_updated = False # 标记 JSON 是否被尝试更新
+            if departments_json_input is not None: # 检查字段是否存在
+                json_updated = True
+                try:
+                    original_departments_data = target_school_in_list.get('departments', [])
+                    new_departments_data = json.loads(departments_json_input)
+                    if isinstance(new_departments_data, list):
+                        target_school_in_list['departments'] = new_departments_data
+                        # 只有当 JSON 真的改变时才 flash info
+                        if json.dumps(original_departments_data, sort_keys=True) != json.dumps(new_departments_data, sort_keys=True):
+                             flash('院系专业信息 (通过JSON) 已更新。请注意检查其内部数据准确性。', 'info')
+                    else:
+                        flash('JSON 编辑器中的院系数据格式不正确（应为列表），未更新院系信息。', 'warning')
+                        # 如果 JSON 格式错误，保留原来的数据
+                        target_school_in_list['departments'] = original_departments_data 
+                except json.JSONDecodeError:
+                    flash('JSON 编辑器中的院系数据格式无效，未更新院系信息。请检查 JSON 语法。', 'danger')
+                    # 如果 JSON 格式错误，保留原来的数据
+                    target_school_in_list['departments'] = original_departments_data 
+            
             if save_schools_data(schools_data_current):
-                flash('院校信息更新成功!', 'success')
+                flash('院校信息更新成功!' + (' (院系JSON未更改或未提交)' if not json_updated else ''), 'success')
             else:
                  flash('院校信息已在内存中更新，但写入文件失败！', 'danger')
 
@@ -1190,8 +1231,15 @@ def admin_edit_school(school_id):
         except Exception as e:
              app.logger.error(f"更新学校 {school_id} 时出错: {e}", exc_info=True)
              flash(f'更新院校信息时发生内部错误: {e}', 'danger')
+    
+    # GET 请求
+    # 准备在模板中显示的 departments JSON 字符串
+    departments_json_str_for_template = json.dumps(school_to_edit.get('departments', []), ensure_ascii=False, indent=2)
+    
+    # 在GET请求时，用 school_to_edit 的数据填充表单
+    form.process(obj=type('SchoolObject', (object,), school_to_edit)()) # 使用 process 填充
 
-    return render_template('admin/edit_school.html', form=form, school=school_to_edit)
+    return render_template('admin/edit_school.html', form=form, school=school_to_edit, departments_json_str=departments_json_str_for_template)
 
 @app.route('/admin/edit-exam-ratios', methods=['GET'])
 @admin_required

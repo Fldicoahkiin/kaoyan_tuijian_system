@@ -74,10 +74,9 @@ def extract_province_smart(row, school_name_raw, intro_raw, filename_hint_provin
         province_str = str(province_from_col).strip()
         if is_valid_province(province_str): return province_str
 
-    # 2. Check filename hint (if provided and valid)
-    # Special case: ignore hint for "东三省" as it contains multiple provinces
-    if filename_hint_province and filename_hint_province != "东三省" and is_valid_province(filename_hint_province):
-        return filename_hint_province
+    # 2. Check filename hint (if provided and valid) - REMOVED
+    # if filename_hint_province and filename_hint_province != "东三省" and is_valid_province(filename_hint_province):
+    #     return filename_hint_province
 
     # 3. Check school name for location in brackets or prefix
     match = re.search(r'[（(](.+?)[)）]', school_name)
@@ -106,18 +105,42 @@ def clean_column_names(df):
     df.columns = df.columns.str.strip()
     return df
 
-def extract_school_level(name_str, row_level_val):
-    """从行数据或名称中提取院校等级"""
+def extract_school_level(name_str, row_level_val, intro_str=None):
+    """从行数据、名称或简介中提取院校等级"""
+    explicit_level_from_col = None
+    # 1. 优先检查等级列
     if pd.notna(row_level_val):
         level_str = str(row_level_val).strip()
-        if level_str in ["985", "211", "双一流", "一般"]:
-            return level_str
-            
+        # "普通院校" 也是一个可接受的等级列值
+        if level_str in ["985", "211", "双一流", "一般", "普通院校"]:
+            # 如果等级列是明确的 985/211/双一流，直接返回
+            if level_str in ["985", "211", "双一流"]:
+                return level_str
+            # 如果等级列是 "一般" 或 "普通院校"，我们稍后还会检查名称和简介
+            explicit_level_from_col = level_str 
+        # else: 如果等级列的值不是预期的，则视为无效，继续检查名称和简介
+    
+    # 2. 检查名称
     if isinstance(name_str, str):
         if "985" in name_str: return "985"
         if "211" in name_str: return "211"
-        if "双一流" in name_str: return "双一流"
-    return "一般"
+        # "双一流" 在名称中可能不那么常见或明确，主要依赖简介或列
+        # if "双一流" in name_str: return "双一流" 
+    
+    # 3. 检查简介 (新增逻辑)
+    if isinstance(intro_str, str):
+        intro_lower = intro_str.lower() # 转为小写以便匹配
+        # 更精确地匹配 "985工程" 或 "985大学" 等，避免误判包含 "985" 数字的其他文本
+        if re.search(r"985工程|985大学|\"985\"", intro_lower): return "985"
+        if re.search(r"211工程|211大学|\"211\"", intro_lower): return "211"
+        # 双一流的判断可以更宽松一些，因为它通常以文本形式出现
+        if "双一流" in intro_lower or "一流大学" in intro_lower or "一流学科" in intro_lower: return "双一流"
+
+    # 4. 如果等级列有明确的 "一般" 或 "普通院校"，且名称和简介中没找到更高级别的，则使用它
+    if explicit_level_from_col in ["一般", "普通院校"]:
+        return explicit_level_from_col
+
+    return "普通院校" # 默认返回 "普通院校"
 
 def find_header_row(df_peek, keywords):
     best_header_index = -1
@@ -145,23 +168,23 @@ def determine_region_from_filename_hint(hint_name):
         return "B区"
     return "A区"
 
-def get_province_hint_from_filename(hint_name):
-    """
-    根据从文件名提取的提示名称（如 "安徽", "福建", "Sheet1"）判断是否为有效省份提示。
-    排除 "Sheet1", "B区", "东三省" 等特殊提示。
-    """
-    if hint_name not in ["Sheet1", "B区", "东三省"]:
-        # 直接检查传入的 hint_name 是否是有效省份
-        if is_valid_province(hint_name):
-            return hint_name
-    return None # 如果是特殊提示或无效省份名，则返回 None
+# def get_province_hint_from_filename(hint_name): # REMOVE THIS FUNCTION
+#     """
+#     根据从文件名提取的提示名称（如 "安徽", "福建", "Sheet1"）判断是否为有效省份提示。
+#     排除 "Sheet1", "B区", "东三省" 等特殊提示。
+#     """
+#     if hint_name not in ["Sheet1", "B区", "东三省"]:
+#         # 直接检查传入的 hint_name 是否是有效省份
+#         if is_valid_province(hint_name):
+#             return hint_name
+#     return None # 如果是特殊提示或无效省份名，则返回 None
 
 def get_multiline_str(value):
     if isinstance(value, pd.Series):
         if not value.empty:
             value = value.iloc[0] # 如果是Series，取第一个元素
-    else:
-            return None
+        else: # 如果是空 Series，则视为 None
+            value = None
     if pd.isna(value): return None
     return str(value).strip()
 
@@ -191,9 +214,10 @@ def get_first_value_from_row(row, primary_col_name, secondary_col_name=None):
 def process_single_csv(csv_path, filename_hint, all_schools_data):
     print(f"  正在处理CSV文件: {os.path.basename(csv_path)} (Hint: {filename_hint})")
     current_sheet_region = determine_region_from_filename_hint(filename_hint)
-    filename_province_hint = get_province_hint_from_filename(filename_hint) # Get hint
+    # filename_province_hint = get_province_hint_from_filename(filename_hint) # REMOVED
+    filename_province_hint = None # Set to None as it's no longer used or passed to extract_province_smart
     
-    print(f"    文件 \'{os.path.basename(csv_path)}\' 被识别为区域: {current_sheet_region}, 省份提示: {filename_province_hint}")
+    print(f"    文件 \'{os.path.basename(csv_path)}\' 被识别为区域: {current_sheet_region}")
 
     try:
         # Try to detect header dynamically, similar to Excel processing
@@ -242,9 +266,9 @@ def process_single_csv(csv_path, filename_hint, all_schools_data):
     if actual_school_name_col is None:
         actual_school_name_col = next((col for col in df.columns if '校' in col or '大学' in col or '学院' in col), None)
         if actual_school_name_col: print(f"    启发式地选择列 '{actual_school_name_col}' 作为学校名称列。")
-    if actual_major_code_col is None:
-        actual_major_code_col = next((col for col in df.columns if '代码' in col and '学校代码' not in col and '院校代码' not in col), None)
-        if actual_major_code_col: print(f"    启发式地选择列 '{actual_major_code_col}' 作为专业代码列。")
+        if actual_major_code_col is None:
+            actual_major_code_col = next((col for col in df.columns if '代码' in col and '学校代码' not in col and '院校代码' not in col), None)
+            if actual_major_code_col: print(f"    启发式地选择列 '{actual_major_code_col}' 作为专业代码列。")
 
     if not actual_school_name_col: print(f"    严重警告: 文件 \'{os.path.basename(csv_path)}\' 中未找到学校名称列。跳过。"); return
     if not actual_major_code_col: print(f"    警告: 文件 \'{os.path.basename(csv_path)}\' 中未找到专业代码列。跳过。"); return
@@ -266,11 +290,17 @@ def process_single_csv(csv_path, filename_hint, all_schools_data):
             if pd.isna(school_name_raw) or not str(school_name_raw).strip(): continue
             school_name_cleaned = str(school_name_raw).split('\n')[0].strip()
 
+            print(f"DEBUG: Processing CSV row index {index}, school_name_cleaned: '{school_name_cleaned}'") # Added CSV Index
+
             if school_name_cleaned not in all_schools_data:
+                print(f"DEBUG: School '{school_name_cleaned}' not in all_schools_data. Creating new entry.")
+                print(f"DEBUG: Before assigning '{school_name_cleaned}' to all_schools_data.")
                 intro_raw = get_first_value_from_row(row, intro_cols[0], intro_cols[1] if len(intro_cols)>1 else None)
                 level_val = get_first_value_from_row(row, level_cols[0], level_cols[1] if len(level_cols)>1 else None)
-                province = extract_province_smart(row, school_name_cleaned, intro_raw, filename_province_hint)
+                province = extract_province_smart(row, school_name_cleaned, intro_raw) 
                 
+                intro_for_level_check = get_multiline_str(intro_raw) # 获取处理后的简介字符串
+
                 rank_val = get_first_value_from_row(row, rank_cols[0], rank_cols[1]) or \
                            get_first_value_from_row(row, rank_cols[2] if len(rank_cols)>2 else None, rank_cols[3] if len(rank_cols)>3 else None)
                 computer_rank_cleaned = None
@@ -281,14 +311,19 @@ def process_single_csv(csv_path, filename_hint, all_schools_data):
 
                 all_schools_data[school_name_cleaned] = {
                     "id": school_name_cleaned, "name": school_name_cleaned,
-                    "level": extract_school_level(school_name_cleaned, level_val),
+                    "level": extract_school_level(school_name_cleaned, level_val, intro_for_level_check),
                     "province": province if province else "未知省份",
                     "region": current_sheet_region,
-                    "intro": get_multiline_str(intro_raw),
+                    "intro": get_multiline_str(intro_for_level_check),
                     "computer_rank": computer_rank_cleaned,
-                    "departments": {},
+                    "departments": {}, 
                     "enrollment_24_school_total": "未知",
                 }
+                print(f"DEBUG: After assigning '{school_name_cleaned}' to all_schools_data. Check presence now:")
+                if school_name_cleaned not in all_schools_data:
+                    print(f"FATAL DEBUG: School '{school_name_cleaned}' STILL NOT in all_schools_data after assignment at row index {index}!")
+                else:
+                     print(f"DEBUG: School '{school_name_cleaned}' successfully added to all_schools_data.")
             
             school_entry = all_schools_data[school_name_cleaned]
 
@@ -337,15 +372,15 @@ def process_single_csv(csv_path, filename_hint, all_schools_data):
                 elif '085411' in code or '大数据' in subjects: temp_major_name = '大数据技术与工程'
                 elif '0839' in code or '网络空间安全' in subjects: temp_major_name = '网络空间安全'
                 major_name = temp_major_name
-
-            major_info = {
+                
+                major_info = {
                 "major_code": major_code_str, "major_name": major_name,
                 "exam_subjects": get_multiline_str(exam_subjects_val),
                 "reference_books": get_multiline_str(get_first_value_from_row(row, ref_book_cols[0], ref_book_cols[1] if len(ref_book_cols)>1 else None)),
                 "retrial_subjects": get_multiline_str(get_first_value_from_row(row, retrial_subj_cols[0])),
                 "enrollment_24": enrollment_24_num,
                 "tuition_duration": get_multiline_str(get_first_value_from_row(row, tuition_cols[0], tuition_cols[1] if len(tuition_cols)>1 else None)),
-                "score_lines": {
+                    "score_lines": {
                     "2024": get_multiline_str(get_first_value_from_row(row, score_24_cols[0], score_24_cols[1] if len(score_24_cols)>1 else None)),
                     "2023": get_multiline_str(get_first_value_from_row(row, score_23_cols[0], score_23_cols[1] if len(score_23_cols)>1 else None))
                 },

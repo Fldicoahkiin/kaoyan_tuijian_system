@@ -11,6 +11,11 @@
         {{ form.hidden_tag() }}
 
         <div class="mb-3">
+            <label class="form-label">学校ID (只读)</label>
+            <input type="text" class="form-control" value="{{ school.id }}" readonly>
+        </div>
+
+        <div class="mb-3">
             {{ form.name.label(class="form-label") }}
             {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else "")) }}
             {% if form.name.errors %}
@@ -45,14 +50,25 @@
             </div>
         </div>
 
-        <div class="mb-3">
-            {{ form.computer_rank.label(class="form-label") }}
-            {{ form.computer_rank(class="form-control" + (" is-invalid" if form.computer_rank.errors else "")) }}
-            {% if form.computer_rank.errors %}
-                <div class="invalid-feedback">
-                    {% for error in form.computer_rank.errors %}{{ error }}{% endfor %}
-                </div>
-            {% endif %}
+        <div class="row mb-3">
+            <div class="col-md-6">
+                {{ form.computer_rank.label(class="form-label") }}
+                {{ form.computer_rank(class="form-control" + (" is-invalid" if form.computer_rank.errors else "")) }}
+                {% if form.computer_rank.errors %}
+                    <div class="invalid-feedback">
+                        {% for error in form.computer_rank.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col-md-6">
+                {{ form.enrollment_24_school_total.label(class="form-label") }}
+                {{ form.enrollment_24_school_total(class="form-control" + (" is-invalid" if form.enrollment_24_school_total.errors else "")) }}
+                {% if form.enrollment_24_school_total.errors %}
+                    <div class="invalid-feedback">
+                        {% for error in form.enrollment_24_school_total.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+            </div>
         </div>
 
         <div class="mb-3">
@@ -65,15 +81,211 @@
              {% endif %}
         </div>
 
+        <hr class="my-4">
+        <h4><i class="fas fa-sitemap"></i> 院系与专业信息</h4>
+
+        {# 只读展示部分 #}
         <div class="mb-3">
-            <p class="text-muted">注意：目前仅支持修改学校顶层信息 (如名称、等级、省份、计算机等级、简介)。地区 (A/B区) 由数据处理脚本根据来源自动确定。院系和专业信息请通过修改源 Excel 文件并重新运行数据处理脚本进行更新。</p>
+            <p class="text-muted">当前院系专业结构 (只读预览):</p>
+            {% if school.departments %}
+                <div class="accordion" id="departmentsDisplayAccordion">
+                    {% for department in school.departments %}
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="display-heading-dept-{{ loop.index }}">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#display-collapse-dept-{{ loop.index }}">
+                                {{ department.department_name | default('未知院系名称') }} ({{ department.majors | default([]) | length }} 个专业)
+                            </button>
+                        </h2>
+                        <div id="display-collapse-dept-{{ loop.index }}" class="accordion-collapse collapse" data-bs-parent="#departmentsDisplayAccordion">
+                            <div class="accordion-body">
+                                {% if department.majors %}
+                                    <ul>
+                                    {% for major in department.majors %}
+                                        <li>{{ major.major_name | default('未知专业名称') }} ({{ major.major_code | default('无代码') }})</li>
+                                    {% else %}
+                                        <li>该院系下无专业信息。</li>
+                                    {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <p>该院系下无专业信息。</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>该学校暂无院系专业信息。</p>
+            {% endif %}
         </div>
 
+        {# JSON 编辑器部分 #}
+        <div class="mb-3">
+            <label for="departments_json_str" class="form-label">
+                <strong><i class="fas fa-code"></i> 编辑院系专业 (JSON格式)</strong>
+            </label>
+            <p class="form-text text-warning">
+                注意：直接编辑JSON具有风险，请确保格式正确。此处的修改将覆盖该学校的所有院系和专业数据。
+                JSON结构应该是一个列表 `[...]`，每个元素代表一个院系对象 `{ "department_name": "...", "majors": [...] }`。
+            </p>
+            <textarea name="departments_json_str" id="departments_json_str" class="form-control" rows="15" spellcheck="false">{{ departments_json_str }}</textarea>
+        </div>
 
-        <div class="d-flex justify-content-end">
+        {# 将提交按钮移到这里，包含所有可编辑内容 #}
+        <div class="d-flex justify-content-end mt-3">
              <a href="{{ url_for('admin_schools') }}" class="btn btn-secondary me-2">取消</a>
-            {{ form.submit(class="btn btn-primary") }}
+            {{ form.submit(class="btn btn-primary") }} {# 提交整个 form，包括上面的字段和下面的 textarea #}
         </div>
-    </form>
+    </form> {# 确保这是之前 form 的结束标签 #}
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const departmentsDynamicList = document.getElementById('departments-dynamic-list');
+    const addDepartmentBtn = document.getElementById('add-department-btn');
+    const departmentTemplate = document.getElementById('department-template');
+    const majorTemplate = document.getElementById('major-template');
+    const departmentsJsonTextarea = document.getElementById('departments_json_str');
+    const mainForm = departmentsJsonTextarea.closest('form'); // 获取主表单
+    const syncDynamicToJsonBtn = document.getElementById('sync-dynamic-to-json');
+
+    let initialDepartmentsData = [];
+    try {
+        initialDepartmentsData = JSON.parse(departmentsJsonTextarea.value || '[]');
+    } catch (e) {
+        console.error("无法解析初始院系JSON数据:", e);
+        alert("警告：页面加载时院系JSON数据格式错误，动态表单可能无法正确初始化。");
+        initialDepartmentsData = []; // 使用空数组以避免后续JS错误
+    }
+
+    // 函数：从动态表单收集数据并构建JSON对象
+    function collectDataFromDynamicForms() {
+        const departmentsData = [];
+        document.querySelectorAll('#departments-dynamic-list .department-item').forEach(deptCard => {
+            const departmentNameInput = deptCard.querySelector('.department-name-input');
+            const department = {
+                department_name: departmentNameInput ? departmentNameInput.value.trim() : '未知院系',
+                majors: []
+            };
+
+            deptCard.querySelectorAll('.majors-dynamic-list .major-item').forEach(majorDiv => {
+                const major = {
+                    major_name: majorDiv.querySelector('[name=\"major_name\"]').value.trim(),
+                    major_code: majorDiv.querySelector('[name=\"major_code\"]').value.trim(),
+                    exam_subjects: majorDiv.querySelector('[name=\"exam_subjects\"]').value.trim(),
+                    retrial_subjects: majorDiv.querySelector('[name=\"retrial_subjects\"]').value.trim(),
+                    reference_books: majorDiv.querySelector('[name=\"reference_books\"]').value.trim(),
+                    enrollment_24: parseEnrollment(majorDiv.querySelector('[name=\"enrollment_24\"]').value.trim()),
+                    tuition_duration: majorDiv.querySelector('[name=\"tuition_duration\"]').value.trim(),
+                    score_lines: {
+                        "2024": majorDiv.querySelector('[name=\"score_lines_2024\"]').value.trim() || null,
+                        "2023": majorDiv.querySelector('[name=\"score_lines_2023\"]').value.trim() || null
+                    },
+                    admission_info_23: majorDiv.querySelector('[name=\"admission_info_23\"]').value.trim(),
+                    admission_info_24: majorDiv.querySelector('[name=\"admission_info_24\"]').value.trim()
+                };
+                department.majors.push(major);
+            });
+            departmentsData.push(department);
+        });
+        return departmentsData;
+    }
+    
+    function parseEnrollment(value) {
+        const num = parseInt(value, 10);
+        if (!isNaN(num)) return num;
+        if (typeof value === 'string' && (value.toLowerCase() === '若干' || value.includes('见官网'))) return value;
+        return null; // 或 '未知'
+    }
+
+    // 函数：将收集到的数据更新到JSON文本框
+    function syncToJsonTextarea() {
+        const currentDynamicData = collectDataFromDynamicForms();
+        departmentsJsonTextarea.value = JSON.stringify(currentDynamicData, null, 2);
+        console.log("已同步动态表单数据到JSON编辑器。");
+    }
+    
+    if(syncDynamicToJsonBtn) {
+        syncDynamicToJsonBtn.addEventListener('click', syncToJsonTextarea);
+    }
+
+    // 函数：创建专业表单元素
+    function createMajorElement(majorData = {}) {
+        const majorNode = majorTemplate.content.cloneNode(true).firstElementChild;
+        majorNode.querySelector('[name=\"major_name\"]').value = majorData.major_name || '';
+        majorNode.querySelector('[name=\"major_code\"]').value = majorData.major_code || '';
+        majorNode.querySelector('[name=\"exam_subjects\"]').value = majorData.exam_subjects || '';
+        majorNode.querySelector('[name=\"retrial_subjects\"]').value = majorData.retrial_subjects || '';
+        majorNode.querySelector('[name=\"reference_books\"]').value = majorData.reference_books || '';
+        majorNode.querySelector('[name=\"enrollment_24\"]').value = majorData.enrollment_24 === null || majorData.enrollment_24 === undefined ? '' : majorData.enrollment_24;
+        majorNode.querySelector('[name=\"tuition_duration\"]').value = majorData.tuition_duration || '';
+        majorNode.querySelector('[name=\"score_lines_2024\"]').value = (majorData.score_lines && majorData.score_lines["2024"]) || '';
+        majorNode.querySelector('[name=\"score_lines_2023\"]').value = (majorData.score_lines && majorData.score_lines["2023"]) || '';
+        majorNode.querySelector('[name=\"admission_info_23\"]').value = majorData.admission_info_23 || '';
+        majorNode.querySelector('[name=\"admission_info_24\"]').value = majorData.admission_info_24 || '';
+
+        majorNode.querySelector('.remove-major-btn').addEventListener('click', function() {
+            majorNode.remove();
+        });
+        return majorNode;
+    }
+
+    // 函数：创建院系表单元素
+    function createDepartmentElement(departmentData = {}) {
+        const deptNode = departmentTemplate.content.cloneNode(true).firstElementChild;
+        deptNode.querySelector('.department-name-input').value = departmentData.department_name || '';
+        
+        const majorsListDiv = deptNode.querySelector('.majors-dynamic-list');
+        if (departmentData.majors && departmentData.majors.length > 0) {
+            departmentData.majors.forEach(major => {
+                majorsListDiv.appendChild(createMajorElement(major));
+            });
+        }
+
+        deptNode.querySelector('.remove-department-btn').addEventListener('click', function() {
+            if (confirm('确定要删除此院系及其下所有专业吗？')) {
+                deptNode.remove();
+            }
+        });
+
+        deptNode.querySelector('.add-major-btn').addEventListener('click', function() {
+            majorsListDiv.appendChild(createMajorElement());
+        });
+        return deptNode;
+    }
+
+    // 初始化：根据 initialDepartmentsData 渲染表单
+    function initializeDynamicForms() {
+        departmentsDynamicList.innerHTML = ''; // 清空现有内容
+        if (Array.isArray(initialDepartmentsData)) {
+            initialDepartmentsData.forEach(dept => {
+                departmentsDynamicList.appendChild(createDepartmentElement(dept));
+            });
+        }
+    }
+
+    if (addDepartmentBtn) {
+        addDepartmentBtn.addEventListener('click', function() {
+            departmentsDynamicList.appendChild(createDepartmentElement());
+        });
+    }
+
+    // 在表单提交前，将动态表单的数据同步到JSON文本框
+    if (mainForm) {
+        mainForm.addEventListener('submit', function(event) {
+            // 阻止默认提交，先同步，然后再以编程方式提交，或者允许其自然提交（如果同步是即时的）
+            // 为了简单起见，我们假设用户会记得点击"手动同步"或我们稍后添加自动同步
+            syncToJsonTextarea(); 
+            // 如果需要严格确保，可以在这里加一个小的延迟然后提交，或者取消事件然后手动提交
+            // event.preventDefault(); // 如果需要更多控制
+            // console.log("主表单提交前，已尝试同步动态表单数据。");
+            // mainForm.submit(); // 如果 preventDefault() 了
+        });
+    }
+
+    // 页面加载时初始化动态表单
+    initializeDynamicForms();
+
+});
+</script>
 {% endblock %} 
