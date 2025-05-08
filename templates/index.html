@@ -13,7 +13,7 @@
     <h1 class="mb-4 text-center">可视化数据面板</h1>
 -->
     <h1 class="mb-4 text-center">考研推荐系统</h1>
-    <div class="dashboard-grid d-flex">
+    <div class="dashboard-grid d-flex align-items-stretch">
         <!-- 第一列：国家线图表 -->
         <div class="left-column flex-shrink-0" style="min-width: 300px;">
             <div id="national-line-total" class="chart-container mb-3"></div>
@@ -25,7 +25,7 @@
         <div id="school-list-container" class="dashboard-schools-list flex-grow-1 mx-2 d-flex flex-column">
              <h4 class="text-center p-3 mb-0 border-bottom border-secondary flex-shrink-0">院校速览</h4>
              <div class="dashboard-schools-table-container flex-grow-1" style="overflow: auto; min-height: 0px;">
-                 <table class="table table-sm table-hover dashboard-schools-table resizable-table align-middle" style="table-layout: fixed; width: 100%;">
+                 <table class="table table-sm table-hover dashboard-schools-table resizable-table align-middle" style="table-layout: fixed; width: 100%; height: 100%; background-color: var(--card-bg);">
                      <thead>
                          <tr>
                              <th style="width: 200px; position: relative;">院校名称<div class="col-resizer"></div></th>
@@ -49,9 +49,9 @@
         <!-- 第三列：饼图和公告 -->
         <div class="right-column flex-shrink-0 d-flex flex-column align-items-center" style="min-width: 300px;">
             <div id="exam-type-pie" class="chart-container mb-3" style="width: 300px; max-width: 100%;"></div>
-            <div id="announcements" style="width: 300px; max-width: 100%;">
-             <h4 class="text-center p-3 mb-0 border-bottom border-secondary">最新公告</h4>
-            <ul id="announcement-list" class="list-group list-group-flush p-2">
+            <div id="announcements" class="d-flex flex-column flex-grow-1" style="width: 300px; max-width: 100%;">
+             <h4 class="text-center p-3 mb-0 border-bottom border-secondary flex-shrink-0">最新公告</h4>
+            <ul id="announcement-list" class="list-group list-group-flush flex-grow-1 overflow-auto">
                 <li class="list-group-item bg-transparent text-center p-5"><div class="spinner-border spinner-border-sm text-primary" role="status"><span class="visually-hidden">加载中...</span></div> 正在加载公告...</li>
             </ul>
         </div>

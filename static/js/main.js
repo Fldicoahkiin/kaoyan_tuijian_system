@@ -178,7 +178,7 @@ function renderDashboardSchoolPage(page) {
     }
     renderDashboardPagination();
     // 在渲染完分页 *之后* 尝试调整高度
-    setTimeout(adjustColumnHeights, 50); // 短暂延迟确保渲染完成
+    // setTimeout(adjustColumnHeights, 50); // 短暂延迟确保渲染完成
 }
 
 function renderDashboardPagination() {
@@ -516,7 +516,6 @@ function adjustColumnHeights() {
 
     console.log(`Adjusting heights: Max=${maxHeight}, Header=${headerHeight}, Pager=${paginationHeight}, Available=${availableHeight}, CalculatedTableHeight=${tableContainerHeight}`);
 
-    middleTableContainer.style.height = `${tableContainerHeight}px`;
     // 重新设置 flex-grow: 1 以防万一 height 被覆盖
     middleTableContainer.style.flexGrow = '1';
     middleTableContainer.style.overflowY = 'auto'; // 确保垂直滚动

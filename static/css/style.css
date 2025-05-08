@@ -637,7 +637,6 @@ a:hover {
 /* 仪表盘滚动列表 */
 .dashboard-schools-list .list-group, /* 保留旧的选择器以防万一 */
 .dashboard-schools-table-container { /* 新增表格容器样式 */
-    max-height: 500px; /* 稍微增加高度 */
     overflow-y: auto; /* 超出部分滚动 */
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
