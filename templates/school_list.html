@@ -16,11 +16,20 @@
     <form method="GET" action="{{ url_for('school_list') }}" class="mb-4 p-3 border rounded bg-light">
         <div class="row g-3 align-items-end">
             <div class="col-md-2">
-                <label for="region" class="form-label">省份/地区</label>
-                <select name="region" id="region" class="form-select">
+                <label for="province" class="form-label">省份</label>
+                <select name="province" id="province" class="form-select">
+                    <option value="">所有省份</option>
+                    {% for p in all_provinces %}
+                    <option value="{{ p }}" {% if current_province == p %}selected{% endif %}>{{ p }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="region_filter" class="form-label">A/B区</label>
+                <select name="region_filter" id="region_filter" class="form-select">
                     <option value="">所有地区</option>
-                    {% for p in provinces %}
-                    <option value="{{ p }}" {% if request.args.get('region') == p %}selected{% endif %}>{{ p }}</option>
+                    {% for r in all_regions %}
+                    <option value="{{ r }}" {% if current_region == r %}selected{% endif %}>{{ r }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -28,8 +37,8 @@
                 <label for="level" class="form-label">院校等级</label>
                 <select name="level" id="level" class="form-select">
                     <option value="">所有等级</option>
-                    {% for l in levels %}
-                    <option value="{{ l }}" {% if request.args.get('level') == l %}selected{% endif %}>{{ l }}</option>
+                    {% for l in all_levels %}
+                    <option value="{{ l }}" {% if current_level == l %}selected{% endif %}>{{ l }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -37,14 +46,14 @@
                 <label for="rank" class="form-label">计算机等级</label>
                 <select name="rank" id="rank" class="form-select">
                     <option value="">所有评级</option>
-                     {% for r in ranks %}
-                     <option value="{{ r }}" {% if request.args.get('rank') == r %}selected{% endif %}>{{ r }}</option>
+                     {% for r in all_ranks %}
+                     <option value="{{ r }}" {% if current_rank == r %}selected{% endif %}>{{ r }}</option>
                      {% endfor %}
                 </select>
             </div>
-            <div class="col-md-3">
-                <label for="name" class="form-label">院校名称</label>
-                <input type="text" name="name" id="name" class="form-control" placeholder="输入关键词..." value="{{ request.args.get('name', '') }}">
+            <div class="col-md-2">
+                <label for="q" class="form-label">院校名称</label>
+                <input type="text" name="q" id="q" class="form-control" placeholder="输入关键词..." value="{{ search_query }}">
             </div>
             <div class="col-md-auto">
                 <button type="submit" class="btn btn-primary w-100"><i class="fas fa-filter"></i> 筛选</button>
@@ -64,8 +73,10 @@
                     <th><i class="fas fa-school"></i> 院校名称</th>
                     <th><i class="fas fa-medal"></i> 院校等级</th>
                     <th><i class="fas fa-laptop-code"></i> 计算机等级</th>
-                    <th><i class="fas fa-users"></i> <a href="{{ url_for('school_list', region=request.args.get('region'), level=request.args.get('level'), name=request.args.get('name'), rank=request.args.get('rank'), sort='enrollment' if request.args.get('sort') != 'enrollment' else '-enrollment') }}">24年招生人数 <i class="fas fa-sort"></i></a></th>
-                    <th><i class="fas fa-heart"></i> <a href="{{ url_for('school_list', region=request.args.get('region'), level=request.args.get('level'), name=request.args.get('name'), rank=request.args.get('rank'), sort='favorites' if request.args.get('sort') != 'favorites' else '-favorites') }}">收藏人数 <i class="fas fa-sort"></i></a></th>
+                    <th><i class="fas fa-map-marker-alt"></i> 省份</th>
+                    <th><i class="fas fa-map"></i> 地区</th>
+                    <th><i class="fas fa-users"></i> <a href="{{ url_for('school_list', province=current_province, level=current_level, q=search_query, rank=current_rank, region_filter=current_region, sort='enrollment' if current_sort != 'enrollment' else '-enrollment') }}">24年招生人数 <i class="fas fa-sort"></i></a></th>
+                    <th><i class="fas fa-heart"></i> <a href="{{ url_for('school_list', province=current_province, level=current_level, q=search_query, rank=current_rank, region_filter=current_region, sort='favorites' if current_sort != 'favorites' else '-favorites') }}">收藏人数 <i class="fas fa-sort"></i></a></th>
                     <th>操作</th>
                 </tr>
             </thead>
@@ -73,27 +84,28 @@
                 {% if schools %}
                     {% for school in schools %}
                     <tr>
-                        <td>{{ loop.index + (pagination.page - 1) * pagination.per_page }}</td>
+                        <td>{{ loop.index + (page - 1) * 20 }}</td>
                         <td><a href="{{ url_for('school_detail', school_id=school.id) }}">{{ school.name }}</a></td>
-                        <td><span class="badge {% if school.level == '985' %}bg-danger{% elif school.level == '211' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">{{ school.level or '未知' }}</span></td>
+                        <td><span class="badge {% if school.level == '985' %}bg-danger{% elif school.level == '211' %}bg-warning text-dark{% elif school.level == '双一流' %}bg-success{% else %}bg-secondary{% endif %}">{{ school.level or '未知' }}</span></td>
                         <td>{{ school.computer_rank or '-' }}</td>
-                        <td>{{ school.enrollment_24 or '-' }}</td>
-                        <td>{{ school.favorites_count }}</td>
+                        <td>{{ school.province or '未知' }}</td>
+                        <td><span class="badge {% if school.region == 'A区' %}bg-primary{% elif school.region == 'B区' %}bg-info{% else %}bg-secondary{% endif %}">{{ school.region or '未知' }}</span></td>
+                        <td>{{ school.enrollment_24_school_total or '-' }}</td>
+                        <td>{{ school.favorites_count or 0 }}</td>
                         <td>
                             <a href="{{ url_for('school_detail', school_id=school.id) }}" class="btn btn-sm btn-info"><i class="fas fa-eye"></i> 查看详情</a>
                             {% if 'username' in session %}
-                                <form action="{{ url_for('toggle_favorite', school_id=school.id) }}" method="POST" style="display: inline;" class="ms-2">
-                                    <button type="submit" class="btn btn-sm {% if school.id in current_user_favorites %}btn-danger{% else %}btn-outline-danger{% endif %}">
-                                        <i class="fas fa-heart"></i> {% if school.id in current_user_favorites %}取消收藏{% else %}收藏{% endif %}
-                                    </button>
-                                </form>
+                                <button type="button" class="btn btn-sm {% if school.is_favorite %}btn-danger{% else %}btn-outline-danger{% endif %} favorite-btn" data-school-id="{{ school.id }}">
+                                    <i class="{% if school.is_favorite %}fas{% else %}far{% endif %} fa-heart"></i> 
+                                    <span>{% if school.is_favorite %}取消收藏{% else %}收藏{% endif %}</span>
+                                </button>
                             {% endif %}
                         </td>
                     </tr>
                     {% endfor %}
                 {% else %}
                     <tr>
-                        <td colspan="7" class="text-center">没有找到符合条件的院校。</td>
+                        <td colspan="9" class="text-center">没有找到符合条件的院校。</td>
                     </tr>
                 {% endif %}
             </tbody>
@@ -101,25 +113,99 @@
     </div>
 
     <!-- 分页 -->
-    {% if pagination and pagination.total_pages > 1 %}
+    {% if total_pages > 1 %}
     <nav aria-label="Page navigation">
         <ul class="pagination justify-content-center">
             <!-- 上一页 -->
-            <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
-                <a class="page-link" href="{{ url_for('school_list', page=pagination.prev_num, **request.args) }}">&laquo;</a>
+            <li class="page-item {% if page == 1 %}disabled{% endif %}">
+                <a class="page-link" href="{{ url_for('school_list', page=page-1, province=current_province, level=current_level, q=search_query, rank=current_rank, region_filter=current_region, sort=current_sort) }}">&laquo;</a>
             </li>
             <!-- 页码 -->
-            {% for page_num in range(1, pagination.total_pages + 1) %}
-                <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
-                    <a class="page-link" href="{{ url_for('school_list', page=page_num, **request.args) }}">{{ page_num }}</a>
+            {% set show_pages = 5 %}
+            {% set half_pages = (show_pages // 2) %}
+            {% set start_page = [1, page - half_pages] | max %}
+            {% set end_page = [total_pages, start_page + show_pages - 1] | min %}
+            {% set start_page = [1, end_page - show_pages + 1] | max %}
+            
+            {% if start_page > 1 %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('school_list', page=1, province=current_province, level=current_level, q=search_query, rank=current_rank, region_filter=current_region, sort=current_sort) }}">1</a>
+                </li>
+                {% if start_page > 2 %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+            {% endif %}
+            
+            {% for p in range(start_page, end_page + 1) %}
+                <li class="page-item {% if p == page %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('school_list', page=p, province=current_province, level=current_level, q=search_query, rank=current_rank, region_filter=current_region, sort=current_sort) }}">{{ p }}</a>
                 </li>
             {% endfor %}
+            
+            {% if end_page < total_pages %}
+                {% if end_page < total_pages - 1 %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('school_list', page=total_pages, province=current_province, level=current_level, q=search_query, rank=current_rank, region_filter=current_region, sort=current_sort) }}">{{ total_pages }}</a>
+                </li>
+            {% endif %}
+            
             <!-- 下一页 -->
-            <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
-                <a class="page-link" href="{{ url_for('school_list', page=pagination.next_num, **request.args) }}">&raquo;</a>
+            <li class="page-item {% if page == total_pages %}disabled{% endif %}">
+                <a class="page-link" href="{{ url_for('school_list', page=page+1, province=current_province, level=current_level, q=search_query, rank=current_rank, region_filter=current_region, sort=current_sort) }}">&raquo;</a>
             </li>
         </ul>
     </nav>
     {% endif %}
 </div> {# 结束 .container #}
+
+{% block scripts %}
+{{ super() }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 收藏按钮处理
+    const favoriteButtons = document.querySelectorAll('.favorite-btn');
+    favoriteButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const schoolId = this.dataset.schoolId;
+            const isFavorited = this.classList.contains('btn-danger');
+            const url = `/api/school/favorite/${schoolId}`;
+            const method = isFavorited ? 'DELETE' : 'POST';
+            
+            fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    if (data.action === 'favorited' || data.action === 'already_favorited') {
+                        this.classList.remove('btn-outline-danger');
+                        this.classList.add('btn-danger');
+                        this.querySelector('i').classList.remove('far');
+                        this.querySelector('i').classList.add('fas');
+                        this.querySelector('span').textContent = ' 取消收藏';
+                    } else {
+                        this.classList.remove('btn-danger');
+                        this.classList.add('btn-outline-danger');
+                        this.querySelector('i').classList.remove('fas');
+                        this.querySelector('i').classList.add('far');
+                        this.querySelector('span').textContent = ' 收藏';
+                    }
+                } else if (data.redirect) {
+                    window.location.href = data.redirect;
+                } else {
+                    alert('操作失败: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('发生错误，请稍后重试。');
+            });
+        });
+    });
+});
+</script>
+{% endblock %}
 {% endblock %} 

@@ -5,11 +5,12 @@ import re # 用于后续的正则提取
 
 # 定义文件路径
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) # 获取项目根目录
-EXCEL_PATH = os.path.join(BASE_DIR, "择校文档.xlsx")
+# EXCEL_PATH = os.path.join(BASE_DIR, "择校文档.xlsx") # No longer primary input
 OUTPUT_JSON_PATH = os.path.join(BASE_DIR, "data", "schools.json")
 DATA_DIR = os.path.join(BASE_DIR, "data")
+CSV_SOURCE_DIR = BASE_DIR # Assuming CSVs are in the root project directory for now
 
-# --- 省份和城市数据 ---
+# --- 省份数据 (用于 extract_province_smart IF it needs to validate provinces) ---
 VALID_PROVINCES = [
     "北京", "天津", "河北", "山西", "内蒙古", "辽宁", "吉林", "黑龙江", 
     "上海", "江苏", "浙江", "安徽", "福建", "江西", "山东", "河南", 
@@ -30,7 +31,7 @@ CITY_TO_PROVINCE = {
     "合肥": "安徽", "淮南": "安徽", "马鞍山": "安徽",
     "南京": "江苏", "徐州": "江苏", "镇江": "江苏", "无锡": "江苏", "南通": "江苏",
     "杭州": "浙江", "金华": "浙江",
-    "福州": "福建", "厦门": "福建", "泉州": "福建", "汕头": "福建",
+    "福州": "福建", "厦门": "福建", "泉州": "福建", # Removed "汕头": "福建", as Shantou is in Guangdong
     "南昌": "江西",
     "武汉": "湖北", "宜昌": "湖北",
     "长沙": "湖南", "湘潭": "湖南",
@@ -56,377 +57,358 @@ def extract_province_from_string(text):
     """尝试从文本中提取第一个出现的有效省份名称。"""
     if not isinstance(text, str) or not text:
         return None
-    # 优先匹配较长的省份名称，例如 "黑龙江" 优先于 "江"
     sorted_provinces = sorted(VALID_PROVINCES, key=len, reverse=True)
     for province in sorted_provinces:
         if province in text:
             return province
     return None
 
-def extract_province_smart(row, school_name_raw, intro_raw, sheet_name_for_province_extraction):
-    """智能提取省份，按优先级：列 -> 名称 -> 简介 -> 工作表名。"""
+def extract_province_smart(row, school_name_raw, intro_raw, filename_hint_province=None):
+    """智能提取省份，按优先级：列 -> 文件名提示 -> 名称 -> 简介 -> 市名映射。"""
     school_name = str(school_name_raw) if pd.notna(school_name_raw) else ''
     intro = str(intro_raw) if pd.notna(intro_raw) else ''
     
-    # 1. 尝试从 '省份' 列获取并验证
-    province_from_col = row.get('省份')
+    # 1. Check explicit '省份' column first
+    province_from_col = get_first_value_from_row(row, '省份') # Use helper
     if pd.notna(province_from_col):
         province_str = str(province_from_col).strip()
-        if is_valid_province(province_str):
-            # print(f"    提取自列: {province_str}")
-            return province_str
+        if is_valid_province(province_str): return province_str
 
-    # 2. 尝试从学校名称提取
-    # 2.1 查找括号内的城市/省份
+    # 2. Check filename hint (if provided and valid)
+    # Special case: ignore hint for "东三省" as it contains multiple provinces
+    if filename_hint_province and filename_hint_province != "东三省" and is_valid_province(filename_hint_province):
+        return filename_hint_province
+
+    # 3. Check school name for location in brackets or prefix
     match = re.search(r'[（(](.+?)[)）]', school_name)
     if match:
         location = match.group(1).strip()
-        if is_valid_province(location):
-            # print(f"    提取自名称(括号内省份): {location}")
-            return location
-        if location in CITY_TO_PROVINCE:
-            province_mapped = CITY_TO_PROVINCE[location]
-            # print(f"    提取自名称(括号内城市 {location}): {province_mapped}")
-            return province_mapped
-
-    # 2.2 检查学校名称是否以已知城市开头
+        if is_valid_province(location): return location
+        if location in CITY_TO_PROVINCE: return CITY_TO_PROVINCE[location]
     for city, province_of_city in CITY_TO_PROVINCE.items():
-        if school_name.startswith(city):
-            # print(f"    提取自名称(城市前缀 {city}): {province_of_city}")
-            return province_of_city
+        if school_name.startswith(city): return province_of_city
 
-    # 2.3 直接在名称中查找省份关键字
+    # 4. Extract from school name string
     province_from_name = extract_province_from_string(school_name)
-    if province_from_name:
-        # print(f"    提取自名称(关键字): {province_from_name}")
-        return province_from_name
+    if province_from_name: return province_from_name
         
-    # 3. 尝试从简介提取
+    # 5. Extract from intro string
     province_from_intro = extract_province_from_string(intro)
-    if province_from_intro:
-        # print(f"    提取自简介: {province_from_intro}")
-        return province_from_intro
+    if province_from_intro: return province_from_intro
+    
+    # 6. Last resort: check if filename hint matches a known city
+    if filename_hint_province and filename_hint_province in CITY_TO_PROVINCE:
+        return CITY_TO_PROVINCE[filename_hint_province]
 
-    # 4. 尝试使用工作表名称 (作为较低优先级)
-    if sheet_name_for_province_extraction and is_valid_province(str(sheet_name_for_province_extraction).strip()):
-        # print(f"    提取自工作表名称: {str(sheet_name_for_province_extraction).strip()}")
-        return str(sheet_name_for_province_extraction).strip()
-
-    # 5. 无法提取，返回 None
-    # print(f"    未能提取省份 for {school_name} from any source.")
-    return None
+    return None # Return None if no province found
 
 def clean_column_names(df):
-    """清理DataFrame的列名，去除首尾空格。"""
     df.columns = df.columns.str.strip()
     return df
 
-def extract_school_level(name_str):
-    """尝试从院校名称字符串中提取等级信息。"""
+def extract_school_level(name_str, row_level_val):
+    """从行数据或名称中提取院校等级"""
+    if pd.notna(row_level_val):
+        level_str = str(row_level_val).strip()
+        if level_str in ["985", "211", "双一流", "一般"]:
+            return level_str
+            
     if isinstance(name_str, str):
-        if "985" in name_str:
-            return "985"
-        if "211" in name_str:
-            return "211"
-        # 可以根据需要添加更多规则，例如 "双一流"
-    return "一般" # 默认等级
+        if "985" in name_str: return "985"
+        if "211" in name_str: return "211"
+        if "双一流" in name_str: return "双一流"
+    return "一般"
 
-# 新增辅助函数：动态查找表头行
 def find_header_row(df_peek, keywords):
-    """
-    分析DataFrame的前几行，找到最可能包含表头关键字的行。
-    :param df_peek: DataFrame，通常是工作表的前N行，header=None读取。
-    :param keywords: list of str，用于匹配表头的关键字（不区分大小写）。
-    :return: 0-based index of the best header row, or -1 if no suitable row found.
-    """
     best_header_index = -1
     max_matches = 0
-    
-    if df_peek.empty:
-        return -1
-
-    # 至少需要匹配到的关键字数量
+    if df_peek.empty: return -1
     MIN_KEYWORD_MATCHES = 2 
-
-    for i in range(len(df_peek)):
+    for i in range(min(len(df_peek), 15)): # Limit scan to first 15 rows
         current_matches = 0
         try:
-            # 将行内容转换为小写字符串列表进行比较
             row_values = [str(cell).strip().lower() for cell in df_peek.iloc[i].tolist()]
-        except Exception:
-            # 如果某行无法转换（例如完全是奇怪的类型），跳过这一行
-            continue
-            
+        except Exception: continue
         for keyword in keywords:
-            # 检查关键字是否作为子字符串存在于任何单元格值中
             if any(keyword.lower() in cell_value for cell_value in row_values):
                 current_matches += 1
-        
         if current_matches > max_matches and current_matches >= MIN_KEYWORD_MATCHES:
             max_matches = current_matches
             best_header_index = i
-            
     return best_header_index
 
-def process_excel_data(excel_path, output_json_path):
-    """读取Excel文件，处理数据，并输出为JSON。"""
+def determine_region_from_filename_hint(hint_name):
+    """根据工作表名判断院校所属区域（A区或B区）
+    Excel工作表名为"B区"的学校归为B区，其他均为A区
+    """
+    if isinstance(hint_name, str) and "B区" in hint_name:
+        return "B区"
+    return "A区"
+
+def get_province_hint_from_filename(hint_name):
+    """
+    根据从文件名提取的提示名称（如 "安徽", "福建", "Sheet1"）判断是否为有效省份提示。
+    排除 "Sheet1", "B区", "东三省" 等特殊提示。
+    """
+    if hint_name not in ["Sheet1", "B区", "东三省"]:
+        # 直接检查传入的 hint_name 是否是有效省份
+        if is_valid_province(hint_name):
+            return hint_name
+    return None # 如果是特殊提示或无效省份名，则返回 None
+
+def get_multiline_str(value):
+    if isinstance(value, pd.Series):
+        if not value.empty:
+            value = value.iloc[0] # 如果是Series，取第一个元素
+    else:
+            return None
+    if pd.isna(value): return None
+    return str(value).strip()
+
+def get_first_value_from_row(row, primary_col_name, secondary_col_name=None):
+    """安全地从Pandas行中获取值，处理潜在的Series并获取第一个元素。"""
+    val_primary = row.get(primary_col_name)
+    
+    primary_is_effectively_na = False
+    if isinstance(val_primary, pd.Series):
+        # 如果是Series，则当它为空，或其第一个元素为NA时，我们认为它是缺失的
+        if val_primary.empty or pd.isna(val_primary.iloc[0]):
+            primary_is_effectively_na = True
+        # else: val_primary is a Series with a non-NA first element, so we'll use it.
+    elif pd.isna(val_primary): # 如果val_primary是标量NA或None
+        primary_is_effectively_na = True
+
+    chosen_val = val_primary
+    if primary_is_effectively_na and secondary_col_name:
+        chosen_val = row.get(secondary_col_name) # 尝试使用备用列
+
+    # 现在处理最终选择的值 (chosen_val)
+    if isinstance(chosen_val, pd.Series):
+        return chosen_val.iloc[0] if not chosen_val.empty else None
+            
+    return chosen_val # 如果 chosen_val 不是系列 (即它是标量、None 或 pd.NA), get_multiline_str 会处理 pd.isna()
+
+def process_single_csv(csv_path, filename_hint, all_schools_data):
+    print(f"  正在处理CSV文件: {os.path.basename(csv_path)} (Hint: {filename_hint})")
+    current_sheet_region = determine_region_from_filename_hint(filename_hint)
+    filename_province_hint = get_province_hint_from_filename(filename_hint) # Get hint
+    
+    print(f"    文件 \'{os.path.basename(csv_path)}\' 被识别为区域: {current_sheet_region}, 省份提示: {filename_province_hint}")
+
     try:
-        xls = pd.ExcelFile(excel_path)
-    except FileNotFoundError:
-        print(f"错误: Excel 文件未找到于 '{excel_path}'")
-        return
-    except Exception as e:
-        print(f"读取 Excel 文件时出错: {e}")
-        return
+        # Try to detect header dynamically, similar to Excel processing
+        df_peek = pd.read_csv(csv_path, nrows=20, header=None, on_bad_lines='skip', encoding='utf-8')
+        header_keywords = ['学校', '代码', '专业', '院系', '科目', '名称', '招生', '录取', '复试', '考试', '省份', '简介', '等级', '评级', '院校']
+        identified_header_idx = find_header_row(df_peek, header_keywords)
 
-    all_schools_data = {}
-    # first_sheet_processed = False # 不再需要这个标志位
-
-    print("开始处理 Excel 文件...")
-    # 定义用于表头检测的关键字
-    header_keywords = ['学校', '代码', '专业', '院系', '科目', '名称', '招生', '录取', '复试', '考试']
-
-
-    for sheet_name in xls.sheet_names:
-        print(f"  正在处理工作表: {sheet_name}...")
-        actual_major_code_col = None # 用于存储实际的专业代码列名
-        actual_school_name_col = None # 用于存储实际的学校名称列名
+        if identified_header_idx != -1:
+            print(f"    文件 \'{os.path.basename(csv_path)}\': 动态识别到表头在第 {identified_header_idx + 1} 行。")
+            df = pd.read_csv(csv_path, header=identified_header_idx, on_bad_lines='skip', encoding='utf-8')
+        else:
+            print(f"    文件 \'{os.path.basename(csv_path)}\': 未能动态识别表头，尝试使用默认表头行 1 (0-indexed 0)。")
+            df = pd.read_csv(csv_path, header=0, on_bad_lines='skip', encoding='utf-8')
         
+        df = clean_column_names(df)
+        df.columns = [re.sub(r'\\.\\d+$', '', col).strip() for col in df.columns] # Remove .1 suffixes
+        print(f"    文件 \'{os.path.basename(csv_path)}\' 清理后的列名: {list(df.columns)}")
+
+    except Exception as e:
+        print(f"读取或预处理 CSV 文件 \'{os.path.basename(csv_path)}\' 时出错: {e}")
+        return
+
+    # --- Define possible column names --- 
+    school_name_cols = ['院校名称', '院校', '学校名称', '学校']
+    intro_cols = ['简介', '院校简介']
+    level_cols = ['院校等级', '等级']
+    rank_cols = ['计算机等级', '计算机评级', '学科评估', '评估等级']
+    dept_cols = ['招生院系', '院系名称', '院系', '学院']
+    major_code_cols = ['专业代码', '代码', '专业代码及名称'] # Priority order matters if combined
+    major_name_cols = ['专业名称', '专业方向']
+    exam_subj_cols = ['初试科目', '考试科目']
+    ref_book_cols = ['参考书', '参考书目']
+    retrial_subj_cols = ['复试科目']
+    enroll_24_cols = ['24招生人数', '招生人数', '24招生', '招生']
+    tuition_cols = ['学费学制', '学制与学费']
+    score_24_cols = ['24复试线', '24分数线']
+    score_23_cols = ['23复试线', '23分数线']
+    adm_info_23_cols = ['23拟录取情况', '23录取']
+    adm_info_24_cols = ['24拟录取情况', '24录取', '24复试名单', '24拟录取']
+
+    # --- Find actual column names used in this CSV --- 
+    actual_school_name_col = next((col for col in school_name_cols if col in df.columns), None)
+    actual_major_code_col = next((col for col in major_code_cols if col in df.columns), None)
+
+    # Heuristic fallbacks if standard names aren't found
+    if actual_school_name_col is None:
+        actual_school_name_col = next((col for col in df.columns if '校' in col or '大学' in col or '学院' in col), None)
+        if actual_school_name_col: print(f"    启发式地选择列 '{actual_school_name_col}' 作为学校名称列。")
+    if actual_major_code_col is None:
+        actual_major_code_col = next((col for col in df.columns if '代码' in col and '学校代码' not in col and '院校代码' not in col), None)
+        if actual_major_code_col: print(f"    启发式地选择列 '{actual_major_code_col}' 作为专业代码列。")
+
+    if not actual_school_name_col: print(f"    严重警告: 文件 \'{os.path.basename(csv_path)}\' 中未找到学校名称列。跳过。"); return
+    if not actual_major_code_col: print(f"    警告: 文件 \'{os.path.basename(csv_path)}\' 中未找到专业代码列。跳过。"); return
+    print(f"    使用 '{actual_school_name_col}' 作为学校名称列, '{actual_major_code_col}' 作为专业代码列。")
+
+    # --- Preprocessing --- 
+    df[actual_school_name_col] = df[actual_school_name_col].ffill()
+    df.dropna(subset=[actual_major_code_col], how='all', inplace=True)
+    df = df[df[actual_major_code_col].astype(str).str.match(r'^\s*\S+.*')].copy() # Keep if major code not just whitespace
+    df.reset_index(drop=True, inplace=True)
+    df.dropna(how='all', inplace=True)
+    if df.empty: print(f"    文件 \'{os.path.basename(csv_path)}\' 数据为空或无效，跳过。"); return
+
+    # --- Row-by-row processing --- 
+    for index, row in df.iterrows():
         try:
-            # 1. 动态表头检测
-            df_peek = pd.read_excel(xls, sheet_name=sheet_name, nrows=15, header=None)
-            identified_header_idx = find_header_row(df_peek, header_keywords)
+            # --- Extract School Info (once per school) ---
+            school_name_raw = row.get(actual_school_name_col)
+            if pd.isna(school_name_raw) or not str(school_name_raw).strip(): continue
+            school_name_cleaned = str(school_name_raw).split('\n')[0].strip()
 
-            if identified_header_idx != -1:
-                print(f"    工作表 '{sheet_name}': 动态识别到表头可能在第 {identified_header_idx + 1} 行。")
-                df = pd.read_excel(xls, sheet_name=sheet_name, header=identified_header_idx)
-            else:
-                print(f"    工作表 '{sheet_name}': 未能动态识别表头，尝试使用默认表头行 5 (0-indexed 4)。")
-                # 尝试使用之前的默认值 header=4 (即Excel中的第5行)
-                df = pd.read_excel(xls, sheet_name=sheet_name, header=4)
-            
-            df = clean_column_names(df) # 清理列名中的空格
-            # 重命名列名中的 '.1' 等后缀 (例如 '23拟录取情况.1'), 并再次去除可能产生的空格
-            df.columns = [re.sub(r'\.\d+$', '', col).strip() for col in df.columns]
-            
-            print(f"    工作表 '{sheet_name}' 清理后的列名: {list(df.columns)}")
-
-            # 2. 定位 '专业代码' 列
-            possible_major_code_names = ['专业代码'] # 可以扩展更多可能的名称
-            for name_variant in possible_major_code_names:
-                if name_variant in df.columns:
-                    actual_major_code_col = name_variant
-                    break
-            
-            if actual_major_code_col is None:
-                print(f"    警告: 工作表 '{sheet_name}' 中未找到 '专业代码' 列。跳过此工作表。")
-                continue
-            else:
-                print(f"    使用 '{actual_major_code_col}' 作为专业代码列。")
-
-            # 2.a 定位学校名称列
-            possible_school_name_cols = ['学校名称', '院校名称', '院校'] 
-            for name_variant in possible_school_name_cols:
-                if name_variant in df.columns:
-                    actual_school_name_col = name_variant
-                    print(f"    使用 '{actual_school_name_col}' 作为学校名称列。")
-                    break
-            
-            if actual_school_name_col is None:
-                print(f"    严重警告: 工作表 '{sheet_name}' 中未找到任何可识别的学校名称列 (尝试过: {possible_school_name_cols})。清理后的列为: {list(df.columns)}。跳过此工作表。")
-                continue
-
-            # 2.b 向前填充学校名称列以处理合并单元格
-            # print(f"    对学校名称列 '{actual_school_name_col}' 进行向前填充 (ffill)...") # 可以取消注释以获取更详细的日志
-            df[actual_school_name_col] = df[actual_school_name_col].ffill()
-            # print(f"    学校名称列 '{actual_school_name_col}' 向前填充完成。")
-
-
-            # 删除专业代码列完全为空的行
-            df.dropna(subset=[actual_major_code_col], how='all', inplace=True)
-            df.reset_index(drop=True, inplace=True) # 重置索引
-
-            # --- 诊断代码：打印第一个工作表的列名 ---
-            # if not first_sheet_processed:
-            #     print(f"    检测到 '{sheet_name}' 的列名: {list(df.columns)}")
-            #     first_sheet_processed = True
-            # --- 诊断代码结束 ---
-
-            # 删除专业代码列完全为空的行，这些通常是无效数据或分隔行
-            # 这部分逻辑已上移并使用了 actual_major_code_col
-
-            # 重命名列名中的 '.1' 等后缀 (例如 '23拟录取情况.1')
-            # 这部分逻辑已上移
-
-            # --- 数据清洗和转换 ---
-            # 1. 删除完全为空的行
-            df.dropna(how='all', inplace=True)
-            if df.empty:
-                print(f"    工作表 '{sheet_name}' 为空或只包含空行，跳过。")
-                continue
-
-            # 2. 处理每一行数据
-            for index, row in df.iterrows():
-                school_name_raw = row.get(actual_school_name_col) # 使用 ffill 处理后的学校名称列
-                intro_raw = row.get('简介')
-                # province_col_raw = row.get('省份') # 获取省份列原始值 (暂时不修改省份提取逻辑)
-
-                # 处理学校名称合并单元格 - ffill 已处理，简化此部分
-                # current_school_name_raw = school_name_raw
-                # if pd.isna(current_school_name_raw) and index > 0:
-                #     prev_raw_name = df.loc[index-1].get(actual_school_name_col) # 使用实际学校名称列
-                #     current_school_name_raw = prev_raw_name if pd.notna(prev_raw_name) else None
-
-                if pd.isna(school_name_raw): # 直接检查 ffill后的值
-                     print(f"    跳过行 (原始Excel行号未知，DataFrame index {index}): 学校名称在列 '{actual_school_name_col}' 中为空或无效。") 
-                     continue
+            if school_name_cleaned not in all_schools_data:
+                intro_raw = get_first_value_from_row(row, intro_cols[0], intro_cols[1] if len(intro_cols)>1 else None)
+                level_val = get_first_value_from_row(row, level_cols[0], level_cols[1] if len(level_cols)>1 else None)
+                province = extract_province_smart(row, school_name_cleaned, intro_raw, filename_province_hint)
                 
-                current_school_name_raw = school_name_raw # 确保 current_school_name_raw 被赋值
+                rank_val = get_first_value_from_row(row, rank_cols[0], rank_cols[1]) or \
+                           get_first_value_from_row(row, rank_cols[2] if len(rank_cols)>2 else None, rank_cols[3] if len(rank_cols)>3 else None)
+                computer_rank_cleaned = None
+                if pd.notna(rank_val):
+                    rank_str = str(rank_val).strip()
+                    rank_str = re.sub(r"^(第四轮评级：|学科评估：|评估等级：|计算机等级：|计算机评级：)", "", rank_str, flags=re.IGNORECASE).strip()
+                    computer_rank_cleaned = rank_str
 
-                school_name_cleaned = str(current_school_name_raw).split('\\n')[0].strip()
-                school_level = extract_school_level(str(current_school_name_raw))
-
-                province = extract_province_smart(row, current_school_name_raw, intro_raw, sheet_name) # 传入 sheet_name
-
-                major_code_raw = row.get(actual_major_code_col, '') # 使用实际识别的专业代码列名
-                major_code_str = str(major_code_raw).strip() if pd.notna(major_code_raw) else ''
-                major_name = row.get('专业名称', '').strip() if pd.notna(row.get('专业名称')) else ''
-
-                # 清理学校名称，去除可能存在的换行符和等级信息
-                # school_name_cleaned = str(school_name_cleaned).split('\\n')[0].strip() # 已在上文处理
-                # school_level = extract_school_level(str(school_name_cleaned)) # 已在上文处理
-
-                if school_name_cleaned not in all_schools_data:
-                    all_schools_data[school_name_cleaned] = {
-                        "id": school_name_cleaned, # 使用清理后的名称作为ID
-                        "name": school_name_cleaned,
-                        "level": school_level,
-                        "province": province if province else "未知省份", # 使用提取到的省份, 确保不是 None
-                        "intro": str(intro_raw).strip() if pd.notna(intro_raw) else None,
-                        "computer_rank": None, # 初始化，将在下面填充
-                        "self_vs_408": "待判断", # 需要逻辑来判断是自命题还是408
-                        "departments": {}, # 使用字典存储院系，方便合并专业, key为院系名称
-                        "favorites_count": 0
-                    }
-                
-                # 填充或更新 computer_rank (兼容 '计算机等级' 和 '计算机评级')
-                computer_rank_val = row.get('计算机等级') or row.get('计算机评级')
-                if pd.notna(computer_rank_val):
-                    all_schools_data[school_name_cleaned]['computer_rank'] = str(computer_rank_val).strip()
-                elif all_schools_data[school_name_cleaned]['computer_rank'] is None: # 如果之前没有设置过，则保持为 None
-                    all_schools_data[school_name_cleaned]['computer_rank'] = None
-                    
-                # 获取或创建院系信息
-                department_name = row.get('招生院系', '未知院系')
-                if pd.isna(department_name): department_name = '未知院系'
-
-                school_entry = all_schools_data[school_name_cleaned]
-                if department_name not in school_entry['departments']:
-                     school_entry['departments'][department_name] = {
-                         "department_name": department_name,
-                         "majors": [] # 专业列表
-                     }
-
-                # 提取专业信息
-                if not major_code_str: # 专业代码是核心信息，如果为空字符串 (之前是 pd.isna(major_code_str) )
-                    # print(f"    跳过专业：专业代码为空。学校: {school_name_cleaned}, 院系: {department_name}")
-                    continue
-
-                # 处理多行文本字段
-                def get_multiline_str(value):
-                    # 检查输入是否为 Series，如果是，取第一个元素
-                    if isinstance(value, pd.Series):
-                        value = value.iloc[0] if not value.empty else None
-                    return str(value).replace('\r\n', '\n').strip() if not pd.isna(value) else None
-
-                # 明确处理可能重复的列，优先获取第一个
-                admission_23 = row.get('23拟录取情况')
-                admission_24 = row.get('24拟录取情况') or row.get('24拟录取名单') or row.get('24复试名单')
-
-                major_info = {
-                    "major_code": major_code_str,
-                    "major_name": major_name,
-                    "exam_subjects": get_multiline_str(row.get('初试科目')),
-                    "reference_books": get_multiline_str(row.get('参考书')),
-                    "retrial_subjects": get_multiline_str(row.get('复试科目')),
-                    "enrollment_24": pd.to_numeric(row.get('24招生人数'), errors='coerce'),
-                    "tuition_duration": get_multiline_str(row.get('学费学制')),
-                    "score_lines": {
-                        "2024": get_multiline_str(row.get('24复试线')),
-                        "2023": get_multiline_str(row.get('23复试线'))
-                    },
-                    "admission_info_23": get_multiline_str(admission_23),
-                    "admission_info_24": get_multiline_str(admission_24)
+                all_schools_data[school_name_cleaned] = {
+                    "id": school_name_cleaned, "name": school_name_cleaned,
+                    "level": extract_school_level(school_name_cleaned, level_val),
+                    "province": province if province else "未知省份",
+                    "region": current_sheet_region,
+                    "intro": get_multiline_str(intro_raw),
+                    "computer_rank": computer_rank_cleaned,
+                    "departments": {},
+                    "enrollment_24_school_total": "未知",
                 }
+            
+            school_entry = all_schools_data[school_name_cleaned]
 
-                # 专业的专业名称提取逻辑
-                exam_subjects_str = str(major_info['exam_subjects'])
-                code_str = major_info['major_code']
-                name_str = major_info['major_name']
-                
-                if '计算机科学与技术' in exam_subjects_str or ('081200' in code_str and '计算机科学与技术' not in code_str):
-                    major_info['major_name'] = '计算机科学与技术'
-                elif '软件工程' in exam_subjects_str or ('083500' in code_str or '085405' in code_str) and '软件工程' not in code_str:
-                    major_info['major_name'] = '软件工程'
-                elif '计算机技术' in exam_subjects_str or ('085404' in code_str or '085400' in code_str) and '计算机技术' not in code_str:
-                    major_info['major_name'] = '计算机技术'
-                elif '人工智能' in exam_subjects_str or ('085410' in code_str) and '人工智能' not in code_str:
-                    major_info['major_name'] = '人工智能'
-                elif '大数据技术与工程' in exam_subjects_str or ('085411' in code_str) and '大数据技术与工程' not in code_str:
-                    major_info['major_name'] = '大数据技术与工程'
-                elif '网络空间安全' in exam_subjects_str or ('083900' in code_str) and '网络空间安全' not in code_str:
-                    major_info['major_name'] = '网络空间安全'
-                elif not name_str or name_str == '-' or name_str == '未知专业': # 仅当原始名称无效时设为未知
-                    major_info['major_name'] = '未知专业'
-                # else: 保持原始专业名称
+            # --- Extract Department Info --- 
+            dept_name_val = get_first_value_from_row(row, dept_cols[0], dept_cols[1]) or \
+                            get_first_value_from_row(row, dept_cols[2] if len(dept_cols)>2 else None, dept_cols[3] if len(dept_cols)>3 else None)
+            department_name = get_multiline_str(dept_name_val) or '未知院系'
+            if department_name not in school_entry['departments']:
+                school_entry['departments'][department_name] = {"department_name": department_name, "majors": []}
 
-                # 将专业信息添加到对应院系的majors列表
-                school_entry['departments'][department_name]['majors'].append(major_info)
+            # --- Extract Major Info --- 
+            major_code_raw = row.get(actual_major_code_col, '')
+            major_code_str = str(major_code_raw).strip() if pd.notna(major_code_raw) else ''
+            major_name_val = get_first_value_from_row(row, major_name_cols[0], major_name_cols[1] if len(major_name_cols)>1 else None)
+            major_name = str(major_name_val).strip() if pd.notna(major_name_val) else ''
 
-            print(f"工作表 '{sheet_name}' 处理完成。")
+            if actual_major_code_col == '专业代码及名称' and major_code_str:
+                match_code_name = re.match(r'(\d{6})\s*(.*)', major_code_str)
+                if match_code_name:
+                    major_code_str = match_code_name.group(1)
+                    if not major_name: major_name = match_code_name.group(2).strip()
+                elif not re.match(r'^\d+$', major_code_str.split()[0] if major_code_str else '') and not major_name:
+                    major_name = major_code_str; major_code_str = '' 
+            
+            if not major_code_str and not major_name: continue # Skip if no major identifier
 
-        except Exception as e:
-            print(f"处理工作表 '{sheet_name}' 时发生错误: {e}")
-            import traceback
-            traceback.print_exc() # 打印详细错误堆栈
+            enroll_24_val = get_first_value_from_row(row, enroll_24_cols[0], enroll_24_cols[1]) or \
+                            get_first_value_from_row(row, enroll_24_cols[2] if len(enroll_24_cols)>2 else None, enroll_24_cols[3] if len(enroll_24_cols)>3 else None)
+            enrollment_24_num = None
+            if pd.notna(enroll_24_val):
+                enroll_str = str(enroll_24_val).strip()
+                match_num = re.search(r'(\d+)', enroll_str)
+                if match_num: enrollment_24_num = int(match_num.group(1))
+                elif enroll_str.lower() in ['若干', '见官网', '待定']: enrollment_24_num = enroll_str # Keep string representation
+            
+            exam_subjects_val = get_first_value_from_row(row, exam_subj_cols[0], exam_subj_cols[1] if len(exam_subj_cols)>1 else None)
+            
+            # Standardize major name if still missing
+            if not major_name or major_name in ['-', '未知专业', '查看详情', '待定']:
+                temp_major_name = "未知专业方向"; code = major_code_str
+                subjects = str(get_multiline_str(exam_subjects_val)).lower() if exam_subjects_val else ""
+                if '0812' in code or '计算机科学与技术' in subjects: temp_major_name = '计算机科学与技术'
+                elif '0835' in code or '085405' in code or '软件工程' in subjects: temp_major_name = '软件工程'
+                elif '085404' in code or '计算机技术' in subjects: temp_major_name = '计算机技术'
+                elif '085410' in code or '人工智能' in subjects: temp_major_name = '人工智能'
+                elif '085411' in code or '大数据' in subjects: temp_major_name = '大数据技术与工程'
+                elif '0839' in code or '网络空间安全' in subjects: temp_major_name = '网络空间安全'
+                major_name = temp_major_name
 
+            major_info = {
+                "major_code": major_code_str, "major_name": major_name,
+                "exam_subjects": get_multiline_str(exam_subjects_val),
+                "reference_books": get_multiline_str(get_first_value_from_row(row, ref_book_cols[0], ref_book_cols[1] if len(ref_book_cols)>1 else None)),
+                "retrial_subjects": get_multiline_str(get_first_value_from_row(row, retrial_subj_cols[0])),
+                "enrollment_24": enrollment_24_num,
+                "tuition_duration": get_multiline_str(get_first_value_from_row(row, tuition_cols[0], tuition_cols[1] if len(tuition_cols)>1 else None)),
+                "score_lines": {
+                    "2024": get_multiline_str(get_first_value_from_row(row, score_24_cols[0], score_24_cols[1] if len(score_24_cols)>1 else None)),
+                    "2023": get_multiline_str(get_first_value_from_row(row, score_23_cols[0], score_23_cols[1] if len(score_23_cols)>1 else None))
+                },
+                "admission_info_23": get_multiline_str(get_first_value_from_row(row, adm_info_23_cols[0], adm_info_23_cols[1] if len(adm_info_23_cols)>1 else None)),
+                "admission_info_24": get_multiline_str(get_first_value_from_row(row, adm_info_24_cols[0], adm_info_24_cols[1]) or \
+                                                  get_first_value_from_row(row, adm_info_24_cols[2] if len(adm_info_24_cols)>2 else None, adm_info_24_cols[3] if len(adm_info_24_cols)>3 else None))
+            }
+            
+            school_entry['departments'][department_name]['majors'].append(major_info)
+        except Exception as e_row:
+            print(f"    处理文件 \'{os.path.basename(csv_path)}\' 的行 (CSV index {index}) 时发生错误: {e_row}")
+            import traceback; traceback.print_exc()
+            continue
+    print(f"    文件 \'{os.path.basename(csv_path)}\' 处理完成。")
 
-    # --- 后处理和输出 ---
-    # 将字典转换为最终的列表格式
+def replace_nan_with_none(obj): # Keep this helper (now at top level)
+    if isinstance(obj, list): return [replace_nan_with_none(item) for item in obj]
+    if isinstance(obj, dict): return {key: replace_nan_with_none(value) for key, value in obj.items()}
+    if isinstance(obj, float) and pd.isna(obj): return None
+    if obj is pd.NA: return None
+    return obj
+
+def main_process_all_csvs(csv_files_directory, output_json_path):
+    all_schools_data = {}
+    
+    # Define mapping for CSV filenames to a "hint name" used for region/province logic
+    # This assumes CSVs are named like "择校文档_安徽.csv", "择校文档_B区.csv", etc.
+    # And "择校文档_Sheet1.csv" for the general sheet.
+    csv_files_to_process = [f for f in os.listdir(csv_files_directory) if f.startswith("择校文档_") and f.endswith(".csv")]
+
+    for csv_filename in csv_files_to_process:
+        hint_name = csv_filename.replace("择校文档_", "").replace(".csv", "") # e.g., "安徽", "B区", "Sheet1"
+        csv_full_path = os.path.join(csv_files_directory, csv_filename)
+        
+        if not os.path.exists(csv_full_path):
+            print(f"警告: CSV 文件 {csv_full_path} 未找到。跳过。")
+            continue
+        
+        process_single_csv(csv_full_path, hint_name, all_schools_data)
+
     final_school_list = []
-    for school_data in all_schools_data.values():
-        # 将院系字典转换为列表
+    for school_name, school_data in all_schools_data.items():
+        total_enrollment_school = 0; valid_enrollment_found = False
+        for dept_data in school_data['departments'].values():
+            for major in dept_data['majors']:
+                if isinstance(major.get('enrollment_24'), int):
+                    total_enrollment_school += major['enrollment_24']; valid_enrollment_found = True
+        if valid_enrollment_found: school_data['enrollment_24_school_total'] = total_enrollment_school
         school_data['departments'] = list(school_data['departments'].values())
         final_school_list.append(school_data)
 
-    # 递归函数：将 NaN 替换为 None
-    def replace_nan_with_none(obj):
-        if isinstance(obj, list):
-            return [replace_nan_with_none(item) for item in obj]
-        elif isinstance(obj, dict):
-            return {key: replace_nan_with_none(value) for key, value in obj.items()}
-        elif isinstance(obj, float) and pd.isna(obj):
-            return None
-        else:
-            return obj
+    final_school_list.sort(key=lambda x: (x.get('region', ''), x.get('province', ''), x.get('name', '')))
 
-    # 清理最终列表中的 NaN 值
     cleaned_school_list = replace_nan_with_none(final_school_list)
-
-
-    # 创建 data 目录（如果不存在）
     os.makedirs(DATA_DIR, exist_ok=True)
-
-    # 将结果写入 JSON 文件
     try:
         with open(output_json_path, 'w', encoding='utf-8') as f:
-            json.dump(cleaned_school_list, f, ensure_ascii=False, indent=2) # 使用清理后的列表
+            json.dump(cleaned_school_list, f, ensure_ascii=False, indent=2)
         print(f"\n成功将处理后的数据写入到: {output_json_path}")
-    except IOError as e:
-        print(f"写入 JSON 文件时出错: {e}")
-    except Exception as e:
-        print(f"转换或写入 JSON 时发生未知错误: {e}")
-
+    except IOError as e: print(f"写入 JSON 文件时出错: {e}")
+    except Exception as e: print(f"转换或写入 JSON 时发生未知错误: {e}")
 
 if __name__ == "__main__":
-    process_excel_data(EXCEL_PATH, OUTPUT_JSON_PATH) 
+    # Assuming CSVs are in the BASE_DIR (project root) for now
+    print(f"开始从目录 {CSV_SOURCE_DIR} 处理所有 CSV 文件...")
+    main_process_all_csvs(CSV_SOURCE_DIR, OUTPUT_JSON_PATH) 

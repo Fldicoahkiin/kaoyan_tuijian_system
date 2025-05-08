@@ -27,6 +27,16 @@
                 </div>
             </div>
         </div>
+        {# 新增学校数量卡片 #}
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-success text-white mb-4">
+                <div class="card-body">学校总数: {{ school_count | default('N/A') }}</div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="small text-white stretched-link" href="{{ url_for('admin_schools') }}">管理学校</a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
         {# 可以添加更多卡片 #}
     </div>
 

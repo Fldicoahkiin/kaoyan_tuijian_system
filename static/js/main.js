@@ -81,7 +81,7 @@ function fetchSchoolsForDashboard() {
     if (!tableBody || !paginationContainer) return;
 
     // 显示加载状态
-    tableBody.innerHTML = `<tr><td colspan="4" class="text-center p-5"><div class="spinner-border spinner-border-sm text-primary" role="status"><span class="visually-hidden">加载中...</span></div> 正在加载院校数据...</td></tr>`;
+    tableBody.innerHTML = `<tr><td colspan="7" class="text-center p-5"><div class="spinner-border spinner-border-sm text-primary" role="status"><span class="visually-hidden">加载中...</span></div> 正在加载院校数据...</td></tr>`;
     paginationContainer.innerHTML = '';
 
     fetch('/api/schools/list')
@@ -98,7 +98,7 @@ function fetchSchoolsForDashboard() {
         })
         .catch(error => {
             console.error('Error fetching schools for dashboard:', error);
-            tableBody.innerHTML = `<tr><td colspan="4" class="text-center p-5 text-danger">加载院校数据失败: ${error.message}</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="7" class="text-center p-5 text-danger">加载院校数据失败: ${error.message}</td></tr>`;
         });
 }
 
@@ -114,15 +114,18 @@ function renderDashboardSchoolPage(page) {
 
     tableBody.innerHTML = ''; // 清空表格内容
     if (schoolsToShow.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan=\"4\" class=\"text-center p-5 text-muted\">没有更多院校数据</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="7" class="text-center p-5 text-muted">没有更多院校数据</td></tr>`;
     } else {
         schoolsToShow.forEach(school => {
             const row = `
                 <tr>
-                    <td><a href=\"/school/${encodeURIComponent(school.id)}\" class=\"text-decoration-none link-light\">${school.name || 'N/A'}</a></td>
-                    <td><span class=\"badge bg-secondary\">${school.level || 'N/A'}</span></td>
+                    <td><a href="/school/${encodeURIComponent(school.id)}" class="text-decoration-none link-light">${school.name || 'N/A'}</a></td>
+                    <td><span class="badge bg-secondary">${school.level || 'N/A'}</span></td>
                     <td>${school.province || 'N/A'}</td>
+                    <td><span class="badge ${ school.region === 'A区' ? 'bg-primary' : (school.region === 'B区' ? 'bg-info' : 'bg-secondary') }">${school.region || 'N/A'}</span></td>
                     <td>${school.computer_rank || 'N/A'}</td>
+                    <td>${school.enrollment_24 || '-'}</td>
+                    <td>${school.exam_subjects || '-'}</td>
                 </tr>
             `;
             tableBody.innerHTML += row;

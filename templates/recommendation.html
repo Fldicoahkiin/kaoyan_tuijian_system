@@ -80,20 +80,22 @@
                                     <th>院校名称</th>
                                     <th>院校等级</th>
                                     <th>计算机等级</th>
+                                    <th>省份</th>
                                     <th>地区</th>
-                                    <th>推荐分数</th> {# 可选显示 #}
+                                    <th>推荐分数</th>
                                     <th>操作</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for school in recommendations %}
                                     <tr>
-                                        <td>{{ (pagination.page - 1) * pagination.per_page + loop.index }}</td> {# 计算全局排名 #}
+                                        <td>{{ (pagination.page - 1) * pagination.per_page + loop.index }}</td>
                                         <td><a href="{{ url_for('school_detail', school_id=(school.id or school.name)) }}">{{ school.name }}</a></td>
                                         <td>{{ school.level }}</td>
                                         <td>{{ school.computer_rank }}</td>
-                                        <td>{{ school.province }} ({{ school.region }})</td>
-                                        <td>{{ "%.2f"|format(school.recommend_score) }}</td> {# 格式化分数 #}
+                                        <td>{{ school.province }}</td>
+                                        <td><span class="badge {% if school.region == 'A区' %}bg-primary{% elif school.region == 'B区' %}bg-info{% else %}bg-secondary{% endif %}">{{ school.region }}</span></td>
+                                        <td>{{ "%.2f"|format(school.recommend_score) }}</td>
                                         <td>
                                             <a href="{{ url_for('school_detail', school_id=(school.id or school.name)) }}" class="btn btn-sm btn-info">详情</a>
                                         </td>

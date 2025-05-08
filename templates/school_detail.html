@@ -18,8 +18,8 @@
                         <span><i class="fas fa-university me-2"></i>{{ school.name }}</span>
                         <div>
                             <span class="badge bg-secondary me-2">{{ school.level }}</span>
-                            <span class="badge bg-info">{{ school.province | default('未知省份') }}</span>
-                             {# <span class="badge bg-primary me-2">{{ school.region }}</span> #} {# 移除 Region #}
+                            <span class="badge bg-info me-2">{{ school.province | default('未知省份') }}</span>
+                            <span class="badge {% if school.region == 'A区' %}bg-primary{% elif school.region == 'B区' %}bg-info{% else %}bg-secondary{% endif %} me-2">{{ school.region | default('未知地区') }}</span>
                              <button class="btn btn-sm btn-outline-warning favorite-btn ms-3" data-school-id="{{ school.id }}">
                                  <i class="{{ 'fas' if school.id in user_favorites else 'far' }} fa-star"></i>
                                  <span class="ms-1">{{ '已收藏' if school.id in user_favorites else '收藏' }}</span>
@@ -135,15 +135,14 @@ document.addEventListener('DOMContentLoaded', function() {
     if (favoriteBtn) {
         favoriteBtn.addEventListener('click', function() {
             const schoolId = this.dataset.schoolId;
-            const isFavorited = this.querySelector('i').classList.contains('fas');
+            const isFavorited = this.querySelector('i').classList.contains('fas'); // 检查是否已经收藏
             const url = `/api/school/favorite/${schoolId}`;
-            const method = isFavorited ? 'DELETE' : 'POST';
+            const method = isFavorited ? 'DELETE' : 'POST'; // 如果已收藏则DELETE，否则POST
 
             fetch(url, {
                 method: method,
                 headers: {
-                    'Content-Type': 'application/json',
-                    // 'X-CSRFToken': '{{ csrf_token() }}' // 如果需要 CSRF token
+                    'Content-Type': 'application/json'
                 }
             })
             .then(response => response.json())
@@ -151,16 +150,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.status === 'success') {
                     const icon = this.querySelector('i');
                     const textSpan = this.querySelector('span');
-                    if (data.action === 'favorited') {
+                    
+                    if (data.action === 'favorited' || data.action === 'already_favorited') {
                         icon.classList.remove('far');
                         icon.classList.add('fas');
                         textSpan.textContent = ' 已收藏';
-                    } else {
+                    } else if (data.action === 'unfavorited' || data.action === 'not_favorited') {
                         icon.classList.remove('fas');
                         icon.classList.add('far');
                         textSpan.textContent = ' 收藏';
                     }
-                    // alert(data.message);
+                    
+                    if (data.message) {
+                        // 可以考虑用轻量级的toast或tooltip显示
+                        console.log(data.message);
+                    }
                 } else {
                      if (data.redirect) {
                          window.location.href = data.redirect; // 跳转到登录页
