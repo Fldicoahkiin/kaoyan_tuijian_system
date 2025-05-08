@@ -5,9 +5,10 @@
     "profile": {
         "education_background": "",
         "major_area": "",
-        "target_location": "",
-        "target_level": "",
-        "expected_score": null
+        "target_location": "北京",
+        "target_level": "一般",
+        "expected_score": 233,
+        "target_rank": "A"
     },
     "favorites": [
         "上海大学"

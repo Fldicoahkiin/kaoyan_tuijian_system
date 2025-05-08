@@ -1,3 +1,4 @@
 .DS_Store
 logs/app.log
 ~$*
+__pycache__/

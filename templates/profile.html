@@ -12,37 +12,35 @@
                 {% include '_flash_messages.html' %}
 
                 <form method="POST" action="{{ url_for('profile') }}">
-                    {# If using Flask-WTF, include form.hidden_tag() #}
+                    {{ form.hidden_tag() }} {# CSRF token and other hidden fields #}
                     
                     <div class="mb-3">
-                        <label for="education_background" class="form-label">教育背景</label>
-                        <input type="text" id="education_background" name="education_background" class="form-control" value="{{ user_profile.get('education_background', '') }}">
+                        {{ form.education_background.label(class_="form-label") }}
+                        {{ form.education_background(class_="form-control") }}
                     </div>
                      <div class="mb-3">
-                        <label for="major_area" class="form-label">专业领域</label>
-                        <input type="text" id="major_area" name="major_area" class="form-control" value="{{ user_profile.get('major_area', '') }}">
+                        {{ form.major_area.label(class_="form-label") }}
+                        {{ form.major_area(class_="form-control") }}
                     </div>
                      <div class="mb-3">
-                        <label for="target_location" class="form-label">目标地区 (省份)</label>
-                        <input type="text" id="target_location" name="target_location" class="form-control" value="{{ user_profile.get('target_location', '') }}">
+                        {{ form.target_location.label(class_="form-label") }} (省份)
+                        {{ form.target_location(class_="form-control") }}
                     </div>
                      <div class="mb-3">
-                        <label for="target_level" class="form-label">目标院校等级</label>
-                        <select id="target_level" name="target_level" class="form-select">
-                            <option value="" {% if not user_profile.get('target_level') %}selected{% endif %}>-- 请选择 --</option>
-                            <option value="985" {% if user_profile.get('target_level') == '985' %}selected{% endif %}>985</option>
-                            <option value="211" {% if user_profile.get('target_level') == '211' %}selected{% endif %}>211</option>
-                            <option value="双一流" {% if user_profile.get('target_level') == '双一流' %}selected{% endif %}>双一流</option>
-                            <option value="一般" {% if user_profile.get('target_level') == '一般' %}selected{% endif %}>一般</option>
-                        </select>
+                        {{ form.target_level.label(class_="form-label") }}
+                        {{ form.target_level(class_="form-select") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.target_rank.label(class_="form-label") }}
+                        {{ form.target_rank(class_="form-select") }}
                     </div>
                      <div class="mb-4">
-                        <label for="expected_score" class="form-label">预期分数</label>
-                        <input type="number" id="expected_score" name="expected_score" class="form-control" value="{{ user_profile.get('expected_score', '') }}">
+                        {{ form.expected_score.label(class_="form-label") }}
+                        {{ form.expected_score(class_="form-control") }}
                     </div>
 
                     <div class="d-grid mt-4">
-                        <button type="submit" class="btn btn-primary">保存更改</button>
+                        {{ form.submit(class_="btn btn-primary") }}
                     </div>
                 </form>
             </div>

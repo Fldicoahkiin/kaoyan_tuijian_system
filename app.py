@@ -178,7 +178,10 @@ class ProfileForm(FlaskForm):
     education_background = StringField('教育背景', validators=[Optional()])
     major_area = StringField('专业领域', validators=[Optional()])
     target_location = StringField('目标地区', validators=[Optional()])
-    target_level = StringField('目标院校等级', validators=[Optional()])
+    target_level = SelectField('目标院校等级', 
+                             choices=[('', '-- 请选择 --'), ('985', '985'), ('211', '211'), ('双一流', '双一流'), ('一般', '一般')], 
+                             validators=[Optional()])
+    target_rank = SelectField('偏好计算机等级', choices=[], validators=[Optional()])
     expected_score = IntegerField('预期分数', validators=[Optional()])
     submit = SubmitField('保存更改')
 
@@ -486,32 +489,51 @@ def profile():
     user_data = get_user_data(username)
 
     if user_data is None:
-        # 这种情况理论上不应发生，如果 session 有但文件没了
         flash('无法加载用户数据，请重新登录。', 'error')
         session.pop('username', None)
         return redirect(url_for('login'))
 
-    if request.method == 'POST':
-        # 更新个人资料逻辑
-        user_data['profile']['education_background'] = request.form.get('education_background', '')
-        user_data['profile']['major_area'] = request.form.get('major_area', '')
-        user_data['profile']['target_location'] = request.form.get('target_location', '')
-        user_data['profile']['target_level'] = request.form.get('target_level', '')
-        try:
-            expected_score_str = request.form.get('expected_score')
-            user_data['profile']['expected_score'] = int(expected_score_str) if expected_score_str else None
-        except (ValueError, TypeError):
-             user_data['profile']['expected_score'] = None # 如果转换失败则设为 None
+    # 从 user_data 初始化表单，如果profile不存在则使用空字典
+    form = ProfileForm(data=user_data.get('profile', {}))
 
+    # 动态填充 target_rank 的选项
+    all_schools_data = load_json_data(SCHOOLS_DATA_PATH)
+    if all_schools_data: # 确保数据已加载
+        all_ranks_for_form = sorted(list(set(s.get('computer_rank', '') for s in all_schools_data if s.get('computer_rank'))))
+        form.target_rank.choices = [('', '任何等级')] + [(r, r) for r in all_ranks_for_form]
+    else:
+        form.target_rank.choices = [('', '任何等级')]
+
+    if form.validate_on_submit(): # POST 请求
+        user_profile = user_data.get('profile', {}) # 获取或初始化 profile 字典
+        user_profile['education_background'] = form.education_background.data
+        user_profile['major_area'] = form.major_area.data
+        user_profile['target_location'] = form.target_location.data
+        user_profile['target_level'] = form.target_level.data
+        user_profile['target_rank'] = form.target_rank.data # 新增保存
+        try:
+            expected_score_str = form.expected_score.data # 从 form 对象获取数据
+            user_profile['expected_score'] = int(expected_score_str) if expected_score_str is not None else None
+        except (ValueError, TypeError):
+            user_profile['expected_score'] = None
+
+        user_data['profile'] = user_profile #确保profile字典被存回user_data
         if save_user_data(username, user_data):
             flash('个人资料更新成功！', 'success')
         else:
             flash('个人资料更新失败。', 'error')
-        # 即使失败也重定向回 profile 页，避免表单重复提交
         return redirect(url_for('profile'))
 
-    # GET 请求，显示个人资料表单
-    return render_template('profile.html', user_profile=user_data.get('profile', {}))
+    # GET 请求，确保表单字段能正确显示已保存的值
+    # 如果 form 是通过 data=user_data.get('profile', {}) 初始化的，
+    # 并且 ProfileForm 中的字段名与 profile 字典中的键名匹配，
+    # WTForms 会自动处理值的填充。
+    # 如果 target_rank 的值在 choices 中，它会被选中。
+    # 我们需要确保在GET请求时，如果user_data['profile']中有target_rank，form能正确显示
+    if request.method == 'GET' and user_data.get('profile'):
+        form.target_rank.data = user_data.get('profile', {}).get('target_rank')
+
+    return render_template('profile.html', form=form)
 
 # --- 其他功能路由 --- 
 # (添加占位路由以使 base.html 中的链接有效)
@@ -621,7 +643,7 @@ def recommend():
 
     target_score_str = request.args.get('target_score')
     target_level = request.args.get('target_level') or user_profile.get('target_level')
-    target_rank = request.args.get('target_rank')
+    target_rank = request.args.get('target_rank') or user_profile.get('target_rank') # 修改这里以从profile获取
     target_location = request.args.get('target_location') or user_profile.get('target_location')
     page = request.args.get('page', 1, type=int)
     per_page = 10
