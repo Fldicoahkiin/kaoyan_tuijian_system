@@ -77,18 +77,18 @@
                     <th style="width: 100px; position: relative; text-align: center;">24年总招生<div class="col-resizer"></div></th>
                     <th style="width: 200px; position: relative; white-space: nowrap;">初试科目<div class="col-resizer"></div></th>
                     <th style="width: 80px; position: relative; text-align: center;">收藏数<div class="col-resizer"></div></th>
-                    <th style="width: 120px; text-align: center;" class="sticky-col-right">操作</th>
+                    <th style="width: 180px; text-align: center;" class="sticky-col-right">操作</th>
                 </tr>
             </thead>
             <tbody>
                 {% if schools %}
                     {% for school in schools %}
                     <tr>
-                        <td><a href="{{ url_for('school_detail', school_id=school.id) }}">{{ school.name }}</a></td>
+                        <td><a href="{{ url_for('school_detail', school_id=school.id) }}" title="{{ school.name }}" class="td-truncate d-inline-block" style="max-width: 180px;">{{ school.name }}</a></td>
                         <td><span class="badge {% if school.level == '985' %}bg-danger{% elif school.level == '211' %}bg-warning text-dark{% elif school.level == '双一流' %}bg-success{% else %}bg-secondary{% endif %}">{{ school.level or '未知' }}</span></td>
                         <td>{{ school.province or '未知' }}</td>
                         <td><span class="badge {% if school.region == 'A区' %}bg-primary{% elif school.region == 'B区' %}bg-info{% else %}bg-secondary{% endif %}">{{ school.region or '未知' }}</span></td>
-                        <td>{{ school.computer_rank or '-' }}</td>
+                        <td class="td-truncate" style="max-width: 100px;" title="{{ school.computer_rank or '-' }}">{{ school.computer_rank or '-' }}</td>
                         <td>{{ school.enrollment_24_school_total or '-' }}</td>
                         <td style="white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis;" title="{{ school.exam_subjects_summary or school.exam_subjects or '-' }}">{{ school.exam_subjects_summary | default(school.exam_subjects, true) | default('-', true) }}</td>
                         <td style="text-align: center;">{{ school.favorite_count | default(0) }}</td>
@@ -164,5 +164,73 @@
 
 {% block scripts %}
 {{ super() }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Favorite button functionality
+    document.querySelectorAll('.favorite-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const schoolId = this.dataset.schoolId;
+            const isCurrentlyFavorite = this.classList.contains('btn-danger'); // Check if already favorited (solid icon, danger color)
+            const icon = this.querySelector('i');
+            const textSpan = this.querySelector('span');
+
+            fetch(`/api/school/favorite/${schoolId}`, {
+                method: isCurrentlyFavorite ? 'DELETE' : 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // CSRF token might be needed if your Flask app uses CSRF protection globally
+                    // 'X-CSRFToken': '{{ csrf_token() }}' // Example if using Flask-WTF CSRF
+                }
+            })
+            .then(response => {
+                if (response.status === 401) { // Unauthorized
+                    window.location.href = response.url; // Redirect to login
+                    return Promise.reject('Unauthorized');
+                }
+                if (!response.ok) {
+                    return response.json().then(err => Promise.reject(err));
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    if (data.action === 'favorited') {
+                        this.classList.remove('btn-outline-danger');
+                        this.classList.add('btn-danger');
+                        icon.classList.remove('far');
+                        icon.classList.add('fas');
+                        if(textSpan) textSpan.textContent = '取消收藏';
+                    } else if (data.action === 'unfavorited') {
+                        this.classList.remove('btn-danger');
+                        this.classList.add('btn-outline-danger');
+                        icon.classList.remove('fas');
+                        icon.classList.add('far');
+                        if(textSpan) textSpan.textContent = '收藏';
+                    }
+                    // Optionally, display a success message (e.g., using a toast library or simple alert)
+                    // alert(data.message); 
+                } else {
+                    // alert('操作失败: ' + data.message);
+                    console.error('Favorite operation failed:', data.message);
+                }
+            })
+            .catch(error => {
+                if (error !== 'Unauthorized') { // Don't alert for unauthorized as redirect is handled
+                    console.error('Error toggling favorite:', error);
+                    // alert('发生错误，请稍后再试。');
+                }
+            });
+        });
+    });
+
+    // Enable resizable table columns for tables with the 'resizable-table' class
+    // Ensure enableColumnResizing is defined (e.g., in main.js and loaded)
+    if (typeof enableColumnResizing === 'function') {
+        document.querySelectorAll('.resizable-table').forEach(enableColumnResizing);
+    } else {
+        console.warn('enableColumnResizing function is not defined. Table column resizing will not work.');
+    }
+});
+</script>
 {% endblock %}
 {% endblock %} 

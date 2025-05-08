@@ -63,8 +63,8 @@ def extract_province_from_string(text):
             return province
     return None
 
-def extract_province_smart(row, school_name_raw, intro_raw, filename_hint_province=None):
-    """智能提取省份，按优先级：列 -> 文件名提示 -> 名称 -> 简介 -> 市名映射。"""
+def extract_province_smart(row, school_name_raw, intro_raw):
+    """智能提取省份，按优先级：列 -> 名称 -> 简介 -> 市名映射。"""
     school_name = str(school_name_raw) if pd.notna(school_name_raw) else ''
     intro = str(intro_raw) if pd.notna(intro_raw) else ''
     
@@ -73,10 +73,6 @@ def extract_province_smart(row, school_name_raw, intro_raw, filename_hint_provin
     if pd.notna(province_from_col):
         province_str = str(province_from_col).strip()
         if is_valid_province(province_str): return province_str
-
-    # 2. Check filename hint (if provided and valid) - REMOVED
-    # if filename_hint_province and filename_hint_province != "东三省" and is_valid_province(filename_hint_province):
-    #     return filename_hint_province
 
     # 3. Check school name for location in brackets or prefix
     match = re.search(r'[（(](.+?)[)）]', school_name)
@@ -95,10 +91,6 @@ def extract_province_smart(row, school_name_raw, intro_raw, filename_hint_provin
     province_from_intro = extract_province_from_string(intro)
     if province_from_intro: return province_from_intro
     
-    # 6. Last resort: check if filename hint matches a known city
-    if filename_hint_province and filename_hint_province in CITY_TO_PROVINCE:
-        return CITY_TO_PROVINCE[filename_hint_province]
-
     return None # Return None if no province found
 
 def clean_column_names(df):
@@ -212,10 +204,9 @@ def get_first_value_from_row(row, primary_col_name, secondary_col_name=None):
     return chosen_val # 如果 chosen_val 不是系列 (即它是标量、None 或 pd.NA), get_multiline_str 会处理 pd.isna()
 
 def process_single_csv(csv_path, filename_hint, all_schools_data):
-    print(f"  正在处理CSV文件: {os.path.basename(csv_path)} (Hint: {filename_hint})")
+    print(f"  Attempting to process CSV file: {os.path.basename(csv_path)} (Hint for region/other: {filename_hint})") # Added more explicit start message
     current_sheet_region = determine_region_from_filename_hint(filename_hint)
-    # filename_province_hint = get_province_hint_from_filename(filename_hint) # REMOVED
-    filename_province_hint = None # Set to None as it's no longer used or passed to extract_province_smart
+    # filename_province_hint = None (already set as it was removed from extract_province_smart call)
     
     print(f"    文件 \'{os.path.basename(csv_path)}\' 被识别为区域: {current_sheet_region}")
 
@@ -280,7 +271,9 @@ def process_single_csv(csv_path, filename_hint, all_schools_data):
     df = df[df[actual_major_code_col].astype(str).str.match(r'^\s*\S+.*')].copy() # Keep if major code not just whitespace
     df.reset_index(drop=True, inplace=True)
     df.dropna(how='all', inplace=True)
-    if df.empty: print(f"    文件 \'{os.path.basename(csv_path)}\' 数据为空或无效，跳过。"); return
+    if df.empty: 
+        print(f"    文件 \'{os.path.basename(csv_path)}\' 数据为空或所有行均为NA，跳过。") # More explicit message
+        return
 
     # --- Row-by-row processing --- 
     for index, row in df.iterrows():
@@ -299,15 +292,64 @@ def process_single_csv(csv_path, filename_hint, all_schools_data):
                 level_val = get_first_value_from_row(row, level_cols[0], level_cols[1] if len(level_cols)>1 else None)
                 province = extract_province_smart(row, school_name_cleaned, intro_raw) 
                 
-                intro_for_level_check = get_multiline_str(intro_raw) # 获取处理后的简介字符串
+                intro_for_level_check = get_multiline_str(intro_raw)
 
-                rank_val = get_first_value_from_row(row, rank_cols[0], rank_cols[1]) or \
-                           get_first_value_from_row(row, rank_cols[2] if len(rank_cols)>2 else None, rank_cols[3] if len(rank_cols)>3 else None)
-                computer_rank_cleaned = None
-                if pd.notna(rank_val):
-                    rank_str = str(rank_val).strip()
-                    rank_str = re.sub(r"^(第四轮评级：|学科评估：|评估等级：|计算机等级：|计算机评级：)", "", rank_str, flags=re.IGNORECASE).strip()
-                    computer_rank_cleaned = rank_str
+                # --- Refined Computer Rank Extraction ---
+                rank_val_raw = get_first_value_from_row(row, rank_cols[0], rank_cols[1]) or \
+                               get_first_value_from_row(row, rank_cols[2] if len(rank_cols)>2 else None, rank_cols[3] if len(rank_cols)>3 else None)
+                computer_rank_cleaned = "未提供" # Default
+
+                if pd.notna(rank_val_raw):
+                    rank_str_original = str(rank_val_raw).strip()
+                    rank_str_upper = rank_str_original.upper()
+
+                    if not rank_str_upper or rank_str_upper == "-" :
+                        computer_rank_cleaned = "无评级"
+                    elif any(no_rank_indicator in rank_str_upper for no_rank_indicator in ["无评级", "未评估", "不参评", "未参与评估", "不参与评估"]):
+                        computer_rank_cleaned = "无评级"
+                    else:
+                        ORDERED_VALID_RANKS = ['A+', 'A-', 'A', 'B+', 'B-', 'B', 'C+', 'C-', 'C']
+                        found_rank_flag = False
+                        for r_check in ORDERED_VALID_RANKS:
+                            # Regex to find rank as a whole word or with typical surrounding, non-alphanumeric characters
+                            # This handles "A+", "(A+)", "A+等", "评级A+" but not "学科A" if 'A' is the rank.
+                            # It prioritizes ranks that are clearly demarcated.
+                            if re.search(r'(?:^|[^A-Z0-9\w])' + re.escape(r_check) + r'(?:$|[^A-Z0-9\w])', rank_str_upper):
+                                computer_rank_cleaned = r_check
+                                found_rank_flag = True
+                                break
+                            # Simpler check if the above is too strict, for ranks that might be embedded
+                            elif r_check in rank_str_upper: # Check if 'A+' is simply in 'BLABLA A+ BLABLA'
+                                computer_rank_cleaned = r_check 
+                                found_rank_flag = True
+                                # Don't break immediately for this simpler check if a more specific one (like A+ vs A) might follow for a substring
+                                # However, our ORDERED_VALID_RANKS handles A+ before A. So, first simple 'in' match is good.
+                                break 
+                        
+                        if not found_rank_flag:
+                            # If no standard A/B/C rank found directly, try cleaning common verbose terms
+                            # and see if a valid rank emerges or the string becomes manageable.
+                            temp_rank_cleaned_str = rank_str_original
+                            noise_patterns = [
+                                r"^(第四轮评级：|学科评估：|评估等级：|计算机等级：|计算机评级：|评级：)",
+                                r"第[一二三四五六七八九十]轮评估?",
+                                r"第四轮",
+                                r"学科评估结果?",
+                                r"计算机科学与技术",
+                                r"软件工程",
+                                r"等级",
+                                r"[：:]" # Colons
+                            ]
+                            for pattern in noise_patterns:
+                                temp_rank_cleaned_str = re.sub(pattern, "", temp_rank_cleaned_str, flags=re.IGNORECASE).strip()
+                            
+                            # After cleaning, check again if it matches a standard rank
+                            if temp_rank_cleaned_str.upper() in ORDERED_VALID_RANKS:
+                                computer_rank_cleaned = temp_rank_cleaned_str.upper()
+                            elif temp_rank_cleaned_str : # If something non-empty remains after cleaning
+                                computer_rank_cleaned = temp_rank_cleaned_str # Use the cleaned, possibly non-standard, string
+                            # If temp_rank_cleaned_str is empty, it defaults to "未提供" (or "无评级" if set earlier)
+                # --- End of Refined Computer Rank Extraction ---
 
                 all_schools_data[school_name_cleaned] = {
                     "id": school_name_cleaned, "name": school_name_cleaned,

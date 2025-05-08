@@ -543,7 +543,7 @@ def school_list():
     if level_filter:
         filtered_schools = [s for s in filtered_schools if s.get('level') == level_filter]
     if rank_filter:
-        filtered_schools = [s for s in filtered_schools if s.get('computer_rank') and s.get('computer_rank').startswith(rank_filter)]
+        filtered_schools = [s for s in filtered_schools if s.get('computer_rank') == rank_filter]
     if region_filter:
         filtered_schools = [s for s in filtered_schools if s.get('region') == region_filter]
         

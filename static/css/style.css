@@ -516,7 +516,7 @@ a:hover {
 .dashboard-schools-table-container { 
     flex-grow: 1; 
     overflow-y: auto; 
-    overflow-x: auto; 
+    overflow-x: auto; /* Ensure horizontal scrolling is enabled */
     padding: 0; 
     min-height: 0; 
 }
@@ -557,6 +557,14 @@ a:hover {
 }
 #announcement-list li:last-child {
     border-bottom: none;
+}
+
+/* --- Utility class for truncating text in table cells --- */
+.td-truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* max-width is best applied inline or via a more specific class if widths vary */
 }
 
 /* --- 图标 --- */
