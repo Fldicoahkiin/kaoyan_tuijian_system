@@ -290,26 +290,30 @@ function renderDashboardPagination() {
 
 // --- ECharts 初始化 --- 
 function initCharts() {
-    // 初始化国家线总分图表
-    const nationalLineTotalChartDom = document.getElementById('national-line-total');
-    if (nationalLineTotalChartDom) {
-        const nationalLineTotalChart = echarts.init(nationalLineTotalChartDom, 'dark');
-        fetchNationalLineData('/api/national-lines/total', nationalLineTotalChart, '国家线总分趋势');
+    // Initialize new charts
+    // 1. 左上角: 计算机总分近三年国家线折线图
+    const csTotalChartDom = document.getElementById('national-line-cs-total');
+    if (csTotalChartDom) {
+        const csTotalChart = echarts.init(csTotalChartDom, 'dark');
+        // The API /api/national-lines/computer-science-total is expected to return line chart data
+        fetchNationalLineData('/api/national-lines/computer-science-total', csTotalChart, '近三年计算机总分国家线');
     }
 
-    // 初始化国家线政治英语图表
-    const nationalLinePoliticsChartDom = document.getElementById('national-line-politics');
-    if (nationalLinePoliticsChartDom) {
-        const nationalLinePoliticsChart = echarts.init(nationalLinePoliticsChartDom, 'dark');
-         fetchNationalLineData('/api/national-lines/politics', nationalLinePoliticsChart, '国家线政治/英语趋势');
+    // 2. 左中: 政治近3年国家线柱状图
+    const politicsRecentChartDom = document.getElementById('national-line-politics-recent');
+    if (politicsRecentChartDom) {
+        const politicsRecentChart = echarts.init(politicsRecentChartDom, 'dark');
+        // The API /api/national-lines/politics-recent is expected to return bar chart data
+        fetchNationalLineData('/api/national-lines/politics-recent', politicsRecentChart, '近三年政治国家线');
     }
 
-    // 初始化国家线其他科目图表
-     const nationalLineOthersChartDom = document.getElementById('national-line-others');
-     if (nationalLineOthersChartDom) {
-         const nationalLineOthersChart = echarts.init(nationalLineOthersChartDom, 'dark');
-         fetchNationalLineData('/api/national-lines/others', nationalLineOthersChart, '国家线数/专科趋势');
-     }
+    // 3. 左下角: 英语(1,2)数学(1,2)国家线走向折线图
+    const engMathChartDom = document.getElementById('national-line-eng-math');
+    if (engMathChartDom) {
+        const engMathChart = echarts.init(engMathChartDom, 'dark');
+        // The API /api/national-lines/english-math-subjects is expected to return line chart data for 4 lines
+        fetchNationalLineData('/api/national-lines/english-math-subjects', engMathChart, '英/数主要科目国家线趋势');
+    }
 
     // 初始化考试类型比例饼图
     const examTypePieChartDom = document.getElementById('exam-type-pie');

@@ -20,7 +20,7 @@ from logging.handlers import RotatingFileHandler
 import pandas as pd # 导入 pandas 用于 replace_nan_with_none 函数
 
 # --- 导入爬虫函数 ---
-from utils.scraper import run_scraper 
+from utils.scraper import run_scraper
 
 app = Flask(__name__)
 # 设置一个密钥用于 session 加密，请在实际部署中替换为更安全的随机值
@@ -35,6 +35,15 @@ ANNOUNCEMENTS_PATH = os.path.join(BASE_DIR, "data", "announcements.json")
 EXAM_TYPE_RATIOS_PATH = os.path.join(BASE_DIR, "data", "exam_type_ratios.json")
 USERS_DIR = os.path.join(BASE_DIR, "data", "users")
 FAVORITES_COUNT_PATH = os.path.join(BASE_DIR, "data", "favorites_count.json")
+HOMEPAGE_CONFIG_PATH = os.path.join(BASE_DIR, "data", "homepage_config.json") # 新增配置文件路径
+
+# --- 默认配置 (新增) ---
+DEFAULT_HOMEPAGE_CONFIG = {
+    "national_line_total_title": "近三年总分国家线趋势",
+    "national_line_politics_title": "近三年政治/英语单科线",
+    "national_line_others_title": "近三年数学/专业课单科线",
+    "exam_type_ratio_title": "自命题 vs 408 比例"
+}
 
 # --- 装饰器：要求管理员权限 ---
 def admin_required(f):
@@ -56,61 +65,193 @@ def admin_required(f):
 def inject_current_year():
     return {'current_year': datetime.datetime.now().year}
 
-# --- 数据加载函数 ---
-def load_json_data(file_path, default_value=[]):
-    """通用 JSON 数据加载函数，带共享文件锁。"""
+# --- 数据加载函数 --- 
+def load_json_data(file_path, default_value={}):
+    """通用 JSON 数据加载函数，带共享文件锁。优先使用 portalocker，失败则回退到 fcntl。"""
     try:
+        # 主路径：尝试使用 portalocker
+        import portalocker
+        # app.logger.debug(f"Attempting to read {file_path} using portalocker")
         with open(file_path, 'r', encoding='utf-8') as f:
-            fcntl.flock(f.fileno(), fcntl.LOCK_SH)  # 获取共享锁
+            portalocker.lock(f, portalocker.LOCK_SH) # 获取共享锁
             try:
-                data = json.load(f)
+                content = f.read()
+                if not content:
+                    app.logger.warning(f"数据文件 {file_path} 为空 (portalocker path)，返回默认值: {default_value}")
+                    return default_value
+                data = json.loads(content)
+                # app.logger.debug(f"Successfully read {file_path} using portalocker")
             finally:
-                fcntl.flock(f.fileno(), fcntl.LOCK_UN) # 确保在任何情况下都释放锁
+                portalocker.unlock(f)
             return data
+    except ImportError: # portalocker 未安装或找不到
+        app.logger.warning("portalocker 模块未找到，回退到 fcntl 进行文件读取锁定 (如果可用)。")
+        # 后备路径：尝试使用 fcntl
+        try:
+            import fcntl # fcntl 主要用于 POSIX 系统
+            # app.logger.debug(f"Attempting to read {file_path} using fcntl")
+            with open(file_path, 'r', encoding='utf-8') as f:
+                fcntl.flock(f.fileno(), fcntl.LOCK_SH) # 获取共享锁
+                try:
+                    content = f.read()
+                    if not content:
+                        app.logger.warning(f"数据文件 {file_path} 为空 (fcntl path)，返回默认值: {default_value}")
+                        return default_value
+                    data = json.loads(content)
+                    # app.logger.debug(f"Successfully read {file_path} using fcntl")
+                finally:
+                    fcntl.flock(f.fileno(), fcntl.LOCK_UN) # 确保释放锁
+                return data
+        except ImportError: # fcntl 模块也未找到 (例如在非 POSIX 系统如 Windows)
+            app.logger.warning(f"fcntl 模块也未找到。将尝试在不加锁的情况下读取文件 {file_path} (非线程安全)。")
+            # 最后手段：在不加锁的情况下读取 (注意：非线程安全)
+            try:
+                # app.logger.debug(f"Attempting to read {file_path} without locking")
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                    if not content:
+                        app.logger.warning(f"数据文件 {file_path} 为空 (no-lock path)，返回默认值: {default_value}")
+                        return default_value
+                    data = json.loads(content)
+                    # app.logger.debug(f"Successfully read {file_path} without locking")
+                return data
+            except Exception as e_nolock:
+                app.logger.error(f"在没有锁的情况下读取文件 {file_path} 也失败了: {e_nolock}", exc_info=True)
+                return default_value
+        except Exception as e_fcntl: # fcntl 路径下的其他错误 (例如 IOError, json.JSONDecodeError)
+            app.logger.error(f"使用 fcntl 加载 JSON 数据 {file_path} 时发生错误: {e_fcntl}", exc_info=True) # Corrected typo
+            return default_value
     except FileNotFoundError:
-        # 使用 app.logger 记录错误
-        app.logger.error(f"数据文件未找到: {file_path}")
+        # 文件未找到是常见情况，可能不是一个error，而是逻辑的一部分（例如，首次运行时）
+        app.logger.info(f"数据文件未找到: {file_path}。这可能是正常的，将返回默认值: {default_value}")
         return default_value
-    except json.JSONDecodeError:
-        app.logger.error(f"解析数据文件时出错: {file_path}")
+    except json.JSONDecodeError as e_json:
+        app.logger.error(f"解析 JSON 数据文件 {file_path} 时出错: {e_json}", exc_info=True)
         return default_value
+    except IOError as e_io: # portalocker 路径下的 IO 错误 (例如权限问题)
+        app.logger.error(f"读取文件 {file_path} 时发生 IO 错误 (portalocker path): {e_io}", exc_info=True)
+        return default_value
+    except Exception as e_main: # portalocker 路径下的其他未知错误
+        app.logger.error(f"加载 JSON 数据 {file_path} 时发生未知错误 (portalocker path): {e_main}", exc_info=True)
+        return default_value
+
+# --- 新增：加载首页配置函数 ---
+def load_homepage_config():
+    """加载首页配置文件，如果文件不存在或无效，则返回默认配置。"""
+    config_data = load_json_data(HOMEPAGE_CONFIG_PATH, default_value=DEFAULT_HOMEPAGE_CONFIG)
+    # 确保返回的字典包含所有默认键
+    final_config = DEFAULT_HOMEPAGE_CONFIG.copy()
+    final_config.update(config_data) # 用加载的数据覆盖默认值
+    return final_config
+
+# --- 新增：保存首页配置函数 ---
+def save_homepage_config(config_data):
+    """将首页配置数据保存到 JSON 文件，带文件锁。"""
+    try:
+        os.makedirs(os.path.dirname(HOMEPAGE_CONFIG_PATH), exist_ok=True)
+        with open(HOMEPAGE_CONFIG_PATH, 'w', encoding='utf-8') as f:
+            portalocker.lock(f, portalocker.LOCK_EX)
+            try:
+                json.dump(config_data, f, ensure_ascii=False, indent=2)
+                f.flush()
+                os.fsync(f.fileno())
+                app.logger.info(f"首页配置已成功写入 {HOMEPAGE_CONFIG_PATH}")
+                return True
+            finally:
+                portalocker.unlock(f)
+    except ImportError:
+        app.logger.warning("portalocker not found, attempting fcntl for saving homepage config.")
+        try:
+            os.makedirs(os.path.dirname(HOMEPAGE_CONFIG_PATH), exist_ok=True)
+            with open(HOMEPAGE_CONFIG_PATH, 'w', encoding='utf-8') as f:
+                fcntl.flock(f.fileno(), fcntl.LOCK_EX) 
+                try:
+                    json.dump(config_data, f, ensure_ascii=False, indent=2)
+                    f.flush()
+                    os.fsync(f.fileno())
+                    app.logger.info(f"首页配置已成功写入 {HOMEPAGE_CONFIG_PATH} (using fcntl)")
+                    return True
+                finally:
+                    fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+        except Exception as e_fcntl_save:
+            app.logger.error(f"使用fcntl保存首页配置文件 {HOMEPAGE_CONFIG_PATH} 时发生错误: {e_fcntl_save}", exc_info=True)
+            return False 
     except IOError as e_io:
-        app.logger.error(f"读取或锁定文件 {file_path} 时发生IO错误: {e_io}", exc_info=True)
-        return default_value # 或者根据情况决定是否抛出异常
+        app.logger.error(f"保存首页配置文件 {HOMEPAGE_CONFIG_PATH} 时发生IO错误: {e_io}", exc_info=True)
+        return False
     except Exception as e:
-        app.logger.error(f"加载 JSON 数据 {file_path} 时发生意外错误: {e}", exc_info=True)
-        return default_value
+        app.logger.error(f"保存首页配置文件时发生意外错误: {e}", exc_info=True)
+        return False
 
 # --- 数据保存函数 (新增) ---
 def save_schools_data(data):
-    """将学校数据（列表）保存到 JSON 文件，带文件锁。"""
+    """将学校数据（列表）保存到 JSON 文件，带文件锁。优先 portalocker, 回退 fcntl。"""
     try:
-        # 确保目录存在
+        # 主路径：尝试使用 portalocker
+        import portalocker
         os.makedirs(os.path.dirname(SCHOOLS_DATA_PATH), exist_ok=True)
-        
-        # --- 文件锁开始 ---
         with open(SCHOOLS_DATA_PATH, 'w', encoding='utf-8') as f:
-            fcntl.flock(f.fileno(), fcntl.LOCK_EX) # 获取排他锁
+            portalocker.lock(f, portalocker.LOCK_EX)
             try:
-                # 确保数据是干净的（没有 NaN 等 JSON 不支持的类型）
-                cleaned_data = replace_nan_with_none(data) # 假设 replace_nan_with_none 已定义
+                cleaned_data = replace_nan_with_none(data)
                 json.dump(cleaned_data, f, ensure_ascii=False, indent=2)
                 f.flush()
-                os.fsync(f.fileno()) # 确保写入磁盘
-                app.logger.info(f"学校数据已成功写入 {SCHOOLS_DATA_PATH}")
-                # fcntl.flock(f.fileno(), fcntl.LOCK_UN) # with 语句会自动解锁
+                os.fsync(f.fileno())
+                app.logger.info(f"学校数据已成功写入 {SCHOOLS_DATA_PATH} (portalocker)")
+                # 写入成功后，在 finally 解锁前返回 True
+            except Exception as e_write_portalocker:
+                app.logger.error(f"使用 portalocker 写入学校数据时出错: {e_write_portalocker}", exc_info=True)
+                return False # 写入失败，在 finally 解锁后会返回此 False
+            finally:
+                portalocker.unlock(f)
+            return True # 如果 try 块成功执行完毕（没有异常），则在此返回 True
+
+    except ImportError:
+        app.logger.warning("portalocker 模块未找到，回退到 fcntl 进行文件写入锁定 (如果可用)。")
+        # 后备路径：尝试使用 fcntl
+        try:
+            import fcntl # fcntl 主要用于 POSIX 系统
+            os.makedirs(os.path.dirname(SCHOOLS_DATA_PATH), exist_ok=True)
+            with open(SCHOOLS_DATA_PATH, 'w', encoding='utf-8') as f_fcntl: # Renamed to avoid conflict
+                fcntl.flock(f_fcntl.fileno(), fcntl.LOCK_EX)
+                try:
+                    cleaned_data = replace_nan_with_none(data)
+                    json.dump(cleaned_data, f_fcntl, ensure_ascii=False, indent=2)
+                    f_fcntl.flush()
+                    os.fsync(f_fcntl.fileno())
+                    app.logger.info(f"学校数据已成功写入 {SCHOOLS_DATA_PATH} (using fcntl)")
+                    # 写入成功后，在 finally 解锁前返回 True
+                except Exception as e_write_fcntl:
+                    app.logger.error(f"使用 fcntl 写入学校数据时出错: {e_write_fcntl}", exc_info=True)
+                    return False # 写入失败，在 finally 解锁后会返回此 False
+                finally:
+                    fcntl.flock(f_fcntl.fileno(), fcntl.LOCK_UN)
+                return True # 如果 try 块成功执行完毕（没有异常），则在此返回 True
+
+        except ImportError: # fcntl 模块也未找到
+            app.logger.error(f"fcntl 模块也未找到。无法为写入操作锁定文件 {SCHOOLS_DATA_PATH}。")
+            app.logger.warning(f"警告：将尝试在不加锁的情况下保存学校数据到 {SCHOOLS_DATA_PATH} (非线程安全)。")
+            try:
+                os.makedirs(os.path.dirname(SCHOOLS_DATA_PATH), exist_ok=True)
+                with open(SCHOOLS_DATA_PATH, 'w', encoding='utf-8') as f_nolock:
+                    cleaned_data = replace_nan_with_none(data)
+                    json.dump(cleaned_data, f_nolock, ensure_ascii=False, indent=2)
+                    f_nolock.flush()
+                    os.fsync(f_nolock.fileno())
+                app.logger.info(f"学校数据已在不加锁的情况下写入 {SCHOOLS_DATA_PATH}。")
                 return True
-            except Exception as e_write:
-                app.logger.error(f"在持有锁的情况下写入学校数据时出错: {e_write}", exc_info=True)
-                # 锁会自动释放
+            except Exception as e_nolock_save:
+                app.logger.error(f"在不加锁的情况下保存学校数据 {SCHOOLS_DATA_PATH} 也失败了: {e_nolock_save}", exc_info=True)
                 return False
-        # --- 文件锁结束 ---
-        
-    except IOError as e_io:
-        app.logger.error(f"打开或锁定学校数据文件 {SCHOOLS_DATA_PATH} 时发生IO错误: {e_io}", exc_info=True)
+        except Exception as e_fcntl_setup: # fcntl 路径下的其他设置错误 (例如makedirs, open 失败)
+            app.logger.error(f"Fcntl 后备路径中设置保存学校数据 {SCHOOLS_DATA_PATH} 时失败: {e_fcntl_setup}", exc_info=True)
+            return False
+            
+    except IOError as e_io_portalocker_setup: # Catches IOError for portalocker path (e.g. os.makedirs, open before lock)
+        app.logger.error(f"保存学校数据 {SCHOOLS_DATA_PATH} 时发生IO错误 (portalocker setup): {e_io_portalocker_setup}", exc_info=True)
         return False
-    except Exception as e:
-        app.logger.error(f"保存学校数据到 {SCHOOLS_DATA_PATH} 时发生意外错误: {e}", exc_info=True)
+    except Exception as e_main_portalocker: # Other errors in portalocker path (e.g. initial open or makedirs failed)
+        app.logger.error(f"保存学校数据 {SCHOOLS_DATA_PATH} 时发生未知错误 (portalocker path): {e_main_portalocker}", exc_info=True)
         return False
 
 # --- 需要确保 replace_nan_with_none 函数存在于 app.py 中 --- 
@@ -121,11 +262,9 @@ def replace_nan_with_none(obj):
     elif isinstance(obj, dict):
         return {key: replace_nan_with_none(value) for key, value in obj.items()}
     elif isinstance(obj, float) and pd.isna(obj): # 需要导入 pandas as pd
-        # 如果不想依赖 pandas，可以检查 math.isnan(obj)
         import math 
         if math.isnan(obj):
            return None
-    # 可以添加对其他 NaN 类型（如 numpy.nan）的处理
     return obj
 
 # --- 辅助函数：用户数据读写 ---
@@ -210,12 +349,21 @@ class SchoolEditForm(FlaskForm):
     enrollment_24_school_total = StringField('24年总招生人数', validators=[Optional()])
     submit = SubmitField('保存更改')
 
+# --- 新增：首页配置表单 ---
+class HomepageConfigForm(FlaskForm):
+    national_line_total_title = StringField('总分国家线图表标题', validators=[DataRequired()])
+    national_line_politics_title = StringField('政治/英语线图表标题', validators=[DataRequired()])
+    national_line_others_title = StringField('数学/专业课线图表标题', validators=[DataRequired()])
+    exam_type_ratio_title = StringField('自命题vs408比例图表标题', validators=[DataRequired()])
+    submit = SubmitField('保存更改')
+
 # --- 视图函数 / 路由 ---
 
 @app.route('/')
 def index():
     """渲染主页 (可视化大面板)。"""
-    return render_template('index.html') # 传递登录状态等信息到模板
+    homepage_config = load_homepage_config() # 加载首页配置
+    return render_template('index.html', homepage_config=homepage_config) # 传递配置到模板
 
 @app.route('/api/schools/list')
 def api_schools_list():
@@ -278,73 +426,104 @@ def get_national_line_total():
 @app.route('/api/national-lines/politics')
 def get_national_line_politics():
     lines_data = load_json_data(NATIONAL_LINES_PATH)
+    # This old endpoint might still be used by something, or can be deprecated.
+    # The new requirement is for a 3-year bar chart, served by /api/national-lines/politics-recent
     if not lines_data or 'politics' not in lines_data or 'years' not in lines_data['politics'] or 'scores' not in lines_data['politics']:
-        return jsonify({"error": "Politics data not found or incomplete"}), 404
+        return jsonify({"error": "Politics data (full history) not found or incomplete"}), 404
 
     politics_data = lines_data['politics']
-    years = politics_data['years']
-    # The legend in HTML was "A类政治/英语"
-    scores = {
-        "A类政治/英语": politics_data['scores'].get("A区", [None] * len(years)),
-        "B类政治/英语": politics_data['scores'].get("B区", [None] * len(years))
-    }
+    years = politics_data.get('years', [])
+    scores_raw = politics_data.get('scores', {})
+    
+    # Make legend names more specific to politics
+    processed_scores = {}
+    if "A区" in scores_raw:
+        processed_scores["A区政治"] = scores_raw["A区"]
+    if "B区" in scores_raw:
+        processed_scores["B区政治"] = scores_raw["B区"]
+    
+    # Fallback if "A区", "B区" are not the exact keys, use what's there but prefix with "政治"
+    if not processed_scores and scores_raw:
+        for key, value in scores_raw.items():
+            processed_scores[f"{key} 政治"] = value
+
+    # Ensure score lists match year list length
+    final_scores = {}
+    for name, data_list in processed_scores.items():
+        if isinstance(data_list, list) and len(data_list) == len(years):
+            final_scores[name] = data_list
+        else:
+            app.logger.warning(f"Legacy API /politics: Score list length mismatch for '{name}'. Padding with None.")
+            final_scores[name] = ([None] * len(years))
+
+
     echarts_data = {
         "years": years,
-        "legend": list(scores.keys()),
+        "legend": list(final_scores.keys()),
         "series": [
-            {
-                "name": name,
-                "data": data,
-                "type": "bar", 
-                "barMaxWidth": 30
-            }
-            for name, data in scores.items()
+            {"name": name, "data": data, "type": "bar", "barMaxWidth": 30}
+            for name, data in final_scores.items()
         ],
-         "yAxis": {
-             "min": "dataMin"
-         }
+         "yAxis": {"min": "dataMin"}
     }
     return jsonify(echarts_data)
 
 @app.route('/api/national-lines/others')
 def get_national_line_others():
     lines_data = load_json_data(NATIONAL_LINES_PATH)
+    # This endpoint is likely to be deprecated or significantly changed
+    # given the new, more specific subject endpoints.
     if not lines_data or 'others' not in lines_data or 'years' not in lines_data['others'] or 'scores' not in lines_data['others']:
-        return jsonify({"error": "Others data not found or incomplete"}), 404
+        return jsonify({"error": "Legacy 'others' data not found or incomplete"}), 404
 
     others_data = lines_data['others']
-    years = others_data['years']
-    # The legend in HTML was "A类数学/专业课". We'll try to pick relevant A/B区 data.
-    # This part is tricky given the current JSON structure for 'others'.
-    # Let's assume we want "数学一" for A区 and B区 as a proxy for "数学/专业课".
-    # A more robust solution would be to restructure national_lines.json for this specific view.
+    years = others_data.get('years', [])
+    scores_raw = others_data.get('scores', {})
+
+    # Attempt to provide something meaningful, e.g. "数学一" data if it exists,
+    # to maintain some backward compatibility if this API is still hit.
+    # This is a placeholder for what used to be complex logic.
+    # The frontend should ideally migrate to new APIs.
     
-    a_scores = others_data['scores'].get("数学一 (A区)", [])
-    b_scores = others_data['scores'].get("数学一 (B区)", [])
+    series_list = []
+    legend_list = []
 
-    # Ensure data length matches years length, padding with None if necessary
-    a_scores_padded = (a_scores + [None] * len(years))[:len(years)]
-    b_scores_padded = (b_scores + [None] * len(years))[:len(years)]
+    # Example: try to find "数学一 (A区)" and "数学一 (B区)"
+    math_one_a_key = "数学一 (A区)"
+    math_one_b_key = "数学一 (B区)"
 
-    scores = {
-        "A类数学/专业课": a_scores_padded,
-        "B类数学/专业课": b_scores_padded
-    }
+    if math_one_a_key in scores_raw and isinstance(scores_raw[math_one_a_key], list) and len(scores_raw[math_one_a_key]) == len(years):
+        series_list.append({
+            "name": "A类数学/专业课 (示例)", # Generic legend
+            "data": scores_raw[math_one_a_key],
+            "type": "line", "smooth": True
+        })
+        legend_list.append("A类数学/专业课 (示例)")
+
+    if math_one_b_key in scores_raw and isinstance(scores_raw[math_one_b_key], list) and len(scores_raw[math_one_b_key]) == len(years):
+        series_list.append({
+            "name": "B类数学/专业课 (示例)", # Generic legend
+            "data": scores_raw[math_one_b_key],
+            "type": "line", "smooth": True
+        })
+        legend_list.append("B类数学/专业课 (示例)")
+
+    if not series_list and scores_raw: # Fallback: take the first few items from 'others'
+        app.logger.info("Legacy API /others: Falling back to generic series from 'others' data.")
+        count = 0
+        for name, data in scores_raw.items():
+            if isinstance(data, list) and len(data) == len(years):
+                series_list.append({"name": name, "data": data, "type": "line", "smooth": True})
+                legend_list.append(name)
+                count += 1
+                if count >= 2: # Limit to a few example series
+                    break
+    
     echarts_data = {
         "years": years,
-        "legend": list(scores.keys()),
-        "series": [
-            {
-                "name": name,
-                "data": data,
-                "type": "line",
-                "smooth": True
-            }
-            for name, data in scores.items() if any(d is not None for d in data) # Only add series if it has some data
-        ],
-         "yAxis": {
-             "min": "dataMin"
-         }
+        "legend": legend_list,
+        "series": series_list,
+        "yAxis": {"min": "dataMin"}
     }
     return jsonify(echarts_data)
 
@@ -1369,59 +1548,139 @@ def admin_save_exam_ratios():
 @app.route('/admin/edit-national-lines', methods=['GET'])
 @admin_required
 def admin_edit_national_lines():
-    national_lines_data = load_json_data(NATIONAL_LINES_PATH, default_value={})
-    return render_template('admin/edit_national_lines.html', national_lines_data=national_lines_data)
+    national_lines_data = load_json_data(NATIONAL_LINES_PATH)
+    fixed_years = ['2023', '2024', '2025'] # Define fixed years
+
+    # Ensure all expected categories for the form are present and structured for fixed years.
+    expected_categories = [
+        'computer_science_total', 'politics', 
+        'english_one', 'english_two', 'math_one', 'math_two'
+    ]
+    areas_to_edit = ['A区', 'B区']
+    
+    processed_data_for_template = {}
+
+    for cat_key in expected_categories:
+        original_category_data = national_lines_data.get(cat_key, {})
+        original_years = original_category_data.get('years', [])
+        original_scores = original_category_data.get('scores', {})
+        
+        # Create a mapping from year to scores for faster lookup
+        original_scores_map_a = {}
+        original_scores_map_b = {}
+        if 'A区' in original_scores and len(original_years) == len(original_scores['A区']):
+             original_scores_map_a = dict(zip(original_years, original_scores['A区']))
+        if 'B区' in original_scores and len(original_years) == len(original_scores['B区']):
+             original_scores_map_b = dict(zip(original_years, original_scores['B区']))
+
+        # Build the structure for the template using fixed years
+        template_scores = {'A区': [], 'B区': []}
+        for year in fixed_years:
+            template_scores['A区'].append(original_scores_map_a.get(year)) # Get score for fixed year, None if not found
+            template_scores['B区'].append(original_scores_map_b.get(year)) # Get score for fixed year, None if not found
+
+        processed_data_for_template[cat_key] = {
+            'years': fixed_years, # Always pass fixed years to template
+            'scores': template_scores
+        }
+
+    return render_template('admin/edit_national_lines.html', national_lines_data=processed_data_for_template)
 
 @app.route('/admin/save-national-lines', methods=['POST'])
 @admin_required
 def admin_save_national_lines():
-    try:
-        form_data = request.form
-        updated_national_lines = {}
-        
-        categories_in_form = set()
-        for key in form_data.keys():
-            if key.endswith('_years[]'):
-                categories_in_form.add(key.split('_years[]')[0])
-        
-        for category in categories_in_form:
-            updated_national_lines[category] = {"years": [], "scores": {}}
-            
-            year_values = request.form.getlist(f'{category}_years[]')
-            valid_years = [year for year in year_values if year.strip()]
-            updated_national_lines[category]["years"] = valid_years
-            
-            score_keys_for_category = [key for key in form_data.keys() if key.startswith(f'{category}_scores_') and key.endswith('[]')]
-            
-            area_names = set()
-            for skey in score_keys_for_category:
-                area_name_part = skey.replace(f'{category}_scores_', '').replace('[]', '')
-                area_names.add(area_name_part)
-                
-            for area in area_names:
-                score_values_str = request.form.getlist(f'{category}_scores_{area}[]')
-                valid_scores = []
-                for s_val_str in score_values_str:
-                    if s_val_str.strip():
-                        try:
-                            if '.' in s_val_str:
-                                valid_scores.append(float(s_val_str))
-                            else:
-                                valid_scores.append(int(s_val_str))
-                        except ValueError:
-                            app.logger.warning(f"Invalid score value '{s_val_str}' for {category} - {area}, skipping.")
-                            valid_scores.append(None)
-                    else:
-                        valid_scores.append(None)
-                
-                updated_national_lines[category]["scores"][area] = (valid_scores + [None] * len(valid_years))[:len(valid_years)]
+    if request.method == 'POST':
+        try:
+            new_national_lines_data = {}
+            fixed_years = ["2023", "2024", "2025"] # Use fixed years
 
-        with open(NATIONAL_LINES_PATH, 'w', encoding='utf-8') as f:
-            json.dump(updated_national_lines, f, ensure_ascii=False, indent=2)
-        flash('国家线数据已成功更新。', 'success')
-    except Exception as e:
-        app.logger.error(f"保存国家线数据时出错: {e}", exc_info=True)
-        flash(f'保存国家线数据时发生错误: {e}', 'danger')
+            categories_config = {
+                'computer_science_total': {'name_cn': '计算机总分', 'areas': ['A区', 'B区']},
+                'politics': {'name_cn': '政治', 'areas': ['A区', 'B区']},
+                'english_one': {'name_cn': '英语一', 'areas': ['A区', 'B区']},
+                'english_two': {'name_cn': '英语二', 'areas': ['A区', 'B区']},
+                'math_one': {'name_cn': '数学一', 'areas': ['A区', 'B区']},
+                'math_two': {'name_cn': '数学二', 'areas': ['A区', 'B区']},
+            }
+
+            for category_key, config in categories_config.items():
+                # Years are now fixed, no need to read from form
+                category_data = {'years': fixed_years, 'scores': {}}
+                all_scores_valid_for_category = True # Flag to track if any score was entered for the category
+
+                for area_name in config['areas']: 
+                    scores_for_area = []
+                    area_has_scores = False # Flag for this specific area
+                    for year in fixed_years:
+                        # Read score using the new name format: category_key_scores_AreaKey_Year
+                        score_form_name = f'{category_key}_scores_{area_name}_{year}'
+                        score_str = request.form.get(score_form_name, '').strip()
+                        
+                        if score_str:
+                            try:
+                                scores_for_area.append(float(score_str))
+                                area_has_scores = True # Mark that this area received at least one score
+                            except ValueError:
+                                scores_for_area.append(None) 
+                                app.logger.warning(f"Invalid score value '{score_str}' for {score_form_name}. Storing as None.")
+                        else:
+                            scores_for_area.append(None) # Store empty strings as None
+                    
+                    category_data['scores'][area_name] = scores_for_area
+                    if area_has_scores:
+                         all_scores_valid_for_category = True # If any area has scores, keep the category
+                
+                # Only add the category to the final data if it had any valid scores entered
+                # This prevents saving empty categories if the user clears all fields
+                # However, the requirement might be to always save the structure for fixed years?
+                # Let's adjust: always save the structure for the fixed years, even if scores are all None.
+                new_national_lines_data[category_key] = category_data
+            
+            # Save the new data (potentially overwriting existing file)
+            # Load existing data first IF we want to preserve other keys not managed by this form?
+            # Current logic replaces the whole file content with only the edited categories.
+            # This seems correct based on the intent to manage these specific lines.
+            
+            os.makedirs(os.path.dirname(NATIONAL_LINES_PATH), exist_ok=True)
+            try:
+                with open(NATIONAL_LINES_PATH, 'w', encoding='utf-8') as f:
+                    portalocker.lock(f, portalocker.LOCK_EX)
+                    try:
+                        # Load old data to merge potentially unmanaged keys (e.g., 'total', 'others')
+                        # Or decide to ONLY save the managed keys.
+                        # Let's stick to saving only the managed keys for simplicity and clarity.
+                        # To preserve other keys: 
+                        # old_data = load_json_data(NATIONAL_LINES_PATH) 
+                        # old_data.update(new_national_lines_data) # Merge changes
+                        # json.dump(old_data, f, ensure_ascii=False, indent=2)
+                        
+                        # Simpler: Overwrite with only the edited/fixed-year data
+                        json.dump(new_national_lines_data, f, ensure_ascii=False, indent=2)
+                        f.flush(); os.fsync(f.fileno())
+                    finally:
+                        portalocker.unlock(f)
+                flash('国家线数据已成功更新 (固定年份: 2023-2025)。', 'success')
+            except ImportError: 
+                app.logger.warning("portalocker not available for saving national lines. Attempting fcntl.")
+                with open(NATIONAL_LINES_PATH, 'w', encoding='utf-8') as f:
+                    fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+                    try:
+                        json.dump(new_national_lines_data, f, ensure_ascii=False, indent=2)
+                        f.flush(); os.fsync(f.fileno())
+                    finally:
+                        fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+                flash('国家线数据已成功更新 (使用fcntl, 固定年份: 2023-2025)。', 'success')
+            except Exception as e_save_lock: 
+                app.logger.error(f"保存国家线数据时在锁定或写入阶段出错: {e_save_lock}", exc_info=True)
+                flash(f'保存国家线数据时发生内部错误: {str(e_save_lock)}', 'danger')
+
+        except Exception as e_main: 
+            app.logger.error(f"保存国家线数据时发生主处理错误: {e_main}", exc_info=True)
+            flash(f'保存国家线数据时发生严重错误: {str(e_main)}', 'danger')
+        
+        return redirect(url_for('admin_edit_national_lines'))
+
+    # If not POST, redirect back
     return redirect(url_for('admin_edit_national_lines'))
 
 @app.route('/admin/announcements/update', methods=['POST'])
@@ -1440,7 +1699,7 @@ def admin_update_announcement():
         updated = False
 
         with open(announcements_file_path, 'r+', encoding='utf-8') as f:
-            fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+            portalocker.lock(f, portalocker.LOCK_EX)
             try:
                 content = f.read()
                 if not content:
@@ -1462,8 +1721,7 @@ def admin_update_announcement():
                 f.seek(0)
                 f.truncate()
                 json.dump(announcements, f, ensure_ascii=False, indent=2)
-                f.flush()
-                os.fsync(f.fileno())
+                f.flush(); os.fsync(f.fileno())
                 app.logger.info(f"公告 '{original_title}' 已更新为 '{new_title}'")
                 return jsonify({'status': 'success', 'message': '公告已成功更新。'})
             else:
@@ -1493,7 +1751,7 @@ def delete_announcement():
         deleted = False
 
         with open(announcements_file_path, 'r+', encoding='utf-8') as f:
-            fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+            portalocker.lock(f, portalocker.LOCK_EX)
             try:
                 content = f.read()
                 if not content:
@@ -1512,8 +1770,7 @@ def delete_announcement():
                 f.seek(0)
                 f.truncate()
                 json.dump(announcements, f, ensure_ascii=False, indent=2)
-                f.flush()
-                os.fsync(f.fileno())
+                f.flush(); os.fsync(f.fileno())
                 app.logger.info(f"公告 '{title_to_delete}' 已被删除。")
                 return jsonify({'status': 'success', 'message': '公告已成功删除。'})
             else:
@@ -1554,31 +1811,363 @@ def save_favorites_count(counts_dict):
     try:
         os.makedirs(os.path.dirname(FAVORITES_COUNT_PATH), exist_ok=True)
         with open(FAVORITES_COUNT_PATH, 'w', encoding='utf-8') as f:
-            fcntl.flock(f.fileno(), fcntl.LOCK_EX) # 排他锁
+            portalocker.lock(f, portalocker.LOCK_EX)
             try:
                 json.dump(counts_dict, f, ensure_ascii=False, indent=2)
-                f.flush()
-                os.fsync(f.fileno())
-                return True
+                f.flush(); os.fsync(f.fileno())
             finally:
-                fcntl.flock(f.fileno(), fcntl.LOCK_UN)
-    except IOError as e_io:
-        app.logger.error(f"保存收藏数文件 {FAVORITES_COUNT_PATH} 时发生IO错误: {e_io}", exc_info=True)
-        return False
-    except Exception as e:
-        app.logger.error(f"保存收藏数文件时发生意外错误: {e}", exc_info=True)
+                portalocker.unlock(f)
+            return True
+    except ImportError:
+        app.logger.warning("portalocker not found, using fcntl for save_favorites_count.")
+        try:
+            with open(FAVORITES_COUNT_PATH, 'w', encoding='utf-8') as f:
+                fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+                try:
+                    json.dump(counts_dict, f, ensure_ascii=False, indent=2)
+                    f.flush(); os.fsync(f.fileno())
+                finally:
+                    fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+                return True
+        except Exception as e_fcntl: # Catch fcntl specific errors
+            app.logger.error(f"使用fcntl保存收藏统计时出错: {e_fcntl}", exc_info=True)
+            return False
+    except Exception as e: # Catch general errors like IOError from open() if portalocker path fails before import error
+        app.logger.error(f"保存收藏统计时发生错误: {e}", exc_info=True)
         return False
 
+# --- 新增：编辑首页配置路由 ---
+@app.route('/admin/edit-homepage', methods=['GET', 'POST'])
+@admin_required
+def admin_edit_homepage():
+    current_config = load_homepage_config()
+    form = HomepageConfigForm(data=current_config)
+
+    if form.validate_on_submit():
+        new_config = {
+            "national_line_total_title": form.national_line_total_title.data,
+            "national_line_politics_title": form.national_line_politics_title.data,
+            "national_line_others_title": form.national_line_others_title.data,
+            "exam_type_ratio_title": form.exam_type_ratio_title.data
+        }
+        if save_homepage_config(new_config):
+            flash('首页配置已成功更新。', 'success')
+        else:
+            flash('保存首页配置时出错！', 'danger')
+        return redirect(url_for('admin_edit_homepage')) # 重定向回当前页面
+
+    return render_template('admin/edit_homepage.html', form=form)
+
+# --- 新增API端点 ---
+@app.route('/api/national-lines/computer-science-total')
+def get_national_line_computer_science_total():
+    lines_data = load_json_data(NATIONAL_LINES_PATH)
+    cs_total_data = lines_data.get('computer_science_total')
+
+    if not cs_total_data:
+        app.logger.warning("API: /api/national-lines/computer-science-total - Computer Science total data not found in JSON.")
+        return jsonify({"error": "Computer Science total data not found"}), 404
+
+    years, scores, legend_keys_from_data = get_recent_n_years_data(cs_total_data, n=3)
+
+    if years is None:
+         app.logger.warning("API: /api/national-lines/computer-science-total - Insufficient data or format error from get_recent_n_years_data.")
+         return jsonify({"error": "Insufficient data or data format error for Computer Science total"}), 404
+
+    series_data = []
+    legend_display = []
+    area_map = {"A区": "A区计算机总分", "B区": "B区计算机总分"}
+    
+    for area_key, display_name in area_map.items():
+        if area_key in scores:
+            series_data.append({
+                "name": display_name,
+                "data": scores[area_key], 
+                "type": "line",
+                "smooth": True
+            })
+            legend_display.append(display_name)
+    
+    if not series_data and legend_keys_from_data:
+        app.logger.info("API: /computer-science-total - A区/B区 not found in scores, using other keys from data.")
+        for key in legend_keys_from_data:
+            display_name = f"{key}计算机总分"
+            series_data.append({
+                "name": display_name,
+                "data": scores.get(key, [None] * len(years)),
+                "type": "line",
+                "smooth": True
+            })
+            legend_display.append(display_name)
+    
+    if not series_data:
+        app.logger.warning("API: /computer-science-total - No series data could be constructed.")
+
+    # 计算 Y 轴范围
+    y_axis_config = calculate_y_axis_range(series_data)
+
+    echarts_data = {
+        "years": years,
+        "legend": legend_display,
+        "series": series_data,
+        "yAxis": y_axis_config # 使用计算出的范围
+    }
+    return jsonify(echarts_data)
+
+@app.route('/api/national-lines/politics-recent')
+def get_national_line_politics_recent():
+    lines_data = load_json_data(NATIONAL_LINES_PATH)
+    politics_data = lines_data.get('politics')
+
+    if not politics_data:
+        app.logger.warning("API: /politics-recent - Politics data not found in JSON.")
+        return jsonify({"error": "Politics data not found"}), 404
+
+    years, scores, legend_keys_from_data = get_recent_n_years_data(politics_data, n=3)
+
+    if years is None:
+        app.logger.warning("API: /politics-recent - Insufficient data or format error from get_recent_n_years_data for Politics.")
+        return jsonify({"error": "Insufficient data or data format error for Politics"}), 404
+
+    series_data = []
+    legend_display = []
+    area_map = {"A区": "A区政治", "B区": "B区政治"}
+
+    for area_key, display_name in area_map.items():
+        if area_key in scores:
+            series_data.append({
+                "name": display_name,
+                "data": scores[area_key],
+                "type": "bar",
+                "barMaxWidth": 30
+            })
+            legend_display.append(display_name)
+
+    if not series_data and legend_keys_from_data: # Fallback
+        app.logger.info("API: /politics-recent - A区/B区 not found in scores, using other keys from data for Politics.")
+        for key in legend_keys_from_data:
+            display_name = f"{key}政治"
+            series_data.append({
+                "name": display_name,
+                "data": scores.get(key, [None] * len(years)),
+                "type": "bar",
+                "barMaxWidth": 30
+            })
+            legend_display.append(display_name)
+    
+    if not series_data:
+        app.logger.warning("API: /politics-recent - No series data could be constructed for Politics.")
+
+    # 计算 Y 轴范围
+    y_axis_config = calculate_y_axis_range(series_data)
+
+    echarts_data = {
+        "years": years,
+        "legend": legend_display,
+        "series": series_data,
+        "yAxis": y_axis_config # 使用计算出的范围
+    }
+    return jsonify(echarts_data)
+
+@app.route('/api/national-lines/english-math-subjects')
+def get_national_line_english_math_subjects():
+    lines_data = load_json_data(NATIONAL_LINES_PATH)
+    
+    subjects_config = {
+        "english_one": "英语一",
+        "english_two": "英语二",
+        "math_one": "数学一",
+        "math_two": "数学二"
+    }
+    
+    all_years_set = set()
+    subject_data_map = {} 
+
+    for key, display_name_prefix in subjects_config.items():
+        data = lines_data.get(key)
+        if data and isinstance(data.get('years'), list) and isinstance(data.get('scores'), dict):
+            subject_data_map[key] = data
+            all_years_set.update(data['years']) 
+        else:
+            app.logger.warning(f"API: /english-math-subjects - Data for subject key '{key}' is missing, incomplete, or malformed.")
+    
+    if not subject_data_map:
+        app.logger.warning("API: /english-math-subjects - No valid English or Math subject data found.")
+        return jsonify({"error": "English or Math subject data not found or is malformed"}), 404
+
+    if not all_years_set:
+        app.logger.warning("API: /english-math-subjects - No years found across any English/Math subjects.")
+        return jsonify({"error": "No year data available for English/Math subjects"}), 404
+        
+    final_years = sorted(list(all_years_set))
+
+    series_data = []
+    legend_data = []
+
+    for key, display_name_prefix in subjects_config.items():
+        subject_entry = subject_data_map.get(key)
+        if subject_entry:
+            scores_a_区_original = subject_entry.get('scores', {}).get('A区')
+            subject_years_original = subject_entry.get('years')
+
+            if isinstance(scores_a_区_original, list) and isinstance(subject_years_original, list) and len(scores_a_区_original) == len(subject_years_original):
+                aligned_scores = [None] * len(final_years)
+                temp_score_map = dict(zip(subject_years_original, scores_a_区_original))
+                
+                for i, year_val in enumerate(final_years):
+                    aligned_scores[i] = temp_score_map.get(year_val)
+                
+                series_name = f"{display_name_prefix} (A区)"
+                series_data.append({
+                    "name": series_name,
+                    "data": aligned_scores,
+                    "type": "line",
+                    "smooth": True
+                })
+                legend_data.append(series_name)
+            else:
+                app.logger.warning(f"API: /english-math-subjects - Scores for '{key}' (A区) are missing, malformed, or year mismatch. Skipping this series.")
+
+    if not series_data:
+         app.logger.warning("API: /english-math-subjects - No series data could be generated after processing all subjects.")
+         return jsonify({"error": "No series data could be generated for English/Math subjects"}), 404
+
+    # 计算 Y 轴范围
+    y_axis_config = calculate_y_axis_range(series_data)
+
+    echarts_data = {
+        "years": final_years,
+        "legend": legend_data,
+        "series": series_data,
+        "yAxis": y_axis_config # 使用计算出的范围
+    }
+    return jsonify(echarts_data)
+
+# --- 辅助函数：获取最近N年的数据 ---
+# MOVED HERE - Correct Placement
+def get_recent_n_years_data(data_category, n=3):
+    if not data_category or 'years' not in data_category or 'scores' not in data_category:
+        app.logger.debug(f"get_recent_n_years_data: Initial data check failed. Category: {data_category}")
+        return None, None, None
+
+    years = data_category['years']
+    scores_dict = data_category['scores']
+
+    if not isinstance(years, list) or not isinstance(scores_dict, dict):
+        app.logger.warning(f"get_recent_n_years_data: Invalid data types. Years is {type(years)}, scores_dict is {type(scores_dict)}")
+        return None, None, None
+        
+    if len(years) == 0: 
+        app.logger.debug("get_recent_n_years_data: Empty years list.")
+        return [], {}, [] # Return empty structures if no years
+
+    if len(years) <= n:
+        final_years = years
+        final_scores = {}
+        for key, score_list in scores_dict.items():
+            if isinstance(score_list, list) and len(score_list) == len(final_years):
+                final_scores[key] = score_list
+            else:
+                app.logger.warning(f"get_recent_n_years_data: Score list length mismatch for '{key}' (len {len(score_list) if isinstance(score_list, list) else 'N/A'}) vs years (len {len(final_years)}) when len(years) <= n. Padding with Nones.")
+                final_scores[key] = [None] * len(final_years)
+        return final_years, final_scores, list(final_scores.keys())
+
+    recent_years = years[-n:]
+    recent_scores = {}
+    
+    for key, score_list in scores_dict.items():
+        if isinstance(score_list, list) and len(score_list) == len(years): 
+            recent_scores[key] = score_list[-n:]
+        else:
+            app.logger.warning(f"get_recent_n_years_data: Score list '{key}' (len {len(score_list) if isinstance(score_list, list) else 'N/A'}) full length mismatch vs total years (len {len(years)}). Padding recent_scores with Nones.")
+            recent_scores[key] = [None] * n 
+            
+    return recent_years, recent_scores, list(scores_dict.keys())
+
+# --- 辅助函数：计算 ECharts Y 轴范围（带缓冲）---
+def calculate_y_axis_range(series_data, min_buffer_value=5, buffer_percentage=0.1):
+    """根据 series 数据计算 Y 轴的 min 和 max，并添加缓冲。"""
+    all_values = []
+    if not series_data:
+        return {'min': 0, 'max': 100} # 默认范围
+
+    for series in series_data:
+        if isinstance(series.get('data'), list):
+            for value in series['data']:
+                if value is not None and isinstance(value, (int, float)):
+                    all_values.append(value)
+
+    if not all_values:
+        return {'min': 0, 'max': 100} # 没有有效数据点
+
+    data_min = min(all_values)
+    data_max = max(all_values)
+    data_range = data_max - data_min
+
+    if data_range == 0: # 如果所有值都相同
+        buffer = max(min_buffer_value, abs(data_min * buffer_percentage)) # 基于值的百分比或最小缓冲
+    else:
+        buffer = max(data_range * buffer_percentage, min_buffer_value) # 使用范围百分比或最小缓冲中较大的一个
+        
+    # 计算最终范围，确保 min 不小于 0 （对于分数线等场景）
+    y_min = max(0, data_min - buffer)
+    y_max = data_max + buffer
+
+    # 可选：进行取整或其他美化处理，这里暂时不加
+    # y_min = math.floor(y_min)
+    # y_max = math.ceil(y_max)
+    
+    # 对于非常小的负数 y_min (如果允许负数且 data_min 接近0)，可能需要特殊处理
+    # 但这里我们用了 max(0, ...)，所以 y_min 不会是负数
+
+    return {'min': y_min, 'max': y_max}
+
+# --- 启动应用 ---
 if __name__ == '__main__':
+    # --- 日志配置 ---
     log_dir = os.path.join(BASE_DIR, 'logs')
     os.makedirs(log_dir, exist_ok=True)
-    log_file = os.path.join(log_dir, 'app.log')
+    log_file_path = os.path.join(log_dir, 'app.log')
 
-    file_handler = RotatingFileHandler(log_file, maxBytes=1024*1024*5, backupCount=5, encoding='utf-8')
-    file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s'))
+    log_format = '%(asctime)s - %(levelname)s - %(name)s - %(module)s.%(funcName)s:%(lineno)d - %(message)s'
+    formatter = logging.Formatter(log_format)
+
+    # Rotating File Handler
+    # Rotate logs at 5MB, keep 5 backup logs
+    file_handler = RotatingFileHandler(log_file_path, maxBytes=5*1024*1024, backupCount=5, encoding='utf-8')
+    file_handler.setFormatter(formatter)
+    file_handler.setLevel(logging.INFO) # Log INFO and above to file
+
+    # Console Handler (for development/debugging)
+    # console_handler = logging.StreamHandler()
+    # console_handler.setFormatter(formatter)
+    # console_handler.setLevel(logging.DEBUG) # Log DEBUG and above to console
+
+    # 获取 Flask 的默认 logger (app.logger) 并添加 handler
+    # app.logger is already a logger instance. We can add handlers to it.
+    # Or, get the root logger if preferred: logging.getLogger()
     
-    app.logger.setLevel(logging.DEBUG)
-    app.logger.addHandler(file_handler)
+    # Clear existing handlers from app.logger if any were added by Flask/extensions by default
+    # to avoid duplicate logs if this script is re-run or in certain environments.
+    # However, this might also remove Flask's default handler. Be cautious.
+    # For this setup, we're adding our custom handlers.
+    
+    # app.logger.handlers.clear() # Optional: if you want only your handlers
 
-    app.logger.info("Flask 应用启动")
-    app.run(debug=True, port=5001) 
+    # Add handlers to Flask's app.logger
+    app.logger.addHandler(file_handler)
+    # app.logger.addHandler(console_handler) # Uncomment for console output
+    
+    # Set the level for app.logger itself.
+    # If set to DEBUG, and handlers are set to INFO, handlers will still only log INFO.
+    # If set to WARNING, handlers set to INFO will only see WARNING and above.
+    app.logger.setLevel(logging.INFO) # Set root level for app.logger
+
+    # Also configure the root logger if other libraries are to use this setup (optional)
+    # logging.basicConfig(level=logging.INFO, handlers=[file_handler, console_handler])
+    
+    app.logger.info("Flask应用启动，日志已配置。")
+    # 移除旧的 fcntl 引用，因为它已被 portalocker 替代或作为后备方案
+    # del fcntl 
+
+    app.run(debug=True, host='0.0.0.0', port=5001)

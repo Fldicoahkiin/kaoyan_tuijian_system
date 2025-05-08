@@ -16,9 +16,12 @@
     <div class="dashboard-grid d-flex align-items-stretch">
         <!-- 第一列：国家线图表 -->
         <div class="left-column flex-shrink-0" style="min-width: 300px;">
-            <div id="national-line-total" class="chart-container mb-3"></div>
-            <div id="national-line-politics" class="chart-container mb-3"></div>
-        <div id="national-line-others" class="chart-container"></div>
+            {# 左上角：计算机总分国家线折线图 #}
+            <div id="national-line-cs-total" class="chart-container mb-3"></div>
+            {# 左中：政治近3年国家线柱状图 #}
+            <div id="national-line-politics-recent" class="chart-container mb-3"></div>
+            {# 左下角：英语、数学国家线走向折线图 #}
+            <div id="national-line-eng-math" class="chart-container"></div>
         </div>
 
         <!-- 第二列：院校滚动列表 - 占据剩余空间 -->

@@ -3,7 +3,7 @@
 
 {% block admin_content %}
 <div class="container-fluid px-4">
-    <h1 class="mt-4">编辑国家线数据</h1>
+    <h1 class="mt-4">编辑国家线数据 (固定年份: 2023, 2024, 2025)</h1>
     <ol class="breadcrumb mb-4">
         <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}">仪表盘</a></li>
         <li class="breadcrumb-item active">编辑国家线数据</li>
@@ -12,44 +12,69 @@
     <div class="card mb-4">
         <div class="card-header">
             <i class="fas fa-chart-line me-1"></i>
-            国家线数据
+            国家线数据编辑
         </div>
         <div class="card-body">
-            <p class="text-muted small">此数据用于首页的国家线相关图表。</p>
+            <p class="text-muted small">此数据用于首页更新后的国家线图表。请为固定的 2023、2024、2025 年输入A区和B区的分数。</p>
             <form method="POST" action="{{ url_for('admin_save_national_lines') }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
                 {% if national_lines_data %}
-                    {# 定义一个字典用于映射英文类别名到中文显示名 #}
+                    {# 定义新的分类顺序和显示名称 #}
+                    {% set desired_category_order = [
+                        'computer_science_total', 
+                        'politics', 
+                        'english_one', 
+                        'english_two', 
+                        'math_one', 
+                        'math_two'
+                    ] %}
                     {% set category_display_names = {
-                        'total': '总分趋势',
-                        'politics': '政治/英语趋势',
-                        'others': '数/专科趋势'
+                        'computer_science_total': '计算机总分国家线',
+                        'politics': '政治国家线',
+                        'english_one': '英语一国家线',
+                        'english_two': '英语二国家线',
+                        'math_one': '数学一国家线',
+                        'math_two': '数学二国家线'
                     } %}
-                    {% for category_key, details in national_lines_data.items() %}
-                        <h4 class="mt-4">{{ category_display_names.get(category_key, category_key|capitalize) }}</h4>
-                        <div class="mb-3 row">
-                            <label class="col-sm-2 col-form-label">年份:</label>
-                            <div class="col-sm-10">
-                                {% for year in details.years %}
-                                    <input type="text" class="form-control d-inline-block me-2" style="width: auto;" name="{{category_key}}_years[]" value="{{ year }}">
+                    {% set areas_to_edit = ['A区', 'B区'] %}
+                    {% set fixed_years = ['2023', '2024', '2025'] %} {# 固定年份 #}
+
+                    {% for category_key in desired_category_order %}
+                        {% set details = national_lines_data.get(category_key) %}
+                        {# app.py ensures details exist, possibly pre-filled for fixed_years #}
+                        <h4 class="mt-4 pt-2 border-top">{{ category_display_names.get(category_key, category_key|capitalize) }}</h4>
+                        
+                        {# 年份显示 - 固定 #}
+                        <div class="mb-1 row">
+                            <label class="col-sm-2 col-form-label fw-bold">年份:</label>
+                            <div class="col-sm-10 d-flex align-items-center">
+                                {% for year in fixed_years %}
+                                <span class="form-control-plaintext d-inline-block me-2 mb-1" style="width: auto; text-align: center; min-width: 70px;">{{ year }}</span>
                                 {% endfor %}
                             </div>
                         </div>
-                        {% for area, scores_list in details.scores.items() %}
+
+                        {# 分数输入 - A区和B区，固定三年 #}
+                        {% for area_name in areas_to_edit %}
                             <div class="mb-3 row">
-                                <label class="col-sm-2 col-form-label">{{ area }} 分数:</label>
-                                <div class="col-sm-10 score-inputs" id="scores-{{category_key}}-{{area.replace(' ', '_').replace('(','').replace(')','')}}">
-                                    {% for score in scores_list %}
-                                        <input type="number" step="0.5" class="form-control d-inline-block me-2" style="width: auto;" name="{{category_key}}_scores_{{area}}[]" value="{{ score }}">
+                                <label class="col-sm-2 col-form-label">{{ area_name }} 分数:</label>
+                                <div class="col-sm-10 d-flex">
+                                    {% for year in fixed_years %}
+                                        {# Access score directly using loop index from pre-processed data #}
+                                        {% set score_list = details.scores.get(area_name, []) %}
+                                        {% set current_score = score_list[loop.index0] if loop.index0 < score_list|length else None %}
+                                        <input type="number" step="0.5" class="form-control d-inline-block me-2 mb-1" style="width: auto; min-width: 70px;" 
+                                               name="{{category_key}}_scores_{{area_name}}_{{year}}" 
+                                               value="{{ current_score if current_score is not none else '' }}" 
+                                               placeholder="{{year}}">
                                     {% endfor %}
                                 </div>
                             </div>
                         {% endfor %}
-                        <hr>
                     {% endfor %}
                 {% else %}
-                    <p>没有加载到国家线数据。</p>
+                    <p>没有加载到国家线数据结构。请检查 `app.py` 中 `admin_edit_national_lines` 的逻辑。</p>
                 {% endif %}
 
                 <div class="d-flex justify-content-end mt-4">
@@ -60,8 +85,9 @@
     </div>
 </div>
 
-{% block admin_body_scripts %}
-{{ super() }}
 {% endblock %}
 
+{% block admin_body_scripts %}
+{{ super() }}
+{# Removed the JavaScript for adding year/score rows #}
 {% endblock %} 
