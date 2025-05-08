@@ -721,7 +721,7 @@ def school_list():
     level_filter = request.args.get('level', '')
     rank_filter = request.args.get('rank', '')
     region_filter = request.args.get('region_filter', '')
-    sort_by = request.args.get('sort', 'default')
+    sort_by = request.args.get('sort', 'favorites') # 修正这里的默认值为 'favorites'
     page = request.args.get('page', 1, type=int)
     per_page = 20 # 每页显示数量
 
@@ -746,21 +746,31 @@ def school_list():
         filtered_schools = [s for s in filtered_schools if s.get('region') == region_filter]
         
     # 加载收藏数
-    favorites_counts = load_favorites_count()
+    favorites_counts = load_favorites_count() # 确保 get_favorites_count() 正确工作
 
-    if sort_by == 'favorites':
-        # 使用加载的 counts 进行排序
-        for school in filtered_schools:
-            school['temp_favorites_count'] = favorites_counts.get(school['id'], 0)
-        filtered_schools.sort(key=lambda x: x.get('temp_favorites_count', 0), reverse=True)
-    elif sort_by == 'default' or True:
-        # Sorting logic
-        # Apply the same fix for NoneType comparison as in data_processor.py
+    # 为每个学校添加收藏数字段，以便后续排序和显示
+    for school in filtered_schools:
+        school_id = school.get('id', school.get('name')) # 获取学校ID
+        # 确保使用字符串ID进行查找，因为JSON键可能是字符串
+        school['favorites_count'] = favorites_counts.get(str(school_id), 0) 
+
+    # --- 修正排序逻辑的默认值 ---
+    # 获取排序参数，确保默认按收藏数排序
+    sort_by = request.args.get('sort', 'favorites') # 修正这里的默认值为 'favorites'
+
+    if sort_by == 'default':
+        # 按默认的区域、省份、名称排序
         filtered_schools.sort(key=lambda x: (
             x.get('region') or '', 
             x.get('province') or '', 
             x.get('name') or ''
         ))
+        app.logger.debug("Sorting schools by default (region, province, name).")
+    else: # 默认情况 (sort_by is 'favorites' or not provided)
+        # 按 'favorites_count' 降序排序
+        filtered_schools.sort(key=lambda x: x.get('favorites_count', 0), reverse=True)
+        app.logger.debug("Sorting schools by favorites count (descending) as default or requested.")
+    # --- 结束修改 ---
 
     total_schools = len(filtered_schools)
     total_pages = ceil(total_schools / per_page)
@@ -779,19 +789,15 @@ def school_list():
         if user_data and 'favorites' in user_data:
             current_user_favorites = user_data['favorites']
     
-    app.logger.debug(f"[school_list] Loaded favorites counts: {favorites_counts}")
-    app.logger.debug("--- [school_list] Assigning favorite status and counts to paginated schools ---") # DEBUG
+    # # Debugging logs moved or removed for clarity, favorite count is already added above
+    # app.logger.debug(f"[school_list] Loaded favorites counts: {favorites_counts}")
+    # app.logger.debug("--- [school_list] Assigning favorite status and counts to paginated schools ---") # DEBUG
     for school in paginated_schools:
         school_id = school.get('id')
         school['is_favorite'] = school_id in current_user_favorites
-        
-        # --- DEBUG: 打印正在查找的 ID 和获取到的计数 --- 
-        retrieved_count = favorites_counts.get(school_id, 0)
-        app.logger.debug(f"  - School ID: '{school_id}' (Type: {type(school_id)}), Retrieved Count: {retrieved_count} (Type: {type(retrieved_count)})")
-        # --- END DEBUG ---
-        
-        school['favorites_count'] = retrieved_count
-    app.logger.debug("--- [school_list] Finished assigning --- ") # DEBUG
+        # Favorites count is already added above
+        # school['favorites_count'] = favorites_counts.get(str(school_id), 0)
+    # app.logger.debug("--- [school_list] Finished assigning --- ") # DEBUG
 
     return render_template('school_list.html',
                            schools=paginated_schools,
@@ -806,7 +812,7 @@ def school_list():
                            current_level=level_filter,
                            current_rank=rank_filter,
                            current_region=region_filter,
-                           current_sort=sort_by,
+                           current_sort=sort_by, # 传递当前的排序方式
                            search_query=search_query,
                            current_user_favorites=current_user_favorites)
 

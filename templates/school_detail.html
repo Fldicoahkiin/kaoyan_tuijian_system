@@ -16,7 +16,7 @@
                     <h2 class="mb-0 d-flex justify-content-between align-items-center">
                         <span><i class="fas fa-university me-2"></i>{{ school.name }}</span>
                         <div>
-                            <span class="badge bg-secondary me-2">{{ school.level }}</span>
+                            <span class="badge {% if school.level == '985' %}bg-danger{% elif school.level == '211' %}bg-warning text-dark{% elif school.level == '双一流' %}bg-success{% else %}bg-secondary{% endif %} me-2">{{ school.level }}</span>
                             <span class="badge bg-info me-2">{{ school.province | default('未知省份') }}</span>
                             <span class="badge {% if school.region == 'A区' %}bg-primary{% elif school.region == 'B区' %}bg-info{% else %}bg-secondary{% endif %} me-2">{{ school.region | default('未知地区') }}</span>
                              <button class="btn btn-sm btn-outline-warning favorite-btn ms-3" data-school-id="{{ school.id }}">
@@ -50,7 +50,7 @@
                                                 <li class="list-group-item bg-transparent">
                                                     <h5 class="mb-3 text-info">
                                                         <i class="fas fa-graduation-cap me-2"></i>{{ major.major_name }}
-                                                        <small class="text-muted">({{ major.major_code }})</small>
+                                                        <small>({{ major.major_code }})</small>
                                                     </h5>
                                                     <div class="row g-3">
                                                         <div class="col-md-6">
@@ -117,7 +117,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     {# 渲染 ECharts 图表 #}
-    const scoreChartOptions = {{ score_chart_options | safe }};
+    const scoreChartOptions = {{ score_chart_options | tojson | safe }};
     if (scoreChartOptions) {
         const scoreChartDom = document.getElementById('score-chart');
         if (scoreChartDom) {
@@ -137,11 +137,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const isFavorited = this.querySelector('i').classList.contains('fas'); // 检查是否已经收藏
             const url = `/api/school/favorite/${schoolId}`;
             const method = isFavorited ? 'DELETE' : 'POST'; // 如果已收藏则DELETE，否则POST
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content'); // 获取 CSRF token
 
             fetch(url, {
                 method: method,
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken // 添加 CSRF token header
                 }
             })
             .then(response => response.json())
