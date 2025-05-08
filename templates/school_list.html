@@ -74,8 +74,10 @@
                     <th style="width: 90px; position: relative;">省份<div class="col-resizer"></div></th>
                     <th style="width: 70px; position: relative;">地区<div class="col-resizer"></div></th>
                     <th style="width: 120px; position: relative;">计算机等级<div class="col-resizer"></div></th>
-                    <th style="width: 100px; position: relative; text-align: center;">热度<div class="col-resizer"></div></th>
-                    <th style="width: 100px; text-align: center;">操作</th>
+                    <th style="width: 100px; position: relative; text-align: center;">24年总招生<div class="col-resizer"></div></th>
+                    <th style="width: 200px; position: relative; white-space: nowrap;">初试科目<div class="col-resizer"></div></th>
+                    <th style="width: 80px; position: relative; text-align: center;">收藏数<div class="col-resizer"></div></th>
+                    <th style="width: 120px; text-align: center;" class="sticky-col-right">操作</th>
                 </tr>
             </thead>
             <tbody>
@@ -88,8 +90,10 @@
                         <td><span class="badge {% if school.region == 'A区' %}bg-primary{% elif school.region == 'B区' %}bg-info{% else %}bg-secondary{% endif %}">{{ school.region or '未知' }}</span></td>
                         <td>{{ school.computer_rank or '-' }}</td>
                         <td>{{ school.enrollment_24_school_total or '-' }}</td>
-                        <td>
-                            <div class="d-flex gap-2">
+                        <td style="white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis;" title="{{ school.exam_subjects_summary or school.exam_subjects or '-' }}">{{ school.exam_subjects_summary | default(school.exam_subjects, true) | default('-', true) }}</td>
+                        <td style="text-align: center;">{{ school.favorite_count | default(0) }}</td>
+                        <td class="sticky-col-right">
+                            <div class="d-flex gap-2 justify-content-center" style="white-space: nowrap;">
                                 <a href="{{ url_for('school_detail', school_id=school.id) }}" class="btn btn-sm btn-info"><i class="fas fa-eye"></i> 查看详情</a>
                                 {% if 'username' in session %}
                                     <button type="button" class="btn btn-sm {% if school.is_favorite %}btn-danger{% else %}btn-outline-danger{% endif %} favorite-btn" data-school-id="{{ school.id }}">
@@ -160,50 +164,5 @@
 
 {% block scripts %}
 {{ super() }}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // 收藏按钮处理
-    const favoriteButtons = document.querySelectorAll('.favorite-btn');
-    favoriteButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const schoolId = this.dataset.schoolId;
-            const isFavorited = this.classList.contains('btn-danger');
-            const url = `/api/school/favorite/${schoolId}`;
-            const method = isFavorited ? 'DELETE' : 'POST';
-            
-            fetch(url, {
-                method: method,
-                headers: { 'Content-Type': 'application/json' }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    if (data.action === 'favorited' || data.action === 'already_favorited') {
-                        this.classList.remove('btn-outline-danger');
-                        this.classList.add('btn-danger');
-                        this.querySelector('i').classList.remove('far');
-                        this.querySelector('i').classList.add('fas');
-                        this.querySelector('span').textContent = ' 取消收藏';
-                    } else {
-                        this.classList.remove('btn-danger');
-                        this.classList.add('btn-outline-danger');
-                        this.querySelector('i').classList.remove('fas');
-                        this.querySelector('i').classList.add('far');
-                        this.querySelector('span').textContent = ' 收藏';
-                    }
-                } else if (data.redirect) {
-                    window.location.href = data.redirect;
-                } else {
-                    alert('操作失败: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('发生错误，请稍后重试。');
-            });
-        });
-    });
-});
-</script>
 {% endblock %}
 {% endblock %} 

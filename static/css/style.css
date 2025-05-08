@@ -38,24 +38,20 @@
 }
 
 html, body {
-    height: 100%; /* Ensure html and body take full height */
+    height: 100%; 
     margin: 0;
     padding: 0;
 }
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-    margin: 0;
-    padding-top: 56px; /* Navbar 高度 */
-    min-height: 100vh; /* Make body at least full viewport height */
-    display: flex;
-    flex-direction: column;
-    background-color: var(--bg-color) !important; /* 强制背景色 */
-    color: var(--text-color) !important; /* 强制文字颜色 */
-    /* 网格背景 */
+    padding-top: 56px; /* Navbar height - adjust if needed */
+    background-color: var(--bg-color) !important; 
+    color: var(--text-color) !important; 
     background-image: linear-gradient(rgba(51, 65, 85, 0.3) 1px, transparent 1px), 
                       linear-gradient(90deg, rgba(51, 65, 85, 0.3) 1px, transparent 1px);
     background-size: 20px 20px;
+    position: relative; /* Needed for absolute footer potentially, but try without first */
 }
 
 body.dark-theme {
@@ -88,13 +84,15 @@ h1 {
 
 /* 页脚 */
 .footer {
-    flex-shrink: 0; /* Prevent footer from shrinking */
     text-align: center;
     padding: 1rem 0;
-    margin-top: auto;
     background-color: var(--card-bg);
     color: var(--text-muted-color);
     border-top: 1px solid var(--border-color);
+    width: 100%; /* Ensure footer spans width */
+    /* Optionally, use absolute positioning if min-height calc is tricky */
+    /* position: absolute; */
+    /* bottom: 0; */
 }
 
 /* 链接 */
@@ -355,7 +353,7 @@ a:hover {
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow), inset 0 0 10px rgba(34, 211, 238, 0.05);
     padding: 0; /* 内部表格不要 padding */
-    overflow: hidden; /* 配合内部圆角 */
+    overflow-x: auto !important; /* Ensure horizontal scrolling is always enabled if content overflows */
 }
 .table-responsive > .table { /* 内部表格移除独立边框和圆角 */
     border: none;
@@ -366,6 +364,15 @@ a:hover {
 .table-responsive > .table th:last-child { border-top-right-radius: 0; }
 .table-responsive > .table tr:last-child td:first-child { border-bottom-left-radius: var(--border-radius); }
 .table-responsive > .table tr:last-child td:last-child { border-bottom-right-radius: var(--border-radius); }
+
+.table-responsive > .table td {
+    /* Ensure table data cells with potentially long content don't wrap, forcing horizontal scroll */
+    white-space: nowrap;
+}
+
+.table-responsive > .table th {
+    white-space: nowrap; /* Ensure headers also don't wrap unexpectedly */
+}
 
 /* --- 分页 --- */
 .pagination {
@@ -465,31 +472,33 @@ a:hover {
 /* --- 仪表盘特定布局 (Dashboard Grid Layout) --- */
 .dashboard-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 改为三等分列 */
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
-    align-items: stretch; /* Changed from start to stretch */
-    height: 100%; /* Ensure grid takes full height of its parent (.main-content-area) */
-    /* justify-items: start; /* 水平方向左对齐 (可选，看效果) */
+    height: 100%; /* Try making grid fill the main-content-area height */
 }
 
 /* 定义项目在网格中的位置 */
 #national-line-total { grid-column: 1 / 2; grid-row: 1 / 2; }
 #national-line-politics { grid-column: 1 / 2; grid-row: 2 / 3; }
 #national-line-others { grid-column: 1 / 2; grid-row: 3 / 4; }
-#school-list-container { grid-column: 2 / 3; grid-row: 1 / 4; }
+
+#school-list-container { 
+    grid-column: 2 / 3; 
+    grid-row: 1 / 4; 
+    display: flex; 
+    flex-direction: column;
+    overflow: hidden; 
+    min-height: 300px; 
+    background-color: var(--card-bg); /* Give it a card background like others */
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--box-shadow);
+}
 #exam-type-pie { grid-column: 3 / 4; grid-row: 1 / 2; }
 #announcements { grid-column: 3 / 4; grid-row: 2 / 4; }
 
 /* 仪表盘特定容器样式 */
-#school-list-container {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    max-height: calc(100vh - 120px); /* 限制列表最大高度，减去 navbar 和 padding */
-    padding: 0; /* 移除通用 padding，由内部控制 */
-}
-#school-list-container h2,
-#announcements h2 {
+#school-list-container h4 { /* Header inside middle column */
     padding: 0.75rem 1rem;
     margin: 0;
     border-bottom: 1px solid var(--border-color);
@@ -499,10 +508,23 @@ a:hover {
     text-transform: uppercase;
     letter-spacing: 0.5px;
     text-shadow: 0 0 5px var(--glow-color);
-    flex-shrink: 0;
-    border-top-left-radius: var(--border-radius);
-    border-top-right-radius: var(--border-radius);
+    flex-shrink: 0; /* Prevent header from shrinking */
+    /* border-top-left-radius and border-top-right-radius can be added if #school-list-container has card-like bg */
     background-color: rgba(34, 211, 238, 0.05);
+}
+
+.dashboard-schools-table-container { 
+    flex-grow: 1; 
+    overflow-y: auto; 
+    overflow-x: auto; 
+    padding: 0; 
+    min-height: 0; 
+}
+
+#dashboard-school-pagination { /* Pagination inside middle column */
+    flex-shrink: 0; /* Prevent pagination from shrinking */
+    padding: 0.5rem; 
+    border-top: 1px solid var(--border-color);
 }
 
 .scrollable-table {
@@ -694,7 +716,38 @@ a:hover {
 /* For now, let's assume the div immediately after nav and before footer is the one. */
 /* It's better to add a specific class to this div in base.html */
 .main-content-area {
-    flex-grow: 1;
-    display: flex; /* If its children also need to flex, e.g., dashboard-grid */
-    flex-direction: column; /* Or row, depending on content structure */
+    padding: 1.5rem; 
+    min-height: calc(100vh - 56px - 57px); /* 100% viewport height - navbar height - footer height (approx 37px + 1rem*2 padding) */
+    box-sizing: border-box; /* Include padding in height calculation */
+}
+
+/* Sticky column styling */
+.sticky-col-right {
+    position: sticky;
+    right: 0;
+    z-index: 5; /* Increased z-index */
+    /* Use a slightly opaque version of the card background or a solid color */
+    background-color: var(--card-bg); /* Assuming this matches the table-responsive bg */
+    /* Or try a slightly different shade: */
+    /* background-color: #2c3a4f; */ /* Example slightly different dark shade */
+}
+
+/* Ensure sticky header cell also has background and correct z-index */
+.table > thead > tr > th.sticky-col-right {
+    position: sticky;
+    right: 0;
+    z-index: 6; /* Header should be above body cells */
+    background-color: #212529; /* Explicitly set dark background for .table-dark thead */
+    border-left: 1px solid var(--border-color); /* Add border for visual separation */
+}
+
+/* Ensure sticky body cell has a border too if needed */
+.table > tbody > tr > td.sticky-col-right {
+     border-left: 1px solid var(--border-color); /* Add border for visual separation */
+     background-color: var(--card-bg); /* Reiterate background for specificity */
+}
+
+/* If using striped tables, ensure sticky column matches row color */
+.table-striped > tbody > tr:nth-of-type(odd) > td.sticky-col-right {
+    background-color: var(--bs-table-striped-bg); 
 }

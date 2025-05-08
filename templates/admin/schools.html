@@ -34,30 +34,30 @@
             <thead class="table-light">
                 <tr>
                     {# <th style="width: 60px; position: relative;">ID<div class="col-resizer"></div></th> #}
-                    <th style="width: 180px; position: relative;">院校名称<div class="col-resizer"></div></th>
-                    <th style="width: 80px; position: relative;">等级<div class="col-resizer"></div></th>
-                    <th style="width: 80px; position: relative;">省份<div class="col-resizer"></div></th>
-                    <th style="width: 60px; position: relative;">区域<div class="col-resizer"></div></th>
-                    <th style="width: 110px; position: relative;">计算机等级<div class="col-resizer"></div></th>
-                    <th style="width: 90px; position: relative; text-align: center;">24年总招生<div class="col-resizer"></div></th>
-                    <th style="width: 80px; position: relative; text-align: center;">院系数量<div class="col-resizer"></div></th>
-                    <th style="width: 80px; position: relative; text-align: center;">专业数量<div class="col-resizer"></div></th>
-                    <th style="width: 120px; text-align: center;">操作</th>
+                    <th style="width: 220px; position: relative;">院校名称<div class="col-resizer"></div></th>
+                    <th style="width: 100px; position: relative;">等级<div class="col-resizer"></div></th>
+                    <th style="width: 100px; position: relative;">省份<div class="col-resizer"></div></th>
+                    <th style="width: 80px; position: relative;">区域<div class="col-resizer"></div></th>
+                    <th style="width: 180px; position: relative;">计算机等级<div class="col-resizer"></div></th>
+                    <th style="width: 100px; position: relative; text-align: center;">24年总招生<div class="col-resizer"></div></th>
+                    <th style="width: 90px; position: relative; text-align: center;">院系数量<div class="col-resizer"></div></th>
+                    <th style="width: 90px; position: relative; text-align: center;">专业数量<div class="col-resizer"></div></th>
+                    <th style="width: 120px; text-align: center;" class="sticky-col-right">操作</th>
                 </tr>
             </thead>
             <tbody>
                 {% for school in schools %}
                 <tr>
                     {# <td>{{ school.id | default('N/A') }}</td> #}
-                    <td>{{ school.name }}</td>
+                    <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px;" title="{{ school.name }}">{{ school.name }}</td>
                     <td>{{ school.level | default('未知') }}</td>
                     <td>{{ school.province | default('未知') }}</td>
                     <td>{{ school.region | default('未知') }}</td>
-                    <td>{{ school.computer_rank | default('无') }}</td>
+                    <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;" title="{{ school.computer_rank | default('无') }}">{{ school.computer_rank | default('无') }}</td>
                     <td>{{ school.enrollment_24_school_total | default('N/A') }}</td>
                     <td>{{ school.department_count | default(0) }}</td>
                     <td>{{ school.major_count | default(0) }}</td>
-                    <td>
+                    <td class="sticky-col-right">
                         <a href="{{ url_for('admin_edit_school', school_id=school.id) }}" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i> 编辑</a>
                         {# 可以添加删除按钮等 #}
                     </td>
