@@ -77,7 +77,7 @@
                     <th style="width: 100px; position: relative; text-align: center;">24年总招生<div class="col-resizer"></div></th>
                     <th style="width: 200px; position: relative; white-space: nowrap;">初试科目<div class="col-resizer"></div></th>
                     <th style="width: 80px; position: relative; text-align: center;">收藏数<div class="col-resizer"></div></th>
-                    <th style="width: 180px; text-align: center;" class="sticky-col-right">操作</th>
+                    <th style="width: 220px; text-align: center;" class="sticky-col-right">操作</th>
                 </tr>
             </thead>
             <tbody>
@@ -91,8 +91,8 @@
                         <td class="td-truncate" style="max-width: 100px;" title="{{ school.computer_rank or '-' }}">{{ school.computer_rank or '-' }}</td>
                         <td>{{ school.enrollment_24_school_total or '-' }}</td>
                         <td style="white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis;" title="{{ school.exam_subjects_summary or school.exam_subjects or '-' }}">{{ school.exam_subjects_summary | default(school.exam_subjects, true) | default('-', true) }}</td>
-                        <td style="text-align: center;">{{ school.favorite_count | default(0) }}</td>
-                        <td class="sticky-col-right">
+                        <td style="text-align: center;">{{ school.favorites_count | default(0) }}</td>
+                        <td>
                             <div class="d-flex gap-2 justify-content-center" style="white-space: nowrap;">
                                 <a href="{{ url_for('school_detail', school_id=school.id) }}" class="btn btn-sm btn-info"><i class="fas fa-eye"></i> 查看详情</a>
                                 {% if 'username' in session %}
@@ -161,6 +161,7 @@
     </nav>
     {% endif %}
 </div> {# 结束 .container #}
+{% endblock %}
 
 {% block scripts %}
 {{ super() }}
@@ -178,8 +179,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: isCurrentlyFavorite ? 'DELETE' : 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    // CSRF token might be needed if your Flask app uses CSRF protection globally
-                    // 'X-CSRFToken': '{{ csrf_token() }}' // Example if using Flask-WTF CSRF
+                    'X-CSRFToken': '{{ csrf_token() }}' // Activate CSRF token
                 }
             })
             .then(response => {
@@ -193,21 +193,46 @@ document.addEventListener('DOMContentLoaded', function() {
                 return response.json();
             })
             .then(data => {
+                // --- DEBUGGING --- 
+                console.log('Favorite API response:', data); 
+                // -- END DEBUGGING --
+                
                 if (data.status === 'success') {
+                    // Find the count cell in the same row
+                    const row = this.closest('tr');
+                    const countCell = row ? row.querySelector('td:nth-last-child(2)') : null; // 2nd to last cell is count
+                    
+                    // --- DEBUGGING ---
+                    console.log('Found row:', row);
+                    console.log('Found count cell:', countCell);
+                    if (countCell) {
+                        console.log('Current count cell text:', countCell.textContent);
+                    }
+                    if (data.new_count !== undefined) {
+                        console.log('New count from API:', data.new_count);
+                    }
+                    // -- END DEBUGGING --
+
+                    // let currentCount = countCell ? parseInt(countCell.textContent || '0') : 0; // No longer needed
+
                     if (data.action === 'favorited') {
                         this.classList.remove('btn-outline-danger');
                         this.classList.add('btn-danger');
                         icon.classList.remove('far');
                         icon.classList.add('fas');
                         if(textSpan) textSpan.textContent = '取消收藏';
+                        // Update count cell with count from API response
+                        if (countCell && data.new_count !== undefined) countCell.textContent = data.new_count;
                     } else if (data.action === 'unfavorited') {
                         this.classList.remove('btn-danger');
                         this.classList.add('btn-outline-danger');
                         icon.classList.remove('fas');
                         icon.classList.add('far');
                         if(textSpan) textSpan.textContent = '收藏';
+                        // Update count cell with count from API response
+                        if (countCell && data.new_count !== undefined) countCell.textContent = data.new_count;
                     }
-                    // Optionally, display a success message (e.g., using a toast library or simple alert)
+                    // Optionally, display a success message
                     // alert(data.message); 
                 } else {
                     // alert('操作失败: ' + data.message);
@@ -232,5 +257,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-{% endblock %}
 {% endblock %} 

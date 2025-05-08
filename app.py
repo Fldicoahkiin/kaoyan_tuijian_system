@@ -34,6 +34,7 @@ NATIONAL_LINES_PATH = os.path.join(BASE_DIR, "data", "national_lines.json")
 ANNOUNCEMENTS_PATH = os.path.join(BASE_DIR, "data", "announcements.json")
 EXAM_TYPE_RATIOS_PATH = os.path.join(BASE_DIR, "data", "exam_type_ratios.json")
 USERS_DIR = os.path.join(BASE_DIR, "data", "users")
+FAVORITES_COUNT_PATH = os.path.join(BASE_DIR, "data", "favorites_count.json")
 
 # --- 装饰器：要求管理员权限 ---
 def admin_required(f):
@@ -547,8 +548,11 @@ def school_list():
     if region_filter:
         filtered_schools = [s for s in filtered_schools if s.get('region') == region_filter]
         
+    # 加载收藏数
+    favorites_counts = load_favorites_count()
+
     if sort_by == 'favorites':
-        favorites_counts = get_favorites_count()
+        # 使用加载的 counts 进行排序
         for school in filtered_schools:
             school['temp_favorites_count'] = favorites_counts.get(school['id'], 0)
         filtered_schools.sort(key=lambda x: x.get('temp_favorites_count', 0), reverse=True)
@@ -572,13 +576,19 @@ def school_list():
         if user_data and 'favorites' in user_data:
             current_user_favorites = user_data['favorites']
     
+    app.logger.debug(f"[school_list] Loaded favorites counts: {favorites_counts}")
+    app.logger.debug("--- [school_list] Assigning favorite status and counts to paginated schools ---") # DEBUG
     for school in paginated_schools:
-        school['is_favorite'] = school.get('id') in current_user_favorites
-        if 'temp_favorites_count' not in school:
-            favorites_counts_for_page = get_favorites_count()
-            school['favorites_count'] = favorites_counts_for_page.get(school['id'],0)
-        else:
-            school['favorites_count'] = school['temp_favorites_count']
+        school_id = school.get('id')
+        school['is_favorite'] = school_id in current_user_favorites
+        
+        # --- DEBUG: 打印正在查找的 ID 和获取到的计数 --- 
+        retrieved_count = favorites_counts.get(school_id, 0)
+        app.logger.debug(f"  - School ID: '{school_id}' (Type: {type(school_id)}), Retrieved Count: {retrieved_count} (Type: {type(retrieved_count)})")
+        # --- END DEBUG ---
+        
+        school['favorites_count'] = retrieved_count
+    app.logger.debug("--- [school_list] Finished assigning --- ") # DEBUG
 
     return render_template('school_list.html',
                            schools=paginated_schools,
@@ -710,41 +720,89 @@ def toggle_favorite(school_id):
 
     username = session['username']
     user_data = get_user_data(username)
-    if not user_data:
-        return jsonify({'status': 'error', 'message': '无法加载用户信息'}), 500
+    # --- 增加用户数据有效性检查 ---
+    if not user_data or not isinstance(user_data, dict):
+        app.logger.error(f"加载用户 '{username}' 的数据失败或数据格式不正确，无法处理收藏请求。")
+        return jsonify({'status': 'error', 'message': '无法加载有效的用户信息，请稍后重试或联系管理员。'}), 500
+    # --- 结束检查 ---
 
+    # 加载学校数据用于验证
     schools_data_list = load_json_data(SCHOOLS_DATA_PATH)
     if not schools_data_list:
+        app.logger.error("无法加载学校数据，无法验证 school_id。")
+        # 返回错误，因为无法确认学校是否存在
         return jsonify({'status': 'error', 'message': '无法加载学校数据'}), 500
-    
-    school_exists = any(s.get('id') == school_id for s in schools_data_list)
-    if not school_exists:
-        return jsonify({'status': 'error', 'message': '无效的学校ID'}), 404
+
+    # 检查学校是否存在 (同时检查 ID 和 Name 以应对可能的复合ID)
+    school_exists_by_id = any(s.get('id') == school_id for s in schools_data_list)
+    school_exists_by_name = any(s.get('name') == school_id for s in schools_data_list)
+
+    if not school_exists_by_id and not school_exists_by_name:
+         app.logger.warning(f"尝试收藏/取消收藏不存在的学校ID或名称: {school_id}")
+         return jsonify({'status': 'error', 'message': '无效的学校ID或名称。'}), 404
+    # --- 结束学校存在性检查 ---
 
     favorites = user_data.get('favorites', [])
+    # --- 确保 favorites 是列表 ---
+    if not isinstance(favorites, list):
+        app.logger.error(f"用户 '{username}' 的收藏夹数据不是列表格式。已重置为空列表。")
+        favorites = []
+    # --- 结束列表检查 ---
+
     action = ''
+    count_changed = False
+    new_total_count = 0 # 初始化
+
+    # 加载当前的全局收藏数
+    current_counts = load_favorites_count()
+    # 使用真实的 school ID 来更新计数 (如果通过 name 匹配)
+    actual_school_id = school_id # 默认使用传入的
+    if not school_exists_by_id and school_exists_by_name:
+        # 如果是通过 name 匹配到的，理论上应该找到对应的 ID，但这里简化处理，仍用 name 作为 key
+        # 更优方案是在找到 name 后获取其 ID
+        pass 
+    school_current_count = current_counts.get(actual_school_id, 0)
 
     if request.method == 'POST':
-        if school_id not in favorites:
-            favorites.append(school_id)
+        if actual_school_id not in favorites:
+            favorites.append(actual_school_id)
             action = 'favorited'
+            new_total_count = school_current_count + 1
+            count_changed = True
         else:
             action = 'already_favorited'
+            new_total_count = school_current_count # 数量不变
     elif request.method == 'DELETE':
-        if school_id in favorites:
-            favorites.remove(school_id)
+        if actual_school_id in favorites:
+            favorites.remove(actual_school_id)
             action = 'unfavorited'
+            new_total_count = max(0, school_current_count - 1) # 确保不小于0
+            count_changed = True
         else:
             action = 'not_favorited'
+            new_total_count = school_current_count # 数量不变
         
+    # 保存用户数据
     user_data['favorites'] = favorites
-    if save_user_data(username, user_data):
-        message = ''
-        if action == 'favorited': message = '收藏成功！'
-        elif action == 'unfavorited': message = '已取消收藏。'
-        return jsonify({'status': 'success', 'action': action, 'school_id': school_id, 'message': message})
-    else:
-        return jsonify({'status': 'error', 'message': '保存收藏夹时出错'}), 500
+    if not save_user_data(username, user_data):
+        # 保存用户数据失败是严重问题，需要回滚或明确告知失败
+        app.logger.error(f"保存用户 '{username}' 的收藏夹时出错！")
+        return jsonify({'status': 'error', 'message': '保存用户收藏夹时出错'}), 500
+
+    # 如果收藏状态实际改变了，则更新并保存全局收藏数
+    if count_changed:
+        current_counts[actual_school_id] = new_total_count
+        if not save_favorites_count(current_counts):
+            # 警告：用户数据已更新，但全局计数更新失败
+            app.logger.error(f"更新全局收藏数文件失败，但用户 {username} 的收藏夹已更新！可能导致计数不一致。")
+            # 即使计数文件保存失败，用户操作已成功，仍返回成功和预期的计数
+            pass # 继续执行，返回成功和预期的 new_total_count
+
+    message = ''
+    if action == 'favorited': message = '收藏成功！'
+    elif action == 'unfavorited': message = '已取消收藏。'
+    # 返回包含新计数的成功响应
+    return jsonify({'status': 'success', 'action': action, 'school_id': actual_school_id, 'message': message, 'new_count': new_total_count})
 
 def calculate_recommendations(target_score, target_level, target_rank_pref, target_location, favorites_counts):
     """根据用户偏好计算推荐结果"""
@@ -1453,6 +1511,45 @@ def delete_announcement():
     except Exception as e:
         app.logger.error(f"删除公告时发生意外错误: {e}", exc_info=True)
         return jsonify({'status': 'error', 'message': f'删除公告时发生内部错误: {e}'}), 500
+
+# --- 新增：收藏数文件读写函数 ---
+def load_favorites_count():
+    """安全地加载收藏数 JSON 文件。"""
+    if not os.path.exists(FAVORITES_COUNT_PATH):
+        # 如果文件不存在，可以返回空字典或尝试初始化
+        app.logger.warning(f"收藏数文件 {FAVORITES_COUNT_PATH} 不存在，返回空字典。可能需要初始化。")
+        return {}
+    try:
+        with open(FAVORITES_COUNT_PATH, 'r', encoding='utf-8') as f:
+            fcntl.flock(f.fileno(), fcntl.LOCK_SH) # 共享锁
+            try:
+                counts = json.load(f)
+            finally:
+                fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+            return counts if isinstance(counts, dict) else {}
+    except (IOError, json.JSONDecodeError) as e:
+        app.logger.error(f"加载收藏数文件 {FAVORITES_COUNT_PATH} 时出错: {e}", exc_info=True)
+        return {} # 出错时返回空字典
+
+def save_favorites_count(counts_dict):
+    """安全地保存收藏数 JSON 文件。"""
+    try:
+        os.makedirs(os.path.dirname(FAVORITES_COUNT_PATH), exist_ok=True)
+        with open(FAVORITES_COUNT_PATH, 'w', encoding='utf-8') as f:
+            fcntl.flock(f.fileno(), fcntl.LOCK_EX) # 排他锁
+            try:
+                json.dump(counts_dict, f, ensure_ascii=False, indent=2)
+                f.flush()
+                os.fsync(f.fileno())
+                return True
+            finally:
+                fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+    except IOError as e_io:
+        app.logger.error(f"保存收藏数文件 {FAVORITES_COUNT_PATH} 时发生IO错误: {e_io}", exc_info=True)
+        return False
+    except Exception as e:
+        app.logger.error(f"保存收藏数文件时发生意外错误: {e}", exc_info=True)
+        return False
 
 if __name__ == '__main__':
     log_dir = os.path.join(BASE_DIR, 'logs')

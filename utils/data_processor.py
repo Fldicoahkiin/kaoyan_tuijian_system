@@ -2,6 +2,7 @@ import pandas as pd
 import json
 import os
 import re # 用于后续的正则提取
+import math # For isnan check if not using pandas
 
 # 定义文件路径
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) # 获取项目根目录
@@ -90,7 +91,7 @@ def extract_province_smart(row, school_name_raw, intro_raw):
     # 5. Extract from intro string
     province_from_intro = extract_province_from_string(intro)
     if province_from_intro: return province_from_intro
-    
+
     return None # Return None if no province found
 
 def clean_column_names(df):
@@ -203,77 +204,115 @@ def get_first_value_from_row(row, primary_col_name, secondary_col_name=None):
             
     return chosen_val # 如果 chosen_val 不是系列 (即它是标量、None 或 pd.NA), get_multiline_str 会处理 pd.isna()
 
+def parse_enrollment(value):
+    """解析招生人数，处理数字、'若干'等文本。"""
+    if pd.isna(value): return None
+    enroll_str = str(value).strip()
+    match_num = re.search(r'(\d+)', enroll_str)
+    if match_num: return int(match_num.group(1))
+    if enroll_str.lower() in ['若干', '见官网', '待定', '见招生简章', '-']: return enroll_str
+    return None # Return None if it's something else unexpected
+
 def process_single_csv(csv_path, filename_hint, all_schools_data):
     print(f"  Attempting to process CSV file: {os.path.basename(csv_path)} (Hint for region/other: {filename_hint})") # Added more explicit start message
     current_sheet_region = determine_region_from_filename_hint(filename_hint)
-    # filename_province_hint = None (already set as it was removed from extract_province_smart call)
+    is_b_region_file = current_sheet_region == "B区" # Flag for B-region debugging
     
-    print(f"    文件 \'{os.path.basename(csv_path)}\' 被识别为区域: {current_sheet_region}")
+    if is_b_region_file: print(f"    [B区 DEBUG] Identified as B-region file.")
 
     try:
         # Try to detect header dynamically, similar to Excel processing
         df_peek = pd.read_csv(csv_path, nrows=20, header=None, on_bad_lines='skip', encoding='utf-8')
-        header_keywords = ['学校', '代码', '专业', '院系', '科目', '名称', '招生', '录取', '复试', '考试', '省份', '简介', '等级', '评级', '院校']
+        header_keywords = ['学校', '代码', '专业', '院系', '科目', '名称', '招生', '录取', '复试', '考试', '省份', '简介', '等级', '评级', '院校', '学费']
         identified_header_idx = find_header_row(df_peek, header_keywords)
 
         if identified_header_idx != -1:
-            print(f"    文件 \'{os.path.basename(csv_path)}\': 动态识别到表头在第 {identified_header_idx + 1} 行。")
-            df = pd.read_csv(csv_path, header=identified_header_idx, on_bad_lines='skip', encoding='utf-8')
+            if is_b_region_file: print(f"    [B区 DEBUG] Dynamically found header at row index {identified_header_idx}.")
+            df = pd.read_csv(csv_path, header=identified_header_idx, on_bad_lines='skip', encoding='utf-8', dtype=str) # Read all as string initially
         else:
-            print(f"    文件 \'{os.path.basename(csv_path)}\': 未能动态识别表头，尝试使用默认表头行 1 (0-indexed 0)。")
-            df = pd.read_csv(csv_path, header=0, on_bad_lines='skip', encoding='utf-8')
+            if is_b_region_file: print(f"    [B区 DEBUG] Header not found dynamically, using default header=0.")
+            df = pd.read_csv(csv_path, header=0, on_bad_lines='skip', encoding='utf-8', dtype=str) # Read all as string
         
         df = clean_column_names(df)
-        df.columns = [re.sub(r'\\.\\d+$', '', col).strip() for col in df.columns] # Remove .1 suffixes
+        # Create lower case column map for easier lookup
+        df_cols_lower = {col.lower(): col for col in df.columns} 
         print(f"    文件 \'{os.path.basename(csv_path)}\' 清理后的列名: {list(df.columns)}")
+        if is_b_region_file: print(f"    [B区 DEBUG] Cleaned columns: {list(df.columns)}")
 
     except Exception as e:
         print(f"读取或预处理 CSV 文件 \'{os.path.basename(csv_path)}\' 时出错: {e}")
+        if is_b_region_file: print(f"    [B区 DEBUG] Error during file read/preprocess: {e}")
         return
 
-    # --- Define possible column names --- 
-    school_name_cols = ['院校名称', '院校', '学校名称', '学校']
-    intro_cols = ['简介', '院校简介']
-    level_cols = ['院校等级', '等级']
-    rank_cols = ['计算机等级', '计算机评级', '学科评估', '评估等级']
-    dept_cols = ['招生院系', '院系名称', '院系', '学院']
-    major_code_cols = ['专业代码', '代码', '专业代码及名称'] # Priority order matters if combined
-    major_name_cols = ['专业名称', '专业方向']
-    exam_subj_cols = ['初试科目', '考试科目']
-    ref_book_cols = ['参考书', '参考书目']
-    retrial_subj_cols = ['复试科目']
-    enroll_24_cols = ['24招生人数', '招生人数', '24招生', '招生']
-    tuition_cols = ['学费学制', '学制与学费']
-    score_24_cols = ['24复试线', '24分数线']
-    score_23_cols = ['23复试线', '23分数线']
-    adm_info_23_cols = ['23拟录取情况', '23录取']
-    adm_info_24_cols = ['24拟录取情况', '24录取', '24复试名单', '24拟录取']
+    # --- Define possible column names (lowercase for matching) --- 
+    school_name_cols_l = ['院校名称', '院校', '学校名称', '学校']
+    intro_cols_l = ['简介', '院校简介']
+    level_cols_l = ['院校等级', '等级']
+    province_cols_l = ['省份'] # Added for explicit check
+    rank_cols_l = ['计算机等级', '计算机评级', '学科评估', '评估等级']
+    dept_cols_l = ['招生院系', '院系名称', '院系', '学院']
+    major_code_cols_l = ['专业代码', '代码', '专业代码及名称'] 
+    major_name_cols_l = ['专业名称', '专业方向', '研究方向'] # Added 研究方向
+    exam_subj_cols_l = ['初试科目', '考试科目']
+    ref_book_cols_l = ['参考书', '参考书目']
+    retrial_subj_cols_l = ['复试科目']
+    enroll_24_cols_l = ['24招生人数', '招生人数(24)', '24招生', '24年招生人数']
+    enroll_23_cols_l = ['23招生人数', '招生人数(23)', '23招生', '23年招生人数']
+    enroll_22_cols_l = ['22招生人数', '招生人数(22)', '22招生', '22年招生人数'] # Added 22
+    enroll_generic_cols_l = ['招生人数', '招生'] # Generic fallback
+    tuition_cols_l = ['学费学制', '学制与学费', '学费', '学制']
+    score_24_cols_l = ['24复试线', '24分数线', '复试线(24)', '分数线(24)']
+    score_23_cols_l = ['23复试线', '23分数线', '复试线(23)', '分数线(23)']
+    score_22_cols_l = ['22复试线', '22分数线', '复试线(22)', '分数线(22)'] # Added 22
+    adm_info_23_cols_l = ['23拟录取情况', '23录取', '录取情况(23)']
+    adm_info_24_cols_l = ['24拟录取情况', '24录取', '24复试名单', '24拟录取', '录取情况(24)']
+
+    # Helper to find the first matching actual column name (case-insensitive)
+    def find_actual_col(possible_lower_names):
+        for name_l in possible_lower_names:
+            if name_l.lower() in df_cols_lower:
+                return df_cols_lower[name_l.lower()]
+        return None
 
     # --- Find actual column names used in this CSV --- 
-    actual_school_name_col = next((col for col in school_name_cols if col in df.columns), None)
-    actual_major_code_col = next((col for col in major_code_cols if col in df.columns), None)
+    actual_school_name_col = find_actual_col(school_name_cols_l)
+    actual_major_code_col = find_actual_col(major_code_cols_l)
 
     # Heuristic fallbacks if standard names aren't found
     if actual_school_name_col is None:
         actual_school_name_col = next((col for col in df.columns if '校' in col or '大学' in col or '学院' in col), None)
         if actual_school_name_col: print(f"    启发式地选择列 '{actual_school_name_col}' 作为学校名称列。")
         if actual_major_code_col is None:
-            actual_major_code_col = next((col for col in df.columns if '代码' in col and '学校代码' not in col and '院校代码' not in col), None)
-            if actual_major_code_col: print(f"    启发式地选择列 '{actual_major_code_col}' 作为专业代码列。")
+        # Try to avoid picking '学校代码' or '院校代码'
+        potential_codes = [col for col in df.columns if '代码' in col]
+        code_col_candidates = [col for col in potential_codes if '学校代码' not in col and '院校代码' not in col]
+        if code_col_candidates:
+             actual_major_code_col = code_col_candidates[0] # Pick first likely candidate
+             print(f"    启发式地选择列 '{actual_major_code_col}' 作为专业代码列。")
 
-    if not actual_school_name_col: print(f"    严重警告: 文件 \'{os.path.basename(csv_path)}\' 中未找到学校名称列。跳过。"); return
-    if not actual_major_code_col: print(f"    警告: 文件 \'{os.path.basename(csv_path)}\' 中未找到专业代码列。跳过。"); return
+    if not actual_school_name_col: 
+        print(f"    严重警告: 文件 \'{os.path.basename(csv_path)}\' 中未找到学校名称列。跳过。")
+        if is_b_region_file: print(f"    [B区 DEBUG] Skipping due to missing school name column.")
+        return
+    if not actual_major_code_col: 
+        print(f"    警告: 文件 \'{os.path.basename(csv_path)}\' 中未找到专业代码列。跳过。")
+        if is_b_region_file: print(f"    [B区 DEBUG] Skipping due to missing major code column.")
+        return
     print(f"    使用 '{actual_school_name_col}' 作为学校名称列, '{actual_major_code_col}' 作为专业代码列。")
 
     # --- Preprocessing --- 
     df[actual_school_name_col] = df[actual_school_name_col].ffill()
     df.dropna(subset=[actual_major_code_col], how='all', inplace=True)
-    df = df[df[actual_major_code_col].astype(str).str.match(r'^\s*\S+.*')].copy() # Keep if major code not just whitespace
+    df = df[df[actual_major_code_col].astype(str).str.strip().str.len() > 0].copy() # Keep if major code not empty string
     df.reset_index(drop=True, inplace=True)
     df.dropna(how='all', inplace=True)
+    
     if df.empty: 
-        print(f"    文件 \'{os.path.basename(csv_path)}\' 数据为空或所有行均为NA，跳过。") # More explicit message
+        print(f"    文件 \'{os.path.basename(csv_path)}\' 数据在预处理后为空 (例如，所有行没有专业代码)，跳过。") 
+        if is_b_region_file: print(f"    [B区 DEBUG] File empty after preprocessing, skipping.")
         return
+        
+    if is_b_region_file: print(f"    [B区 DEBUG] Found {len(df)} rows after preprocessing.")
 
     # --- Row-by-row processing --- 
     for index, row in df.iterrows():
@@ -288,15 +327,14 @@ def process_single_csv(csv_path, filename_hint, all_schools_data):
             if school_name_cleaned not in all_schools_data:
                 print(f"DEBUG: School '{school_name_cleaned}' not in all_schools_data. Creating new entry.")
                 print(f"DEBUG: Before assigning '{school_name_cleaned}' to all_schools_data.")
-                intro_raw = get_first_value_from_row(row, intro_cols[0], intro_cols[1] if len(intro_cols)>1 else None)
-                level_val = get_first_value_from_row(row, level_cols[0], level_cols[1] if len(level_cols)>1 else None)
+                intro_raw = get_first_value_from_row(row, find_actual_col(intro_cols_l))
+                level_val = get_first_value_from_row(row, find_actual_col(level_cols_l))
                 province = extract_province_smart(row, school_name_cleaned, intro_raw) 
                 
                 intro_for_level_check = get_multiline_str(intro_raw)
 
                 # --- Refined Computer Rank Extraction ---
-                rank_val_raw = get_first_value_from_row(row, rank_cols[0], rank_cols[1]) or \
-                               get_first_value_from_row(row, rank_cols[2] if len(rank_cols)>2 else None, rank_cols[3] if len(rank_cols)>3 else None)
+                rank_val_raw = get_first_value_from_row(row, find_actual_col(rank_cols_l))
                 computer_rank_cleaned = "未提供" # Default
 
                 if pd.notna(rank_val_raw):
@@ -370,8 +408,7 @@ def process_single_csv(csv_path, filename_hint, all_schools_data):
             school_entry = all_schools_data[school_name_cleaned]
 
             # --- Extract Department Info --- 
-            dept_name_val = get_first_value_from_row(row, dept_cols[0], dept_cols[1]) or \
-                            get_first_value_from_row(row, dept_cols[2] if len(dept_cols)>2 else None, dept_cols[3] if len(dept_cols)>3 else None)
+            dept_name_val = get_first_value_from_row(row, find_actual_col(dept_cols_l))
             department_name = get_multiline_str(dept_name_val) or '未知院系'
             if department_name not in school_entry['departments']:
                 school_entry['departments'][department_name] = {"department_name": department_name, "majors": []}
@@ -379,7 +416,7 @@ def process_single_csv(csv_path, filename_hint, all_schools_data):
             # --- Extract Major Info --- 
             major_code_raw = row.get(actual_major_code_col, '')
             major_code_str = str(major_code_raw).strip() if pd.notna(major_code_raw) else ''
-            major_name_val = get_first_value_from_row(row, major_name_cols[0], major_name_cols[1] if len(major_name_cols)>1 else None)
+            major_name_val = get_first_value_from_row(row, find_actual_col(major_name_cols_l))
             major_name = str(major_name_val).strip() if pd.notna(major_name_val) else ''
 
             if actual_major_code_col == '专业代码及名称' and major_code_str:
@@ -392,16 +429,38 @@ def process_single_csv(csv_path, filename_hint, all_schools_data):
             
             if not major_code_str and not major_name: continue # Skip if no major identifier
 
-            enroll_24_val = get_first_value_from_row(row, enroll_24_cols[0], enroll_24_cols[1]) or \
-                            get_first_value_from_row(row, enroll_24_cols[2] if len(enroll_24_cols)>2 else None, enroll_24_cols[3] if len(enroll_24_cols)>3 else None)
-            enrollment_24_num = None
-            if pd.notna(enroll_24_val):
-                enroll_str = str(enroll_24_val).strip()
-                match_num = re.search(r'(\d+)', enroll_str)
-                if match_num: enrollment_24_num = int(match_num.group(1))
-                elif enroll_str.lower() in ['若干', '见官网', '待定']: enrollment_24_num = enroll_str # Keep string representation
+            # --- Extract Enrollment History ---
+            enrollment_history = {}
+            enroll_val_24 = get_first_value_from_row(row, find_actual_col(enroll_24_cols_l))
+            enroll_val_23 = get_first_value_from_row(row, find_actual_col(enroll_23_cols_l))
+            enroll_val_22 = get_first_value_from_row(row, find_actual_col(enroll_22_cols_l))
+            enroll_val_gen = get_first_value_from_row(row, find_actual_col(enroll_generic_cols_l))
+
+            parsed_24 = parse_enrollment(enroll_val_24)
+            if parsed_24 is not None: enrollment_history["2024"] = parsed_24
             
-            exam_subjects_val = get_first_value_from_row(row, exam_subj_cols[0], exam_subj_cols[1] if len(exam_subj_cols)>1 else None)
+            parsed_23 = parse_enrollment(enroll_val_23)
+            if parsed_23 is not None: enrollment_history["2023"] = parsed_23
+            
+            parsed_22 = parse_enrollment(enroll_val_22)
+            if parsed_22 is not None: enrollment_history["2022"] = parsed_22
+            
+            # Use generic only if no specific year found yet
+            if not enrollment_history and enroll_val_gen is not None:
+                 parsed_gen = parse_enrollment(enroll_val_gen)
+                 if parsed_gen is not None: enrollment_history["unknown_year"] = parsed_gen # Or try to guess year?
+
+            # --- Extract Score Lines ---
+            score_lines = {}
+            score_val_24 = get_first_value_from_row(row, find_actual_col(score_24_cols_l))
+            if score_val_24: score_lines["2024"] = get_multiline_str(score_val_24)
+            score_val_23 = get_first_value_from_row(row, find_actual_col(score_23_cols_l))
+            if score_val_23: score_lines["2023"] = get_multiline_str(score_val_23)
+            score_val_22 = get_first_value_from_row(row, find_actual_col(score_22_cols_l))
+            if score_val_22: score_lines["2022"] = get_multiline_str(score_val_22)
+
+
+            exam_subjects_val = get_first_value_from_row(row, find_actual_col(exam_subj_cols_l))
             
             # Standardize major name if still missing
             if not major_name or major_name in ['-', '未知专业', '查看详情', '待定']:
@@ -418,22 +477,19 @@ def process_single_csv(csv_path, filename_hint, all_schools_data):
                 major_info = {
                 "major_code": major_code_str, "major_name": major_name,
                 "exam_subjects": get_multiline_str(exam_subjects_val),
-                "reference_books": get_multiline_str(get_first_value_from_row(row, ref_book_cols[0], ref_book_cols[1] if len(ref_book_cols)>1 else None)),
-                "retrial_subjects": get_multiline_str(get_first_value_from_row(row, retrial_subj_cols[0])),
-                "enrollment_24": enrollment_24_num,
-                "tuition_duration": get_multiline_str(get_first_value_from_row(row, tuition_cols[0], tuition_cols[1] if len(tuition_cols)>1 else None)),
-                    "score_lines": {
-                    "2024": get_multiline_str(get_first_value_from_row(row, score_24_cols[0], score_24_cols[1] if len(score_24_cols)>1 else None)),
-                    "2023": get_multiline_str(get_first_value_from_row(row, score_23_cols[0], score_23_cols[1] if len(score_23_cols)>1 else None))
-                },
-                "admission_info_23": get_multiline_str(get_first_value_from_row(row, adm_info_23_cols[0], adm_info_23_cols[1] if len(adm_info_23_cols)>1 else None)),
-                "admission_info_24": get_multiline_str(get_first_value_from_row(row, adm_info_24_cols[0], adm_info_24_cols[1]) or \
-                                                  get_first_value_from_row(row, adm_info_24_cols[2] if len(adm_info_24_cols)>2 else None, adm_info_24_cols[3] if len(adm_info_24_cols)>3 else None))
+                "reference_books": get_multiline_str(get_first_value_from_row(row, find_actual_col(ref_book_cols_l))),
+                "retrial_subjects": get_multiline_str(get_first_value_from_row(row, find_actual_col(retrial_subj_cols_l))),
+                "enrollment": enrollment_history, # Use the history dict
+                "tuition_duration": get_multiline_str(get_first_value_from_row(row, find_actual_col(tuition_cols_l))),
+                    "score_lines": score_lines, # Use the score history dict
+                "admission_info_23": get_multiline_str(get_first_value_from_row(row, find_actual_col(adm_info_23_cols_l))),
+                "admission_info_24": get_multiline_str(get_first_value_from_row(row, find_actual_col(adm_info_24_cols_l)))
             }
             
             school_entry['departments'][department_name]['majors'].append(major_info)
         except Exception as e_row:
             print(f"    处理文件 \'{os.path.basename(csv_path)}\' 的行 (CSV index {index}) 时发生错误: {e_row}")
+            if is_b_region_file: print(f"    [B区 DEBUG] Error processing row {index}: {e_row}")
             import traceback; traceback.print_exc()
             continue
     print(f"    文件 \'{os.path.basename(csv_path)}\' 处理完成。")
