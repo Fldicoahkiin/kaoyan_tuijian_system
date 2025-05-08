@@ -84,6 +84,87 @@
         <hr class="my-4">
         <h4><i class="fas fa-sitemap"></i> 院系与专业信息</h4>
 
+        {# 动态编辑部分 #}
+        <div class="mb-3 p-3 border rounded bg-light">
+            <h5><i class="fas fa-edit"></i> 动态编辑院系专业</h5>
+            <p class="form-text">在此处通过表单动态增删院系和专业。完成后，可以点击下方按钮将结果同步到JSON编辑器进行预览或微调。</p>
+            <div id="departments-dynamic-list" class="mb-3">
+                {# 动态院系列表将在此处生成 #}
+            </div>
+            <button type="button" id="add-department-btn" class="btn btn-success btn-sm mb-2"><i class="fas fa-plus-circle"></i> 添加院系</button>
+            <button type="button" id="sync-dynamic-to-json" class="btn btn-info btn-sm mb-2"><i class="fas fa-sync-alt"></i> 将上方表单内容同步到下方JSON编辑器</button>
+        </div>
+
+        <template id="department-template">
+            <div class="card department-item mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <input type="text" class="form-control form-control-sm department-name-input" placeholder="院系名称">
+                    <button type="button" class="btn btn-danger btn-sm remove-department-btn ms-2"><i class="fas fa-trash-alt"></i> 删除此院系</button>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">专业列表:</h6>
+                    <div class="majors-dynamic-list ms-3">
+                        {# 专业将在此处动态添加 #}
+                    </div>
+                    <button type="button" class="btn btn-outline-primary btn-sm add-major-btn mt-2"><i class="fas fa-plus"></i> 添加专业</button>
+                </div>
+            </div>
+        </template>
+
+        <template id="major-template">
+            <div class="major-item border-top pt-2 mt-2">
+                <div class="d-flex justify-content-end mb-1">
+                    <button type="button" class="btn btn-outline-danger btn-sm remove-major-btn"><i class="fas fa-times"></i>移除此专业</button>
+                </div>
+                <div class="row gx-2">
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label form-label-sm">专业名称:</label>
+                        <input type="text" name="major_name" class="form-control form-control-sm" placeholder="如：计算机科学与技术">
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label form-label-sm">专业代码:</label>
+                        <input type="text" name="major_code" class="form-control form-control-sm" placeholder="如：081200">
+                    </div>
+                    <div class="col-12 mb-2">
+                        <label class="form-label form-label-sm">初试科目:</label>
+                        <textarea name="exam_subjects" class="form-control form-control-sm" rows="2" placeholder="如：政治;英语一;数学一;408"></textarea>
+                    </div>
+                     <div class="col-md-6 mb-2">
+                        <label class="form-label form-label-sm">24年招生人数:</label>
+                        <input type="text" name="enrollment_24" class="form-control form-control-sm" placeholder="数字或'若干'">
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label form-label-sm">学费与学制:</label>
+                        <input type="text" name="tuition_duration" class="form-control form-control-sm" placeholder="如：8000元/年，3年">
+                    </div>
+                    <div class="col-12 mb-2">
+                        <label class="form-label form-label-sm">复试科目:</label>
+                        <textarea name="retrial_subjects" class="form-control form-control-sm" rows="1" placeholder="如：C语言上机,综合面试"></textarea>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <label class="form-label form-label-sm">参考书目:</label>
+                        <textarea name="reference_books" class="form-control form-control-sm" rows="2" placeholder="书籍名称，多本用分号隔开"></textarea>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label form-label-sm">24年复试线:</label>
+                        <input type="text" name="score_lines_2024" class="form-control form-control-sm" placeholder="如：总分350，政治50，英语50">
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label form-label-sm">23年复试线:</label>
+                        <input type="text" name="score_lines_2023" class="form-control form-control-sm" placeholder="如：总分345，政治50，英语50">
+                    </div>
+                    <div class="col-12 mb-2">
+                        <label class="form-label form-label-sm">23年录取情况:</label>
+                        <textarea name="admission_info_23" class="form-control form-control-sm" rows="1" placeholder="如：录取XX人，最低分XX"></textarea>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <label class="form-label form-label-sm">24年录取情况/复试名单:</label>
+                        <textarea name="admission_info_24" class="form-control form-control-sm" rows="1" placeholder="如：录取XX人，最低分XX"></textarea>
+                    </div>
+                </div>
+            </div>
+        </template>
+
         {# 只读展示部分 #}
         <div class="mb-3">
             <p class="text-muted">当前院系专业结构 (只读预览):</p>

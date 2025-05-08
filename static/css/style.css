@@ -37,15 +37,17 @@
     box-sizing: border-box;
 }
 
-html {
-    height: 100%;
+html, body {
+    height: 100%; /* Ensure html and body take full height */
+    margin: 0;
+    padding: 0;
 }
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     margin: 0;
     padding-top: 56px; /* Navbar 高度 */
-    min-height: 100%; /* 改为 100% 配合 html height */
+    min-height: 100vh; /* Make body at least full viewport height */
     display: flex;
     flex-direction: column;
     background-color: var(--bg-color) !important; /* 强制背景色 */
@@ -86,7 +88,7 @@ h1 {
 
 /* 页脚 */
 .footer {
-    flex-shrink: 0;
+    flex-shrink: 0; /* Prevent footer from shrinking */
     text-align: center;
     padding: 1rem 0;
     margin-top: auto;
@@ -465,7 +467,8 @@ a:hover {
     display: grid;
     grid-template-columns: repeat(3, 1fr); /* 改为三等分列 */
     gap: 20px;
-    align-items: start; /* 垂直方向顶部对齐 */
+    align-items: stretch; /* Changed from start to stretch */
+    height: 100%; /* Ensure grid takes full height of its parent (.main-content-area) */
     /* justify-items: start; /* 水平方向左对齐 (可选，看效果) */
 }
 
@@ -684,4 +687,14 @@ a:hover {
 }
 .card-body > .list-group .list-group-item:first-child {
     border-top: none !important; /* 卡片内第一个列表项移除顶部边框 */
+}
+
+/* Main content container - allow it to grow and fill space */
+/* We need a common class or identify the main content div specifically. */
+/* For now, let's assume the div immediately after nav and before footer is the one. */
+/* It's better to add a specific class to this div in base.html */
+.main-content-area {
+    flex-grow: 1;
+    display: flex; /* If its children also need to flex, e.g., dashboard-grid */
+    flex-direction: column; /* Or row, depending on content structure */
 }

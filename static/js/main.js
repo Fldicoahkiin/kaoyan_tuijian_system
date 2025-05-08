@@ -1,8 +1,46 @@
+// --- 添加 CSS 样式 (注入到 head 或 link 到 CSS 文件) ---
+const styles = `
+.col-resizer {
+    position: absolute;
+    top: 0;
+    right: -3px; /* slight overlap */
+    width: 6px;
+    height: 100%;
+    cursor: col-resize;
+    background-color: rgba(100, 100, 100, 0.1); /* subtle visibility */
+    z-index: 1;
+}
+.col-resizer:hover,
+.col-resizer.dragging {
+    background-color: rgba(0, 150, 255, 0.3);
+}
+.dashboard-schools-table th {
+    white-space: nowrap; /* Prevent header text wrapping */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.dashboard-schools-table td {
+    white-space: nowrap; /* Prevent content wrapping initially */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+`;
+const styleSheet = document.createElement("style");
+styleSheet.type = "text/css";
+styleSheet.innerText = styles;
+document.head.appendChild(styleSheet);
+
 document.addEventListener('DOMContentLoaded', function() {
     // setupThemeSwitcher(); // REMOVED:不再需要主题切换
-    fetchSchoolsForDashboard();
     initCharts();
+    fetchSchoolsForDashboard();
     fetchAnnouncements();
+    
+    // Initialize resizable tables on the page
+    document.querySelectorAll('.resizable-table').forEach(enableColumnResizing);
+
+    // Initial height adjustment after a short delay to allow ECharts to render
+    // setTimeout(adjustColumnHeights, 500); // REMOVE THIS
 });
 
 // REMOVED: 不再需要主题切换逻辑
@@ -114,25 +152,33 @@ function renderDashboardSchoolPage(page) {
 
     tableBody.innerHTML = ''; // 清空表格内容
     if (schoolsToShow.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="7" class="text-center p-5 text-muted">没有更多院校数据</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan=\"7\" class=\"text-center p-5 text-muted\">没有更多院校数据</td></tr>`;
     } else {
         schoolsToShow.forEach(school => {
+            let levelBadgeClass = 'bg-secondary'; // Default color
+            switch (school.level) {
+                case '985': levelBadgeClass = 'bg-danger'; break;
+                case '211': levelBadgeClass = 'bg-warning text-dark'; break;
+                case '双一流': levelBadgeClass = 'bg-info'; break;
+            }
+
             const row = `
                 <tr>
-                    <td><a href="/school/${encodeURIComponent(school.id)}" class="text-decoration-none link-light">${school.name || 'N/A'}</a></td>
-                    <td><span class="badge bg-secondary">${school.level || 'N/A'}</span></td>
-                    <td>${school.province || 'N/A'}</td>
-                    <td><span class="badge ${ school.region === 'A区' ? 'bg-primary' : (school.region === 'B区' ? 'bg-info' : 'bg-secondary') }">${school.region || 'N/A'}</span></td>
-                    <td>${school.computer_rank || 'N/A'}</td>
-                    <td>${school.enrollment_24 || '-'}</td>
-                    <td>${school.exam_subjects || '-'}</td>
+                    <td style=\"min-width: 180px; white-space: nowrap;\"><a href=\"/school/${encodeURIComponent(school.id)}\" class=\"text-decoration-none link-light\">${school.name || 'N/A'}</a></td>
+                    <td style=\"min-width: 80px; white-space: nowrap;\"><span class=\"badge ${levelBadgeClass}\">${school.level || '普通院校'}</span></td>
+                    <td style=\"min-width: 80px; white-space: nowrap;\">${school.province || 'N/A'}</td>
+                    <td style=\"min-width: 60px; white-space: nowrap;\"><span class=\"badge ${ school.region === 'A区' ? 'bg-primary' : (school.region === 'B区' ? 'bg-info' : 'bg-secondary') }\">${school.region || 'N/A'}</span></td>
+                    <td style=\"min-width: 120px; white-space: nowrap;\">${school.computer_rank || 'N/A'}</td>
+                    <td style=\"min-width: 100px; text-align: center; white-space: nowrap;\">${school.enrollment_24_school_total || '-'}</td>
+                    <td style=\"white-space: nowrap;\">${school.exam_subjects || '-'}</td>
                 </tr>
             `;
             tableBody.innerHTML += row;
         });
     }
-
     renderDashboardPagination();
+    // 在渲染完分页 *之后* 尝试调整高度
+    setTimeout(adjustColumnHeights, 50); // 短暂延迟确保渲染完成
 }
 
 function renderDashboardPagination() {
@@ -431,3 +477,95 @@ function handleError(error, chartInstance, message) {
 // function fetchSchools() {
 //     // ... 旧的实现 ... 
 // } 
+
+// --- 高度调整函数 ---
+function adjustColumnHeights() {
+    const leftCol = document.querySelector('.left-column');
+    const rightCol = document.querySelector('.right-column');
+    const middleCol = document.getElementById('school-list-container');
+    const middleTableContainer = middleCol.querySelector('.dashboard-schools-table-container');
+    const middleHeader = middleCol.querySelector('h4');
+    const middlePagination = middleCol.querySelector('#dashboard-school-pagination');
+
+    if (!leftCol || !rightCol || !middleCol || !middleTableContainer || !middleHeader || !middlePagination) {
+        console.warn("Height adjustment elements not found.");
+        return;
+    }
+
+    const leftHeight = leftCol.offsetHeight;
+    const rightHeight = rightCol.offsetHeight;
+    const maxHeight = Math.max(leftHeight, rightHeight);
+
+    const headerHeight = middleHeader.offsetHeight;
+    const paginationHeight = middlePagination.offsetHeight;
+    // 获取 middleCol 的 padding/margin (如果需要更精确计算)
+    const middleColStyle = window.getComputedStyle(middleCol);
+    const middleColPaddingTop = parseFloat(middleColStyle.paddingTop);
+    const middleColPaddingBottom = parseFloat(middleColStyle.paddingBottom);
+    const middleColMarginTop = parseFloat(middleColStyle.marginTop);
+    const middleColMarginBottom = parseFloat(middleColStyle.marginBottom);
+    
+    // 计算表格容器应该占据的高度
+    // 可用总高 = max(左右高) - middleCol上下margin/padding (粗略)
+    // 表格高 = 可用总高 - header高 - pagination高
+    const availableHeight = maxHeight - (middleColMarginTop + middleColMarginBottom + middleColPaddingTop + middleColPaddingBottom);
+    let tableContainerHeight = availableHeight - headerHeight - paginationHeight;
+    
+    // 避免负高度
+    tableContainerHeight = Math.max(50, tableContainerHeight); // 设置一个最小高度
+
+    console.log(`Adjusting heights: Max=${maxHeight}, Header=${headerHeight}, Pager=${paginationHeight}, Available=${availableHeight}, CalculatedTableHeight=${tableContainerHeight}`);
+
+    middleTableContainer.style.height = `${tableContainerHeight}px`;
+    // 重新设置 flex-grow: 1 以防万一 height 被覆盖
+    middleTableContainer.style.flexGrow = '1';
+    middleTableContainer.style.overflowY = 'auto'; // 确保垂直滚动
+
+}
+
+// --- 列宽调整函数 (修改为查找 .resizable-table) ---
+function enableColumnResizing() {
+    document.querySelectorAll('.resizable-table').forEach(table => { // Target tables with the class
+        if (!table) return;
+        console.log('Enabling resizing for table:', table.id || 'No ID');
+
+        let thBeingResized = null;
+        let startX, startWidth;
+
+        const onMouseMove = (e) => {
+            if (!thBeingResized) return;
+            const currentX = e.clientX;
+            const diffX = currentX - startX;
+            let newWidth = startWidth + diffX;
+            // 设置最小宽度，防止列消失
+            if (newWidth < 40) newWidth = 40;
+            thBeingResized.style.width = `${newWidth}px`;
+            // console.log(`Resizing ${thBeingResized.cellIndex} to ${newWidth}px`); // Reduce logging
+        };
+
+        const onMouseUp = () => {
+            if (thBeingResized) {
+                thBeingResized.querySelector('.col-resizer').classList.remove('dragging');
+            }
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+            thBeingResized = null;
+            // console.log('Resizing finished'); // Reduce logging
+        };
+
+        table.querySelectorAll('thead th .col-resizer').forEach(resizer => { // Ensure we target resizers in the header
+            resizer.addEventListener('mousedown', (e) => {
+                // ... (mouse down logic - unchanged) ...
+                e.preventDefault();
+                thBeingResized = resizer.parentElement; 
+                startX = e.clientX;
+                startWidth = thBeingResized.offsetWidth;
+                resizer.classList.add('dragging');
+                // console.log(`Start resizing ${thBeingResized.cellIndex} from ${startWidth}px`); // Reduce logging
+
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            });
+        });
+    }); // End forEach table
+} 

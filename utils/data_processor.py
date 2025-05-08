@@ -421,17 +421,53 @@ def main_process_all_csvs(csv_files_directory, output_json_path):
         
         process_single_csv(csv_full_path, hint_name, all_schools_data)
 
+    # After processing all CSVs, convert departments from dict to list for JSON compatibility
     final_school_list = []
     for school_name, school_data in all_schools_data.items():
-        total_enrollment_school = 0; valid_enrollment_found = False
-        for dept_data in school_data['departments'].values():
-            for major in dept_data['majors']:
-                if isinstance(major.get('enrollment_24'), int):
-                    total_enrollment_school += major['enrollment_24']; valid_enrollment_found = True
-        if valid_enrollment_found: school_data['enrollment_24_school_total'] = total_enrollment_school
-        school_data['departments'] = list(school_data['departments'].values())
+        # Ensure departments is a list of dictionaries
+        if isinstance(school_data.get('departments'), dict):
+            school_data['departments'] = list(school_data['departments'].values())
+            for dept in school_data['departments']:
+                if isinstance(dept.get('majors'), dict):
+                    dept['majors'] = list(dept['majors'].values())
+        
+        # Aggregate exam subjects summary
+        unique_exam_subjects = set()
+        if isinstance(school_data.get('departments'), list):
+            for dept_data in school_data['departments']:
+                if isinstance(dept_data.get('majors'), list):
+                    for major in dept_data['majors']:
+                        subjects_str = major.get('exam_subjects')
+                        if subjects_str and isinstance(subjects_str, str) and subjects_str.strip():
+                            # Clean up and split subjects, assuming they might be newline or semicolon separated
+                            # Handle cases like "①政治理论②英语一..." or "政治;英语;数学"
+                            cleaned_subjects = subjects_str.strip()
+                            # Attempt to split by common delimiters or just use the whole string if it's one block
+                            # This is a simple approach; more sophisticated parsing might be needed for complex formats
+                            parts = []
+                            if ';' in cleaned_subjects:
+                                parts = [s.strip() for s in cleaned_subjects.split(';') if s.strip()]
+                            elif '\n' in cleaned_subjects:
+                                parts = [s.strip() for s in cleaned_subjects.split('\n') if s.strip()]
+                            else:
+                                # If no obvious delimiter, consider it as one block or look for numbered items
+                                # For now, let's add the whole cleaned string, or refine if needed
+                                parts = [cleaned_subjects] # Could be further split if numbered like ①②③
+                            
+                            for part in parts:
+                                unique_exam_subjects.add(part)
+
+        if unique_exam_subjects:
+            summary = " | ".join(sorted(list(unique_exam_subjects)))
+            if len(summary) > 150: # Increased limit slightly
+                summary = summary[:147] + "..."
+            school_data['exam_subjects_summary'] = summary
+        else:
+            school_data['exam_subjects_summary'] = "见各专业详情"
+
         final_school_list.append(school_data)
 
+    # Sort the final list by school name for consistent output (optional)
     final_school_list.sort(key=lambda x: (x.get('region', ''), x.get('province', ''), x.get('name', '')))
 
     cleaned_school_list = replace_nan_with_none(final_school_list)

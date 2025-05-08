@@ -216,19 +216,27 @@ def index():
 @app.route('/api/schools/list')
 def api_schools_list():
     """API: 返回用于首页滚动列表的简化学校信息"""
-    schools = load_json_data(SCHOOLS_DATA_PATH)
+    try:
+        data = load_json_data(SCHOOLS_DATA_PATH)
+        if data is None: data = [] # Ensure data is an empty list if file not found or empty
+    except Exception as e:
+        print(f"Error loading school data for API: {e}")
+        data = []
+
     simplified_schools = []
-    for school in schools:
+    for school in data:
         simplified_schools.append({
             'id': school.get('id'),
             'name': school.get('name'),
+            'province': school.get('province'),
             'level': school.get('level'),
-            'province': school.get('province', '未知省份'),
-            'region': school.get('region', '未知地区'),
-            'computer_rank': school.get('computer_rank', '暂无评级'),
-            'enrollment_24': school.get('enrollment_24_school_total', "见详情"),
-            'exam_subjects': "见各专业详情"
+            'region': school.get('region'),
+            'computer_rank': school.get('computer_rank'),
+            'enrollment_24_school_total': school.get('enrollment_24_school_total', '未知'), # Make sure this key exists or provide default
+            'exam_subjects': school.get('exam_subjects_summary', "见各专业详情") # Use the new summary field
         })
+    
+    # print(f"API /api/schools/list returning {len(simplified_schools)} schools.") # Optional: for debugging
     return jsonify(simplified_schools)
 
 # --- API 端点 (使用加载的数据) ---

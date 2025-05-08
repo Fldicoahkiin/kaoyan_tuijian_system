@@ -22,18 +22,18 @@
         </div>
 
         <!-- 第二列：院校滚动列表 - 占据剩余空间 -->
-        <div id="school-list-container" class="dashboard-schools-list flex-grow-1 mx-2">
-             <h4 class="text-center p-3 mb-0 border-bottom border-secondary">院校速览</h4>
-             <div class="dashboard-schools-table-container">
-                 <table class="table table-sm table-hover dashboard-schools-table align-middle">
+        <div id="school-list-container" class="dashboard-schools-list flex-grow-1 mx-2 d-flex flex-column" style="height: 100%;">
+             <h4 class="text-center p-3 mb-0 border-bottom border-secondary flex-shrink-0">院校速览</h4>
+             <div class="dashboard-schools-table-container flex-grow-1" style="overflow-x: auto; overflow-y: auto; min-height: 0;">
+                 <table class="table table-sm table-hover dashboard-schools-table resizable-table align-middle" style="table-layout: fixed; width: 100%;">
                      <thead>
                          <tr>
-                             <th>院校名称</th>
-                             <th>等级</th>
-                             <th>省份</th>
-                             <th>地区</th>
-                             <th>计算机等级</th>
-                             <th>24年招生人数</th>
+                             <th style="width: 200px; position: relative;">院校名称<div class="col-resizer"></div></th>
+                             <th style="width: 90px; position: relative;">等级<div class="col-resizer"></div></th>
+                             <th style="width: 90px; position: relative;">省份<div class="col-resizer"></div></th>
+                             <th style="width: 70px; position: relative;">地区<div class="col-resizer"></div></th>
+                             <th style="width: 120px; position: relative;">计算机等级<div class="col-resizer"></div></th>
+                             <th style="width: 110px; position: relative; text-align: center;">24年招生人数<div class="col-resizer"></div></th>
                              <th>初试科目</th>
                          </tr>
                      </thead>
@@ -43,7 +43,7 @@
                      </tbody>
                  </table>
              </div>
-             <div id="dashboard-school-pagination" class="p-2 border-top border-secondary d-flex justify-content-center"></div>
+             <div id="dashboard-school-pagination" class="p-2 border-top border-secondary d-flex justify-content-center flex-shrink-0"></div>
          </div>
 
         <!-- 第三列：饼图和公告 -->
@@ -61,7 +61,7 @@
 
 {% block scripts %}
 {{ super() }}
-<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{# <script src=\"{{ url_for('static', filename='js/main.js') }}\"></script> #}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         initCharts(); // 初始化所有图表
