@@ -430,6 +430,13 @@ def process_single_csv(csv_path, filename_hint, all_schools_data):
             
             school_entry = all_schools_data[school_name_cleaned]
 
+            # --- 新增：更新已存在学校的区域信息 ---
+            # 如果当前文件提供了明确的区域信息，并且与现有记录不同，则更新它
+            if current_sheet_region and current_sheet_region != school_entry.get('region'):
+                print(f"    更新学校 '{school_name_cleaned}' 的区域从 '{school_entry.get('region')}' 到 '{current_sheet_region}' (来自文件 {os.path.basename(csv_path)})")
+                school_entry['region'] = current_sheet_region
+            # --- 结束新增逻辑 ---
+
             # --- Extract Department Info --- 
             dept_name_val = get_first_value_from_row(row, find_actual_col(dept_cols_l))
             department_name = get_multiline_str(dept_name_val) or '未知院系'
