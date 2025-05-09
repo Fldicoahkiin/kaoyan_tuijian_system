@@ -7,9 +7,9 @@
 * **可视化大面板:** 动态展示全国计算机考研相关的宏观数据。主要包括：
   * **中间区域**: 可滚动的院校列表，展示 `院校名称`, `院校等级`, `省份`, `地区(A/B区)`, `计算机等级`。 (注: `24年招生人数` 和 `初试科目` 在此速览中暂不直接显示，详情页可见)
   * **左侧面板**:
-    * 左上: 近三年计算机考研**总分国家线折线图**。
-    * 左中: 近三年**政治/英语单科国家线柱状图**。
-    * 左下: 近三年**数学/专业课国家线折线图**。
+    * 左上: 近三年计**计算机考研总分国家线折线图**。
+    * 左中: 近三年**政治国家线柱状图**。
+    * 左下: 近三年**数学/英语国家线折线图**。
   * **右侧面板**:
     * 右上: 计算机考研**自命题 vs 408统考比例饼图**。
     * 右中/右下: **考研公告通知模块**(内容由后台管理，支持拖拽排序、编辑和删除)。
@@ -40,14 +40,14 @@
   * **公告管理**: 管理员可添加、删除、编辑公告信息，并可拖拽排序。
   * **图表数据编辑**: 管理员可编辑首页"自命题 vs 408 比例"饼图的数据和国家线图表的数据。
   * **院校数据管理**: 管理员可查看院校列表，编辑院校顶层信息和院系专业JSON数据。
-  * **爬虫触发**: 管理员可手动触发部分高校数据爬取更新任务。
+  * **爬虫触发**: 管理员可手动触发针对四川省高校计算机相关专业的爬虫更新任务。
   * **管理员设置**: 管理员可修改自己的登录密码。
   * 所有后台表单提交和 AJAX 操作均已添加 CSRF 保护。
 * **系统日志**: 将关键操作记录到 `logs/app.log` 文件。
 
 本项目的一个关键特点是**不依赖传统数据库**，所有数据（院校信息、国家线、公告、用户信息、收藏夹计数）均以 **JSON 文件** 形式存储在服务器的文件系统中 (`data/` 目录)。后端逻辑使用 Python 和 Flask 框架实现。
 
-**重要提示:** 基于文件的用户数据存储和密码哈希（`werkzeug.security`）相比明文有改进，但**仍不适合生产环境**，存在并发写入风险、安全风险和性能瓶颈。
+**重要提示:** 基于文件的用户数据存储相比传统数据库，在并发写入、安全性和性能方面均存在显著劣势。
 
 ## 2. 技术栈
 
@@ -55,7 +55,6 @@
   * **框架:** Flask
   * **表单与CSRF:** Flask-WTF
   * **数据处理:** JSON (用于运行时数据读写), Pandas (用于 `utils/data_processor.py` 数据预处理)
-  * **密码处理:** Werkzeug
   * **日志:** Python `logging` 模块
   * **数据存储:** JSON 文件
   * **文件锁:** portalocker (用于并发文件访问控制)
@@ -67,7 +66,7 @@
   * **图标:** Font Awesome
   * **(后台公告排序):** SortableJS
 * **开发工具:**
-  * Python 3.x
+  * Python 3.x (建议 3.7+)
   * pip (包管理)
   * Git (版本控制)
 
@@ -82,8 +81,13 @@ computer_recommendation_system/
 │   ├── announcements.json      # 公告通知数据
 │   ├── exam_type_ratios.json   # 首页饼图"自命题vs408比例"数据
 │   ├── favorites_count.json    # 全局学校收藏数统计
-│   └── users/                  # 存储用户信息的文件夹 (每个用户一个 JSON)
-│       └── admin.json
+│   ├── homepage_config.json    # 首页图表标题等配置
+│   ├── users/                  # 存储用户信息的文件夹 (每个用户一个 JSON)
+│   │   └── admin.json          # 示例管理员用户文件
+│   └── crawler/                # 爬虫输出目录
+│       ├── crawler_raw_data.json # 爬虫原始数据 (按学校组织)
+│       ├── crawler_schools.csv   # 爬取的学校URL信息
+│       └── crawler_summary.json  # 爬虫运行汇总统计
 ├── logs/                       # 存放日志文件
 │   └── app.log
 ├── static/                     # 存放前端静态文件
@@ -99,10 +103,11 @@ computer_recommendation_system/
 │   │   ├── user_detail.html
 │   │   ├── announcements.html
 │   │   ├── admin_profile.html
-│   │   ├── edit_exam_ratios.html # 编辑饼图比例数据页面
-│   │   ├── edit_national_lines.html # 编辑国家线数据页面
-│   │   ├── schools.html          # 后台院校列表
-│   │   └── edit_school.html      # 后台编辑院校页面
+│   │   ├── edit_exam_ratios.html
+│   │   ├── edit_national_lines.html
+│   │   ├── edit_homepage.html    # 新增：编辑首页配置页面
+│   │   ├── schools.html
+│   │   └── edit_school.html
 │   ├── base.html               # 前台基础模板
 │   ├── index.html              # 可视化大面板/首页
 │   ├── school_list.html        # 院校库查询结果页
@@ -114,7 +119,9 @@ computer_recommendation_system/
 │   └── _flash_messages.html    # Flash消息模板片段
 ├── utils/                      # 存放工具脚本
 │   ├── data_processor.py       # 初始数据处理脚本
-│   └── scraper.py              # 爬虫脚本 (部分实现)
+│   ├── scraper.py              # 爬虫脚本 (针对四川高校计算机专业)
+│   └── chromedriver.exe        # (Windows) Selenium WebDriver for Chrome
+│   └── chromedriver            # (Linux/macOS) Selenium WebDriver for Chrome
 ├── requirements.txt            # Python 依赖库
 ├── README.md                   # 项目说明和开发文档
 └── 择校文档.xlsx             # 原始数据文件 (示例)
@@ -131,13 +138,13 @@ computer_recommendation_system/
 ```json
 [
   {
-    "id": "院校名称",
+    "id": "院校名称", // 通常与 name 相同，用作唯一标识
     "name": "院校名称",
-    "level": "985/211/双一流/一般",
+    "level": "985/211/双一流/一般/普通院校", // 普通院校也可能出现
     "province": "省份",
-    "region": "A区/B区",
+    "region": "A区/B区/未知分区",
     "intro": "院校简介",
-    "computer_rank": "计算机学科评估等级(A+/A/A-/B+/B/B-/C+/C/C-/无评级)",
+    "computer_rank": "计算机学科评估等级(A+/A/A-/B+/B/B-/C+/C/C-/无评级/未提供)",
     "departments": [
       {
         "department_name": "院系名称",
@@ -145,80 +152,60 @@ computer_recommendation_system/
           {
             "major_code": "专业代码",
             "major_name": "专业名称",
-            "exam_subjects": "初试科目",
-            "reference_books": "参考书目",
-            "retrial_subjects": "复试科目",
-            "enrollment": { 
+            "exam_subjects": "初试科目 (可能多行，\n换行)",
+            "reference_books": "参考书目 (可能多行)",
+            "retrial_subjects": "复试科目 (可能多行)",
+            "enrollment": { // 近三年招生人数
               "2022": 0, 
               "2023": 0, 
               "2024": 0 
             },
-            "tuition_duration": "学费学制",
-            "score_lines": {
-              "2022": "分数线字符串",
-              "2023": "分数线字符串",
-              "2024": "分数线字符串"
+            "tuition_duration": "学费学制 (可能多行)",
+            "score_lines": { // 近三年复试分数线
+              "2022": "分数线字符串或null",
+              "2023": "分数线字符串或null",
+              "2024": "分数线字符串或null"
             },
-            "admission_info_23": "23年录取情况",
-            "admission_info_24": "24年录取情况"
+            "admission_info_23": "23年录取情况 (可能多行)",
+            "admission_info_24": "24年录取情况 (可能多行)"
           }
         ]
       }
     ],
-    "enrollment_24_school_total": 100,
-    "exam_subjects_summary": "初试科目汇总"
+    "enrollment_24_school_total": 100, // 学校2024年总招生人数
+    "exam_subjects_summary": "初试科目汇总 (各专业初试科目的并集，用 | 分隔)"
   }
 ]
 ```
 
 ### `national_lines.json`
 
-存储各科国家线数据，结构如下：
+存储近三年各科国家线数据，结构如下（示例，实际科目可能更多）：
 
 ```json
 {
-  "computer_science_total": {
-    "years": ["2023", "2024", "2025"],
+  "computer_science_total": { // 计算机学硕总分线示例
+    "years": ["2023", "2024", "2025"], // 固定年份
     "scores": {
-      "A区": [290, 285, null],
-      "B区": [280, 275, null]
+      "A区": [273, 270, null],
+      "B区": [263, 260, null]
     }
   },
   "politics": {
     "years": ["2023", "2024", "2025"],
     "scores": {
-      "A区": [55, 55, null],
-      "B区": [55, 55, null]
+      "A区": [50, 48, null],
+      "B区": [47, 45, null]
     }
   },
-  "english_one": {
+  "english_one": { // 英语一
     "years": ["2023", "2024", "2025"],
     "scores": {
-      "A区": [55, 55, null],
-      "B区": [55, 55, null]
-    }
-  },
-  "english_two": {
-    "years": ["2023", "2024", "2025"],
-    "scores": {
-      "A区": [55, 55, null],
-      "B区": [55, 55, null]
-    }
-  },
-  "math_one": {
-    "years": ["2023", "2024", "2025"],
-    "scores": {
-      "A区": [55, 55, null],
-      "B区": [55, 55, null]
-    }
-  },
-  "math_two": {
-    "years": ["2023", "2024", "2025"],
-    "scores": {
-      "A区": [55, 55, null],
-      "B区": [55, 55, null]
+      "A区": [50, 48, null],
+      "B区": [47, 45, null]
     }
   }
+  // ... 其他科目如 english_two, math_one, math_two 等结构类似
 }
 ```
 
@@ -229,8 +216,12 @@ computer_recommendation_system/
 ```json
 [
   {
-    "title": "公告标题",
-    "url": "公告链接"
+    "title": "公告标题1",
+    "url": "公告链接1"
+  },
+  {
+    "title": "公告标题2",
+    "url": "公告链接2"
   }
 ]
 ```
@@ -242,11 +233,11 @@ computer_recommendation_system/
 ```json
 [
   {
-    "value": 60,
+    "value": 70, // 示例值
     "name": "自命题"
   },
   {
-    "value": 40,
+    "value": 30, // 示例值
     "name": "408统考"
   }
 ]
@@ -258,22 +249,21 @@ computer_recommendation_system/
 
 ```json
 {
-  "学校ID_1": 15,
-  "学校ID_2": 5,
-  ...
+  "北京大学": 25,
+  "清华大学": 18
 }
 ```
 
 ### `data/homepage_config.json`
 
-存储首页图表的配置信息：
+存储首页图表的标题配置信息：
 
 ```json
 {
-  "national_line_total_title": "近三年总分国家线趋势",
-  "national_line_politics_title": "近三年政治/英语单科线",
-  "national_line_others_title": "近三年数学/专业课单科线",
-  "exam_type_ratio_title": "自命题 vs 408 比例"
+  "national_line_total_title": "近三年计算机总分国家线趋势",
+  "national_line_politics_title": "近三年政治国家线趋势",
+  "national_line_others_title": "近三年数学/英语国家线趋势",
+  "exam_type_ratio_title": "计算机考研 自命题 vs 408统考 比例"
 }
 ```
 
@@ -284,7 +274,7 @@ computer_recommendation_system/
 ```json
 {
   "username": "string",        // 用户名 (与文件名一致)
-  "password_hash": "string",   // Werkzeug 生成的密码哈希
+  "password": "string",        // 用户明文密码 (极不安全)
   "is_admin": boolean,       // 是否为管理员 (默认为 false)
   "profile": {               // 用户个人资料和偏好
     "education_background": "string",
@@ -298,49 +288,56 @@ computer_recommendation_system/
 }
 ```
 
-### `data/crawler/`
+### `data/crawler/` 目录
 
-爬虫输出目录：
+存放爬虫脚本输出的相关文件：
 
-* `crawler_raw_data.json`: 爬虫原始数据，包含完整爬取结果
-* `crawler_schools.csv`: 爬取的学校和URL信息
-* `crawler_summary.json`: 爬虫处理后的汇总数据
+* **`crawler_raw_data.json`**: 包含从各目标学校爬取的原始、未合并的详细数据，按学校名称组织。每个学校的数据结构尽量与 `schools.json` 中的院系专业结构保持一致。
+* **`crawler_schools.csv`**: 一个 CSV 文件，记录了爬虫尝试爬取的学校名称、研究生院网址、以及爬虫找到的专业目录和分数线页面的具体URL（如果找到）。
+* **`crawler_summary.json`**: 包含本次爬虫运行的汇总统计信息，如运行时间、目标学校列表、目标专业代码、处理的学校数量、成功更新的学校数量、找到的总院系和专业数量等。
 
 ## 5. 已实现功能
 
 * **核心展示**:
-  * 可视化大面板 (含国家线图、考试类型比例图、公告、滚动院校列表)
-  * 院校库查询 (支持多维度筛选、分页)
-  * 院校详情页
+  * 可视化大面板 (动态加载国家线图、考试类型比例图、公告列表、可滚动院校列表)
+  * 院校库查询 (支持按省份、等级、地区、计算机等级、名称等多维度筛选，支持按收藏数或默认排序，分页显示)
+  * 院校详情页 (展示学校简介、院系专业结构、招生人数、考试科目、分数线等)
 * **用户系统**:
-  * 注册、登录、登出 (使用 Flask-WTF 和 CSRF 保护)
-  * 个人资料查看与修改 (支持偏好地区、等级、**计算机等级**、预期分数等)
-  * 院校收藏与取消收藏 (实时更新收藏数)
-  * 收藏夹列表展示
-* **推荐系统**: 基于用户偏好和加权算法的 Top N 院校推荐 (分页显示)。
-* **管理后台**:
-  * 管理员登录与权限控制
-  * 仪表盘概览
-  * 用户管理 (列表、创建、删除、查看详情、切换管理员状态)
-  * 公告管理 (添加、编辑、删除、拖拽排序)
-  * 首页图表数据编辑 (国家线、考试类型比例)
-  * 院校数据管理 (列表查看、顶层信息编辑、院系专业JSON编辑)
-  * 爬虫手动触发
-  * 管理员密码修改
-  * 完整的 CSRF 保护
-* **日志记录**: 关键操作记录到 `logs/app.log` 文件。
-* **数据爬取 (部分)**: 已实现针对 **四川大学** 和 **电子科技大学** 的专业目录和近三年分数线的爬取与合并逻辑 (`utils/scraper.py`)。
-* **UI 风格**:
-  * 固定为深色科技感主题，并对全局样式和组件进行了统一重构。
+  * 用户注册、登录、登出 (使用 Flask-WTF 和 CSRF 保护)
+  * 个人资料查看与修改 (包括目标地区、院校等级、计算机等级偏好、预期分数等)
+  * 院校收藏与取消收藏功能 (实时更新前端显示及后端收藏计数)
+  * 个人收藏夹列表展示
+* **推荐系统**:
+  * 基于用户个人偏好（分数、地区、等级等）和院校热度（收藏数）的加权评分推荐算法。
+  * Top N 院校推荐列表，分页显示。
+* **管理后台 (`/admin/`)**:
+  * 管理员认证与权限控制。
+  * 仪表盘 (显示用户数、公告数、院校数等基本统计)。
+  * 用户管理 (用户列表查看、创建新用户、删除用户、查看用户详情、切换用户管理员状态)。
+  * 公告管理 (添加、编辑、删除公告，支持拖拽排序)。
+  * 首页图表数据编辑 (编辑国家线数据、考试类型比例数据、图表标题等配置)。
+  * 院校数据管理 (查看院校列表、编辑院校顶层信息如等级/简介、编辑院系和专业的完整JSON数据)。
+  * 爬虫管理 (手动触发爬虫任务，目标为四川省高校的计算机相关专业)。
+  * 管理员个人资料修改 (如修改登录密码)。
+  * 所有表单和关键操作均实现 CSRF 保护。
+* **数据处理与爬取**:
+  * `utils/data_processor.py`: 用于从Excel (`择校文档.xlsx`) 初始化/预处理 `schools.json` 数据。
+  * `utils/scraper.py`: 针对四川省高校（如四川大学、电子科技大学等）的计算机相关专业，爬取近三年的招生目录、分数线等信息。爬取数据会导出到 `data/crawler/` 目录，并尝试合并到 `data/schools.json`。
+* **日志记录**: 将应用运行过程中的关键信息和错误记录到 `logs/app.log` 文件。
+* **UI 风格**: 整体采用深色科技感主题，使用 Bootstrap 5 和 Font Awesome 图标，ECharts 用于数据可视化。
 
 ## 6. 运行说明
 
-1. **环境设置**: 确保已安装 Python 3.x 和 pip。建议使用虚拟环境.venv。
+1. **环境设置**: 确保已安装 Python 3.x (建议 3.7 或更高版本) 和 pip。推荐使用虚拟环境：
 
     ```bash
     python -m venv .venv
-    source .venv/bin/activate   # 激活虚拟环境 (Linux/macOS)
-    .venv\Scripts\activate      # 激活虚拟环境 (Windows)
+    # Linux/macOS
+    source .venv/bin/activate
+    # Windows (Git Bash 或 WSL)
+    source .venv/Scripts/activate
+    # Windows (CMD/PowerShell)
+    .venv\Scripts\activate 
     ```
 
 2. **安装依赖**: 在激活虚拟环境后，安装所需库：
@@ -349,13 +346,20 @@ computer_recommendation_system/
     pip install -r requirements.txt
     ```
 
+    如果在 Windows 上安装 `scrypt`（`Werkzeug` 可能间接依赖）遇到问题，可能需要安装 Microsoft C++ Build Tools。
+
 3. **准备数据**:
+    * 运行 `python utils/data_processor.py` 来从 `择校文档.xlsx` 生成初始的 `data/schools.json`。
+    * 确保 `data/national_lines.json`, `data/announcements.json`, `data/exam_type_ratios.json`, `data/homepage_config.json` 文件存在且有有效的初始数据（或为空列表/字典，系统会在某些情况下处理）。
+    * `data/favorites_count.json` 会在用户首次收藏时自动创建。
+    * `data/crawler/` 目录及其下的文件会在运行爬虫脚本 (`utils/scraper.py`) 后生成。
 
-* 运行 `python utils/data_processor.py` 来生成初始的 `schools.json` (如果原始 Excel 文件存在)。
-* 确保 `data/national_lines.json`, `data/announcements.json`, `data/exam_type_ratios.json` 文件存在且有初始数据（或为空列表/字典）。
-* `data/favorites_count.json` 会在用户首次收藏时自动创建。
+4. **设置管理员**:
+    * 首次运行时，通过应用的注册功能注册一个新用户 (例如，用户名为 `admin`)。
+    * 然后，**手动修改**该用户对应的 JSON 文件，例如 `data/users/admin.json`：
+        * 将其中的 `"is_admin"` 字段的值设置为 `true`。
+        * 确保 `"password"` 字段的值是你希望设置的管理员明文密码 (例如: `"password": "your_secure_password"`)
 
-4. **设置管理员**: 首次运行时，需要先注册一个用户，然后**手动修改**对应的 `data/users/用户名.json` 文件，在顶层添加 `"is_admin": true,`。
 5. **运行应用**: 在项目根目录下运行：
 
     ```bash
@@ -365,58 +369,62 @@ computer_recommendation_system/
 6. **访问应用**: 打开浏览器访问 `http://127.0.0.1:5001/`。
 7. **访问后台**: 使用管理员账户登录后，访问 `http://127.0.0.1:5001/admin/`。
 
-## 7. 待办事项 (To-Do List)
+## 7. 爬虫模块 (`utils/scraper.py`)
 
-* **[进行中]** **爬虫模块 (`utils/scraper.py`)**:
-  * **[待定]** **扩展爬取范围**: 添加对 `TARGET_SCHOOLS` 列表中其他学校的特定解析逻辑和数据抓取。
-  * **[待定]** **健壮性与容错**: 增强错误处理，添加更详细的日志记录。
-  * **[待定]** **更新机制**: 实现增量更新或定期完全更新的策略。
-  * **[待定]** **代理/延时**: 加入代理 IP 和请求延时，防止被封禁。
-* **[待完善]** **前端页面 (`templates/`, `static/`)**:
-  * 细节样式打磨。
-  * 可视化大面板其余图表细节优化。
-  * 院校详情页可以考虑加入 ECharts 展示历年分数线（目前只在后端逻辑中有准备）。
-* **[待完成]** **后台功能**:
-  * **[待定]** 实现更精细的院校信息编辑界面（替代或辅助JSON编辑）。
-  * **[待定]** 爬虫状态监控/管理界面。
-* **[可选]** **部署优化**:
-  * 考虑使用 Gunicorn/uWSGI + Nginx 进行生产环境部署。
-  * 考虑使用更健壮的数据存储方案（如 SQLite, PostgreSQL）替代 JSON 文件。
-  * 考虑使用后台任务队列（如 Celery）运行爬虫。
+本模块负责从指定高校的研究生招生网站爬取最新的招生信息，主要针对四川省内招收计算机相关专业研究生的高校，用以补充和更新核心数据文件 `data/schools.json`。
 
-## 8. 爬虫模块 (`utils/scraper.py`)
+### 7.1 设计目标
 
-本模块负责从指定高校的研究生招生网站爬取最新的招生信息，特别是针对四川省高校近三年的计算机相关专业数据，用以补充和更新核心数据文件 `data/schools.json`。
-
-### 8.1 设计目标
-
-* **目标院校**: 重点关注四川省内招收计算机相关专业研究生的高校。
-* **目标专业**: 涵盖主流计算机相关专业代码，包括：
-  * `081200` 计算机科学与技术 (学硕)
-  * `083500` 软件工程 (学硕)
-  * `083900` 网络空间安全 (学硕)
+* **目标院校**: 重点关注四川省内招收计算机相关专业研究生的高校（具体列表见 `scraper.py` 内的 `TARGET_UNIVERSITIES`）。
+* **目标专业**: 涵盖主流计算机相关专业代码 (学硕和专硕)，包括但不限于：
+  * `081200` 计算机科学与技术
+  * `083500` 软件工程
+  * `083900` 网络空间安全
   * `085400` 电子信息 (专硕大类)
-  * `085404` 电子信息-计算机技术 (专硕方向)
-  * `085405` 电子信息-软件工程 (专硕方向)
-  * `085410` 电子信息-人工智能 (专硕方向)
-  * `085411` 电子信息-大数据技术与工程 (专硕方向)
-* **目标数据维度 (近三年: 2022, 2023, 2024)**:
-  * **招生人数**: 各专业的计划招生人数或实际录取人数。
-  * **考试科目**: 初试科目代码和名称。
-  * **复试分数线**: 各专业进入复试的总分线和单科线。
-  * **参考书目**: 专业课初试和复试的推荐参考书。
-  * **学费与学制**: 各专业的学费标准和基本学习年限。
-  * **录取情况**: 如最高分、最低分、平均分、拟录取名单公示链接等。
+  * `085404` 计算机技术
+  * `085405` 软件工程 (电子信息专硕方向)
+  * `085410` 人工智能
+  * `085411` 大数据技术与工程
+* **目标数据维度 (近三年: 如 2022, 2023, 2024)**:
+  * 招生院系、专业名称、专业代码
+  * 招生人数 (区分学硕/专硕、全日制/非全日制，视学校公布情况而定)
+  * 初试科目 (代码和名称)
+  * 复试分数线 (总分及单科，视学校公布情况而定)
+  * 学费与学制 (视学校公布情况而定)
+  * (可选) 参考书目、研究方向、导师信息等。
 * **数据输出**:
-  * 将爬取的原始数据输出到 `data/crawler/crawler_raw_data.json`
-  * 将学校URL信息输出到 `data/crawler/crawler_schools.csv`
-  * 将处理后的数据合并到 `data/schools.json`，保持原有结构
+  * 爬取的原始数据（按学校组织）将保存到 `data/crawler/crawler_raw_data.json`。
+  * 爬取过程中涉及的学校及其相关URL（如招生主页、专业目录页、分数线页）将记录在 `data/crawler/crawler_schools.csv`。
+  * 爬虫运行的汇总统计信息将保存到 `data/crawler/crawler_summary.json`。
+  * 解析和处理后的数据将尝试合并更新到主数据文件 `data/schools.json`，尽量保持其原有结构和数据的完整性。
 
-### 8.2 工作流程
+### 7.2 工作流程
 
-1. **加载现有数据**: 启动时，从 `data/schools.json` 文件读取现有学校数据。
-2. **爬取目标院校数据**: 针对四川省内有计算机相关专业的高校进行爬取。
-3. **数据解析与结构化**: 将爬取的HTML内容解析为结构化数据。
-4. **导出爬取数据**: 将原始爬取数据导出到单独的JSON和CSV文件中。
-5. **合并更新数据**: 将爬取的数据与现有的schools.json数据合并，保持原有结构。
-6. **保存更新后的数据**: 将合并后的数据保存回schools.json文件。
+1. **加载现有数据**: 启动爬虫时，首先从 `data/schools.json` 加载现有的院校数据到内存中，作为合并的基础。
+2. **遍历目标高校**: 脚本会遍历在 `TARGET_UNIVERSITIES` 字典中定义的四川省目标高校及其研究生院网址。
+3. **解析单个学校 (`parse_school_data`)**: 对每个目标学校执行以下操作：
+    * 使用 `requests` (或 `Selenium` 对于动态加载页面) 获取学校招生主页、专业目录页、历年分数线页等相关页面的 HTML 内容。
+    * 使用 `BeautifulSoup` 解析 HTML，根据各学校网站的具体结构，编写定制化的解析逻辑来提取目标数据维度信息（如院系、专业、代码、招生人数、考试科目、分数线等）。
+    * 对提取的数据进行结构化处理，使其符合 `schools.json` 中定义的内部数据格式。
+    * 记录下爬取过程中实际访问到的专业目录和分数线页面的URL。
+4. **数据导出与汇总**:
+    * 单个学校爬取并解析完成的原始数据存入一个临时字典中。
+    * 学校的URL信息记录到CSV的行数据中。
+5. **合并数据 (`update_school_data`)**: 将从单个学校爬取并解析后的新数据 (`update_data`)，与内存中加载的对应学校的现有数据 (`school_entry`) 进行合并。
+    * 合并逻辑会基于院系名称和专业代码进行匹配。
+    * 如果院系或专业在现有数据中不存在，则添加为新的条目。
+    * 如果已存在，则选择性地更新其字段（如更新特定年份的分数线、招生人数等），避免覆盖手动维护的或非本次爬取目标的数据。
+6. **保存数据**:
+    * 在所有目标高校都处理完毕后，将包含所有学校原始爬取数据的字典保存到 `crawler_raw_data.json`。
+    * 将所有学校的URL信息列表保存到 `crawler_schools.csv`。
+    * 将爬虫运行的统计信息保存到 `crawler_summary.json`。
+    * 如果至少有一个学校的数据在合并过程中发生了实际变化，则将内存中完整且已合并的学校列表 (`schools_list`) 写回到 `data/schools.json` 文件。
+7. **延时**: 在处理完一个学校后，可能会加入短暂延时，以避免对目标网站服务器造成过大压力。
+
+### 7.3 注意事项
+
+* **网站结构变化**: 各高校招生网站的页面结构可能会不定期发生变化，这可能导致爬虫的解析逻辑失效。需要定期检查和更新爬虫脚本中的选择器和解析规则。
+* **反爬机制**: 一些网站可能有反爬虫机制。脚本中已包含基本的 User-Agent 设置和请求延时，但对于更复杂的反爬机制，可能需要引入代理IP、更复杂的请求头模拟、验证码处理（如果无法避免）等策略。
+* **Selenium WebDriver**: 爬虫依赖 Selenium 与 ChromeDriver (或其他浏览器驱动) 来处理动态加载内容的页面。确保 ChromeDriver 的版本与你系统上安装的 Chrome 浏览器版本兼容，并将其路径配置正确或放置在系统 PATH 中。
+* **数据准确性**: 爬虫提取的数据准确性依赖于解析逻辑的精确度和源网站数据的规范性。建议在数据入库或使用前进行人工核查，特别是关键信息如分数线、招生人数等。
+* **法律与道德**: 爬取数据时应遵守相关网站的 `robots.txt` 协议（如果存在），并避免过于频繁的请求给目标服务器带来不必要的负担。爬取的数据应仅用于项目本身的目的。

@@ -4,7 +4,7 @@ import json
 import os
 import datetime # 导入 datetime 模块
 # 导入 Werkzeug 用于密码哈希 (比明文安全)
-from werkzeug.security import generate_password_hash, check_password_hash
+# from werkzeug.security import generate_password_hash, check_password_hash # 移除 Werkzeug security
 import re # 导入 re 用于解析分数线
 from math import ceil # 用于分页计算
 from flask_wtf import FlaskForm
@@ -634,10 +634,11 @@ def register():
             # 当验证失败或逻辑错误时，重新渲染表单，并传递form对象
             return render_template('register.html', form=form)
 
-        hashed_password = generate_password_hash(password)
+        # hashed_password = generate_password_hash(password) # 移除哈希
         user_data = {
             "username": username,
-            "password_hash": hashed_password,
+            # "password_hash": hashed_password, # 修改为明文密码
+            "password": password, # 直接存储明文密码
             "profile": { 
                 "education_background": "",
                 "major_area": "",
@@ -674,7 +675,8 @@ def login():
 
         if user_data is None:
             flash('用户名不存在！', 'error')
-        elif check_password_hash(user_data.get('password_hash', ''), password):
+        # elif check_password_hash(user_data.get('password_hash', ''), password): # 修改为明文比较
+        elif user_data.get('password') == password:
             session['username'] = username
             flash('登录成功！', 'success')
             return redirect(request.args.get('next') or url_for('index')) # 跳转到 next 或首页
@@ -1206,7 +1208,7 @@ def admin_create_user():
     hashed_password = generate_password_hash(password)
     new_user_data = {
         "username": username,
-        "password_hash": hashed_password,
+        "password": password, # 直接存储明文密码
         "is_admin": is_admin,
         "profile": {
             "education_background": "",
@@ -1428,11 +1430,13 @@ def admin_profile():
              flash('无法加载当前用户信息。', 'error')
              return redirect(url_for('admin_dashboard'))
 
-        if current_password and not check_password_hash(user_data.get('password_hash', ''), current_password):
+        # if current_password and not check_password_hash(user_data.get('password_hash', ''), current_password): # 修改为明文比较
+        if current_password and user_data.get('password') != current_password:
             flash('当前密码错误！', 'error')
             return redirect(url_for('admin_profile'))
 
-        user_data['password_hash'] = generate_password_hash(new_password)
+        # user_data['password_hash'] = generate_password_hash(new_password) # 修改为明文存储
+        user_data['password'] = new_password # 直接存储明文新密码
         if save_user_data(username, user_data):
             flash('密码修改成功！', 'success')
             app.logger.info(f"管理员 '{username}' 修改了自己的密码。")
@@ -2397,4 +2401,4 @@ if __name__ == '__main__':
     # 移除旧的 fcntl 引用，因为它已被 portalocker 替代或作为后备方案
     # del fcntl 
 
-    app.run(debug=True, host='0.0.0.0', port=5001)
+    app.run(debug=True, host='127.0.0.1', port=5001)
