@@ -1,35 +1,45 @@
 School: 四川师范大学
-Timestamp: 20250509_234126
-Error Message: 获取页面失败 (url: https://yjsy.sicnu.edu.cn/): 502 Server Error: Bad Gateway for url: https://yjsy.sicnu.edu.cn/
+Timestamp: 2025-05-10 01:31:35
+Error Message: 获取页面失败 (url: https://yjsc.sicnu.edu.cn/): 483 Client Error:  for url: https://yjsc.sicnu.edu.cn/
 
 Exception Type: HTTPError
-Exception Details: 502 Server Error: Bad Gateway for url: https://yjsy.sicnu.edu.cn/
+Exception Details: 483 Client Error:  for url: https://yjsc.sicnu.edu.cn/
 
 Traceback:
 Traceback (most recent call last):
-  File "/Users/mac/WorkSpace/考研推荐系统/utils/scraper.py", line 271, in fetch_page
-    response.raise_for_status() # 如果请求失败 (4xx, 5xx) 则抛出异常
+  File "/Users/mac/WorkSpace/考研推荐系统/utils/scraper.py", line 304, in fetch_page
+    response.raise_for_status() # Raises an HTTPError for bad responses (4XX or 5XX)
     ~~~~~~~~~~~~~~~~~~~~~~~~~^^
   File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/requests/models.py", line 1024, in raise_for_status
     raise HTTPError(http_error_msg, response=self)
-requests.exceptions.HTTPError: 502 Server Error: Bad Gateway for url: https://yjsy.sicnu.edu.cn/
+requests.exceptions.HTTPError: 483 Client Error:  for url: https://yjsc.sicnu.edu.cn/
 
 During handling of the above exception, another exception occurred:
 
 Traceback (most recent call last):
-  File "/Users/mac/WorkSpace/考研推荐系统/utils/scraper.py", line 271, in fetch_page
-    response.raise_for_status() # 如果请求失败 (4xx, 5xx) 则抛出异常
+  File "/Users/mac/WorkSpace/考研推荐系统/utils/scraper.py", line 304, in fetch_page
+    response.raise_for_status() # Raises an HTTPError for bad responses (4XX or 5XX)
     ~~~~~~~~~~~~~~~~~~~~~~~~~^^
   File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/requests/models.py", line 1024, in raise_for_status
     raise HTTPError(http_error_msg, response=self)
-requests.exceptions.HTTPError: 502 Server Error: Bad Gateway for url: https://yjsy.sicnu.edu.cn/
+requests.exceptions.HTTPError: 483 Client Error:  for url: https://yjsc.sicnu.edu.cn/
 
 During handling of the above exception, another exception occurred:
 
 Traceback (most recent call last):
-  File "/Users/mac/WorkSpace/考研推荐系统/utils/scraper.py", line 271, in fetch_page
-    response.raise_for_status() # 如果请求失败 (4xx, 5xx) 则抛出异常
+  File "/Users/mac/WorkSpace/考研推荐系统/utils/scraper.py", line 304, in fetch_page
+    response.raise_for_status() # Raises an HTTPError for bad responses (4XX or 5XX)
     ~~~~~~~~~~~~~~~~~~~~~~~~~^^
   File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/requests/models.py", line 1024, in raise_for_status
     raise HTTPError(http_error_msg, response=self)
-requests.exceptions.HTTPError: 502 Server Error: Bad Gateway for url: https://yjsy.sicnu.edu.cn/
+requests.exceptions.HTTPError: 483 Client Error:  for url: https://yjsc.sicnu.edu.cn/
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/mac/WorkSpace/考研推荐系统/utils/scraper.py", line 304, in fetch_page
+    response.raise_for_status() # Raises an HTTPError for bad responses (4XX or 5XX)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/requests/models.py", line 1024, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 483 Client Error:  for url: https://yjsc.sicnu.edu.cn/

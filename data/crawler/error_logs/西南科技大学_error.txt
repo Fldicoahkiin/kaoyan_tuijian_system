@@ -1,9 +1,9 @@
 School: 西南科技大学
-Timestamp: 2025-05-09 23:49:13
-Error Message: 获取页面失败 (url: https://graduate.swust.edu.cn/): HTTPSConnectionPool(host='graduate.swust.edu.cn', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x1025eefd0>: Failed to resolve 'graduate.swust.edu.cn' ([Errno 8] nodename nor servname provided, or not known)"))
+Timestamp: 2025-05-10 01:33:40
+Error Message: 获取页面失败 (url: http://www.swust.edu.cn/): HTTPConnectionPool(host='www.swust.edu.cn', port=80): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x105a09910>, 'Connection to www.swust.edu.cn timed out. (connect timeout=30)'))
 
-Exception Type: ConnectionError
-Exception Details: HTTPSConnectionPool(host='graduate.swust.edu.cn', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x1025eefd0>: Failed to resolve 'graduate.swust.edu.cn' ([Errno 8] nodename nor servname provided, or not known)"))
+Exception Type: ConnectTimeout
+Exception Details: HTTPConnectionPool(host='www.swust.edu.cn', port=80): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x105a09910>, 'Connection to www.swust.edu.cn timed out. (connect timeout=30)'))
 
 Traceback:
 Traceback (most recent call last):
@@ -13,13 +13,12 @@ Traceback (most recent call last):
     ...<2 lines>...
         socket_options=self.socket_options,
     )
-  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 60, in create_connection
-    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
-               ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.13/3.13.3/Frameworks/Python.framework/Versions/3.13/lib/python3.13/socket.py", line 977, in getaddrinfo
-    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
-               ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 85, in create_connection
+    raise err
+  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 73, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+TimeoutError: timed out
 
 The above exception was the direct cause of the following exception:
 
@@ -30,20 +29,36 @@ Traceback (most recent call last):
     ...<10 lines>...
         **response_kw,
     )
-  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 488, in _make_request
-    raise new_e
-  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 464, in _make_request
-    self._validate_conn(conn)
-    ~~~~~~~~~~~~~~~~~~~^^^^^^
-  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
-    conn.connect()
+  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+    ~~~~~~~~~~~~^
+        method,
+        ^^^^^^^
+    ...<6 lines>...
+        enforce_content_length=enforce_content_length,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 445, in request
+    self.endheaders()
+    ~~~~~~~~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.3/Frameworks/Python.framework/Versions/3.13/lib/python3.13/http/client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.3/Frameworks/Python.framework/Versions/3.13/lib/python3.13/http/client.py", line 1093, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.3/Frameworks/Python.framework/Versions/3.13/lib/python3.13/http/client.py", line 1037, in send
+    self.connect()
     ~~~~~~~~~~~~^^
-  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 704, in connect
-    self.sock = sock = self._new_conn()
-                       ~~~~~~~~~~~~~~^^
-  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 205, in _new_conn
-    raise NameResolutionError(self.host, self, e) from e
-urllib3.exceptions.NameResolutionError: <urllib3.connection.HTTPSConnection object at 0x1025ede50>: Failed to resolve 'graduate.swust.edu.cn' ([Errno 8] nodename nor servname provided, or not known)
+  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ~~~~~~~~~~~~~~^^
+  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 207, in _new_conn
+    raise ConnectTimeoutError(
+    ...<2 lines>...
+    ) from e
+urllib3.exceptions.ConnectTimeoutError: (<urllib3.connection.HTTPConnection object at 0x1053f9950>, 'Connection to www.swust.edu.cn timed out. (connect timeout=30)')
 
 The above exception was the direct cause of the following exception:
 
@@ -61,12 +76,12 @@ Traceback (most recent call last):
   File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/util/retry.py", line 519, in increment
     raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='graduate.swust.edu.cn', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x1025ede50>: Failed to resolve 'graduate.swust.edu.cn' ([Errno 8] nodename nor servname provided, or not known)"))
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='www.swust.edu.cn', port=80): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x1053f9950>, 'Connection to www.swust.edu.cn timed out. (connect timeout=30)'))
 
 During handling of the above exception, another exception occurred:
 
 Traceback (most recent call last):
-  File "/Users/mac/WorkSpace/考研推荐系统/utils/scraper.py", line 308, in fetch_page
+  File "/Users/mac/WorkSpace/考研推荐系统/utils/scraper.py", line 303, in fetch_page
     response = requests.get(url, headers=active_headers, timeout=REQUEST_TIMEOUT, verify=False, **kwargs) # Added verify=False, consider certs
   File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/requests/api.py", line 73, in get
     return request("get", url, params=params, **kwargs)
@@ -77,9 +92,9 @@ Traceback (most recent call last):
     resp = self.send(prep, **send_kwargs)
   File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/requests/sessions.py", line 703, in send
     r = adapter.send(request, **kwargs)
-  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/requests/adapters.py", line 700, in send
-    raise ConnectionError(e, request=request)
-requests.exceptions.ConnectionError: HTTPSConnectionPool(host='graduate.swust.edu.cn', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x1025ede50>: Failed to resolve 'graduate.swust.edu.cn' ([Errno 8] nodename nor servname provided, or not known)"))
+  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/requests/adapters.py", line 688, in send
+    raise ConnectTimeout(e, request=request)
+requests.exceptions.ConnectTimeout: HTTPConnectionPool(host='www.swust.edu.cn', port=80): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x1053f9950>, 'Connection to www.swust.edu.cn timed out. (connect timeout=30)'))
 
 During handling of the above exception, another exception occurred:
 
@@ -90,13 +105,12 @@ Traceback (most recent call last):
     ...<2 lines>...
         socket_options=self.socket_options,
     )
-  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 60, in create_connection
-    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
-               ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.13/3.13.3/Frameworks/Python.framework/Versions/3.13/lib/python3.13/socket.py", line 977, in getaddrinfo
-    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
-               ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 85, in create_connection
+    raise err
+  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 73, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+TimeoutError: timed out
 
 The above exception was the direct cause of the following exception:
 
@@ -107,20 +121,36 @@ Traceback (most recent call last):
     ...<10 lines>...
         **response_kw,
     )
-  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 488, in _make_request
-    raise new_e
-  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 464, in _make_request
-    self._validate_conn(conn)
-    ~~~~~~~~~~~~~~~~~~~^^^^^^
-  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
-    conn.connect()
+  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+    ~~~~~~~~~~~~^
+        method,
+        ^^^^^^^
+    ...<6 lines>...
+        enforce_content_length=enforce_content_length,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 445, in request
+    self.endheaders()
+    ~~~~~~~~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.3/Frameworks/Python.framework/Versions/3.13/lib/python3.13/http/client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.3/Frameworks/Python.framework/Versions/3.13/lib/python3.13/http/client.py", line 1093, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.3/Frameworks/Python.framework/Versions/3.13/lib/python3.13/http/client.py", line 1037, in send
+    self.connect()
     ~~~~~~~~~~~~^^
-  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 704, in connect
-    self.sock = sock = self._new_conn()
-                       ~~~~~~~~~~~~~~^^
-  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 205, in _new_conn
-    raise NameResolutionError(self.host, self, e) from e
-urllib3.exceptions.NameResolutionError: <urllib3.connection.HTTPSConnection object at 0x1025eda90>: Failed to resolve 'graduate.swust.edu.cn' ([Errno 8] nodename nor servname provided, or not known)
+  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ~~~~~~~~~~~~~~^^
+  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 207, in _new_conn
+    raise ConnectTimeoutError(
+    ...<2 lines>...
+    ) from e
+urllib3.exceptions.ConnectTimeoutError: (<urllib3.connection.HTTPConnection object at 0x1053ecc30>, 'Connection to www.swust.edu.cn timed out. (connect timeout=30)')
 
 The above exception was the direct cause of the following exception:
 
@@ -138,12 +168,12 @@ Traceback (most recent call last):
   File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/util/retry.py", line 519, in increment
     raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='graduate.swust.edu.cn', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x1025eda90>: Failed to resolve 'graduate.swust.edu.cn' ([Errno 8] nodename nor servname provided, or not known)"))
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='www.swust.edu.cn', port=80): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x1053ecc30>, 'Connection to www.swust.edu.cn timed out. (connect timeout=30)'))
 
 During handling of the above exception, another exception occurred:
 
 Traceback (most recent call last):
-  File "/Users/mac/WorkSpace/考研推荐系统/utils/scraper.py", line 308, in fetch_page
+  File "/Users/mac/WorkSpace/考研推荐系统/utils/scraper.py", line 303, in fetch_page
     response = requests.get(url, headers=active_headers, timeout=REQUEST_TIMEOUT, verify=False, **kwargs) # Added verify=False, consider certs
   File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/requests/api.py", line 73, in get
     return request("get", url, params=params, **kwargs)
@@ -154,9 +184,9 @@ Traceback (most recent call last):
     resp = self.send(prep, **send_kwargs)
   File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/requests/sessions.py", line 703, in send
     r = adapter.send(request, **kwargs)
-  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/requests/adapters.py", line 700, in send
-    raise ConnectionError(e, request=request)
-requests.exceptions.ConnectionError: HTTPSConnectionPool(host='graduate.swust.edu.cn', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x1025eda90>: Failed to resolve 'graduate.swust.edu.cn' ([Errno 8] nodename nor servname provided, or not known)"))
+  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/requests/adapters.py", line 688, in send
+    raise ConnectTimeout(e, request=request)
+requests.exceptions.ConnectTimeout: HTTPConnectionPool(host='www.swust.edu.cn', port=80): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x1053ecc30>, 'Connection to www.swust.edu.cn timed out. (connect timeout=30)'))
 
 During handling of the above exception, another exception occurred:
 
@@ -167,13 +197,12 @@ Traceback (most recent call last):
     ...<2 lines>...
         socket_options=self.socket_options,
     )
-  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 60, in create_connection
-    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
-               ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.13/3.13.3/Frameworks/Python.framework/Versions/3.13/lib/python3.13/socket.py", line 977, in getaddrinfo
-    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
-               ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 85, in create_connection
+    raise err
+  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 73, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+TimeoutError: timed out
 
 The above exception was the direct cause of the following exception:
 
@@ -184,20 +213,36 @@ Traceback (most recent call last):
     ...<10 lines>...
         **response_kw,
     )
-  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 488, in _make_request
-    raise new_e
-  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 464, in _make_request
-    self._validate_conn(conn)
-    ~~~~~~~~~~~~~~~~~~~^^^^^^
-  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
-    conn.connect()
+  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+    ~~~~~~~~~~~~^
+        method,
+        ^^^^^^^
+    ...<6 lines>...
+        enforce_content_length=enforce_content_length,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 445, in request
+    self.endheaders()
+    ~~~~~~~~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.3/Frameworks/Python.framework/Versions/3.13/lib/python3.13/http/client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.3/Frameworks/Python.framework/Versions/3.13/lib/python3.13/http/client.py", line 1093, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.3/Frameworks/Python.framework/Versions/3.13/lib/python3.13/http/client.py", line 1037, in send
+    self.connect()
     ~~~~~~~~~~~~^^
-  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 704, in connect
-    self.sock = sock = self._new_conn()
-                       ~~~~~~~~~~~~~~^^
-  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 205, in _new_conn
-    raise NameResolutionError(self.host, self, e) from e
-urllib3.exceptions.NameResolutionError: <urllib3.connection.HTTPSConnection object at 0x1025efd90>: Failed to resolve 'graduate.swust.edu.cn' ([Errno 8] nodename nor servname provided, or not known)
+  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ~~~~~~~~~~~~~~^^
+  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 207, in _new_conn
+    raise ConnectTimeoutError(
+    ...<2 lines>...
+    ) from e
+urllib3.exceptions.ConnectTimeoutError: (<urllib3.connection.HTTPConnection object at 0x1053ec510>, 'Connection to www.swust.edu.cn timed out. (connect timeout=30)')
 
 The above exception was the direct cause of the following exception:
 
@@ -215,12 +260,12 @@ Traceback (most recent call last):
   File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/util/retry.py", line 519, in increment
     raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='graduate.swust.edu.cn', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x1025efd90>: Failed to resolve 'graduate.swust.edu.cn' ([Errno 8] nodename nor servname provided, or not known)"))
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='www.swust.edu.cn', port=80): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x1053ec510>, 'Connection to www.swust.edu.cn timed out. (connect timeout=30)'))
 
 During handling of the above exception, another exception occurred:
 
 Traceback (most recent call last):
-  File "/Users/mac/WorkSpace/考研推荐系统/utils/scraper.py", line 308, in fetch_page
+  File "/Users/mac/WorkSpace/考研推荐系统/utils/scraper.py", line 303, in fetch_page
     response = requests.get(url, headers=active_headers, timeout=REQUEST_TIMEOUT, verify=False, **kwargs) # Added verify=False, consider certs
   File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/requests/api.py", line 73, in get
     return request("get", url, params=params, **kwargs)
@@ -231,9 +276,9 @@ Traceback (most recent call last):
     resp = self.send(prep, **send_kwargs)
   File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/requests/sessions.py", line 703, in send
     r = adapter.send(request, **kwargs)
-  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/requests/adapters.py", line 700, in send
-    raise ConnectionError(e, request=request)
-requests.exceptions.ConnectionError: HTTPSConnectionPool(host='graduate.swust.edu.cn', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x1025efd90>: Failed to resolve 'graduate.swust.edu.cn' ([Errno 8] nodename nor servname provided, or not known)"))
+  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/requests/adapters.py", line 688, in send
+    raise ConnectTimeout(e, request=request)
+requests.exceptions.ConnectTimeout: HTTPConnectionPool(host='www.swust.edu.cn', port=80): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x1053ec510>, 'Connection to www.swust.edu.cn timed out. (connect timeout=30)'))
 
 During handling of the above exception, another exception occurred:
 
@@ -244,13 +289,12 @@ Traceback (most recent call last):
     ...<2 lines>...
         socket_options=self.socket_options,
     )
-  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 60, in create_connection
-    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
-               ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/homebrew/Cellar/python@3.13/3.13.3/Frameworks/Python.framework/Versions/3.13/lib/python3.13/socket.py", line 977, in getaddrinfo
-    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
-               ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 85, in create_connection
+    raise err
+  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 73, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+TimeoutError: timed out
 
 The above exception was the direct cause of the following exception:
 
@@ -261,20 +305,36 @@ Traceback (most recent call last):
     ...<10 lines>...
         **response_kw,
     )
-  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 488, in _make_request
-    raise new_e
-  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 464, in _make_request
-    self._validate_conn(conn)
-    ~~~~~~~~~~~~~~~~~~~^^^^^^
-  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
-    conn.connect()
+  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+    ~~~~~~~~~~~~^
+        method,
+        ^^^^^^^
+    ...<6 lines>...
+        enforce_content_length=enforce_content_length,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 445, in request
+    self.endheaders()
+    ~~~~~~~~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.3/Frameworks/Python.framework/Versions/3.13/lib/python3.13/http/client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.3/Frameworks/Python.framework/Versions/3.13/lib/python3.13/http/client.py", line 1093, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.3/Frameworks/Python.framework/Versions/3.13/lib/python3.13/http/client.py", line 1037, in send
+    self.connect()
     ~~~~~~~~~~~~^^
-  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 704, in connect
-    self.sock = sock = self._new_conn()
-                       ~~~~~~~~~~~~~~^^
-  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 205, in _new_conn
-    raise NameResolutionError(self.host, self, e) from e
-urllib3.exceptions.NameResolutionError: <urllib3.connection.HTTPSConnection object at 0x1025eefd0>: Failed to resolve 'graduate.swust.edu.cn' ([Errno 8] nodename nor servname provided, or not known)
+  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ~~~~~~~~~~~~~~^^
+  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 207, in _new_conn
+    raise ConnectTimeoutError(
+    ...<2 lines>...
+    ) from e
+urllib3.exceptions.ConnectTimeoutError: (<urllib3.connection.HTTPConnection object at 0x105a09910>, 'Connection to www.swust.edu.cn timed out. (connect timeout=30)')
 
 The above exception was the direct cause of the following exception:
 
@@ -292,12 +352,12 @@ Traceback (most recent call last):
   File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/urllib3/util/retry.py", line 519, in increment
     raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='graduate.swust.edu.cn', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x1025eefd0>: Failed to resolve 'graduate.swust.edu.cn' ([Errno 8] nodename nor servname provided, or not known)"))
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='www.swust.edu.cn', port=80): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x105a09910>, 'Connection to www.swust.edu.cn timed out. (connect timeout=30)'))
 
 During handling of the above exception, another exception occurred:
 
 Traceback (most recent call last):
-  File "/Users/mac/WorkSpace/考研推荐系统/utils/scraper.py", line 308, in fetch_page
+  File "/Users/mac/WorkSpace/考研推荐系统/utils/scraper.py", line 303, in fetch_page
     response = requests.get(url, headers=active_headers, timeout=REQUEST_TIMEOUT, verify=False, **kwargs) # Added verify=False, consider certs
   File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/requests/api.py", line 73, in get
     return request("get", url, params=params, **kwargs)
@@ -308,6 +368,6 @@ Traceback (most recent call last):
     resp = self.send(prep, **send_kwargs)
   File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/requests/sessions.py", line 703, in send
     r = adapter.send(request, **kwargs)
-  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/requests/adapters.py", line 700, in send
-    raise ConnectionError(e, request=request)
-requests.exceptions.ConnectionError: HTTPSConnectionPool(host='graduate.swust.edu.cn', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x1025eefd0>: Failed to resolve 'graduate.swust.edu.cn' ([Errno 8] nodename nor servname provided, or not known)"))
+  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/requests/adapters.py", line 688, in send
+    raise ConnectTimeout(e, request=request)
+requests.exceptions.ConnectTimeout: HTTPConnectionPool(host='www.swust.edu.cn', port=80): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x105a09910>, 'Connection to www.swust.edu.cn timed out. (connect timeout=30)'))

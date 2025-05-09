@@ -72,8 +72,8 @@ os.makedirs(ERROR_LOG_DIR, exist_ok=True)
 # ... (其他常量)
 USE_HEADLESS_BROWSER = False # True for production, False for debugging to see browser UI
 REQUEST_TIMEOUT = 30 # seconds for requests
-SELENIUM_TIMEOUT = 30 # seconds for selenium waits (Increased from 30)
-RETRY_DELAY = 10  # seconds
+SELENIUM_TIMEOUT = 30 # seconds for selenium waits
+RETRY_DELAY = 5  # seconds
 MAX_RETRIES = 3
 
 DEFAULT_HEADERS = {
@@ -345,46 +345,61 @@ def fetch_dynamic_page_with_selenium(url, school_name, page_type_suffix, seleniu
     html_source = None
     driver = None
     try:
-        options = webdriver.ChromeOptions()
-        # options.add_argument('--headless') 
-        options.add_argument('--disable-gpu')
-        options.add_argument('--no-sandbox')
-        options.add_argument('--disable-dev-shm-usage')
-        options.add_argument("user-agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'")
+        options = webdriver.ChromeOptions() 
+        # options.add_argument('--headless') # Keep this commented for debugging for now
+        options.add_argument('--disable-gpu') # Generally safe
+        options.add_argument('--no-sandbox') # Often needed in containerized/CI environments
+        options.add_argument('--disable-dev-shm-usage') # Also common for stability
 
-        # Add anti-detection options
-        options.add_argument("--disable-blink-features=AutomationControlled")
-        # The following experimental options might conflict with undetected_chromedriver
-        # options.add_experimental_option("excludeSwitches", ["enable-automation"])
-        # options.add_experimental_option('useAutomationExtension', False)
+        # Logic to decide WebDriver type based on the module-level switch
+        if not _CURRENTLY_USING_UNDETECTED_DRIVER:
+            # Options for standard Selenium WebDriver
+            options.add_argument("user-agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'")
+            options.add_argument("--disable-blink-features=AutomationControlled")
+            options.add_experimental_option("excludeSwitches", ["enable-automation"])
+            options.add_experimental_option('useAutomationExtension', False)
+            
+            script_dir = os.path.dirname(__file__)
+            project_root = os.path.dirname(script_dir)
+            chromedriver_filename = "chromedriver.exe" if platform.system() == "Windows" else "chromedriver"
+            chrome_driver_path = os.path.join(project_root, 'utils', chromedriver_filename)
+            print(f"    [Selenium] 使用标准 ChromeDriver，路径: {chrome_driver_path}")
+            service = Service(executable_path=chrome_driver_path)
+            driver = webdriver.Chrome(service=service, options=options)
+        else:
+            # Options for undetected_chromedriver (it handles many anti-detection measures itself)
+            print(f"    [Selenium] 初始化 undetected_chromedriver (非 Headless - 调试模式)...")
+            driver = uc.Chrome(options=options) 
 
-        # script_dir = os.path.dirname(__file__)
-        # project_root = os.path.dirname(script_dir)
-        # chromedriver_filename = "chromedriver.exe" if platform.system() == "Windows" else "chromedriver"
-        # chrome_driver_path = os.path.join(project_root, 'utils', chromedriver_filename)
-        # print(f"    [Selenium] 尝试使用 ChromeDriver 路径 ({platform.system()}): {chrome_driver_path}")
+    except WebDriverException as e:
+        if not _CURRENTLY_USING_UNDETECTED_DRIVER:
+            if "executable needs to be in PATH" in str(e) or "cannot be found" in str(e):
+                 print(f"    [Selenium] 错误：在路径 '{chrome_driver_path}' 找不到 chromedriver...")
+            elif "'chromedriver' executable may have wrong permissions" in str(e):
+                  print(f"    [Selenium] 错误：'{chrome_driver_path}' 可能权限不足...")
+            else:
+                  print(f"    [Selenium] 初始化标准 WebDriver 时出错: {e}")
+        else: # Errors specific to or when using undetected_chromedriver
+            if "'chromedriver' executable may have wrong permissions" in str(e):
+                 print(f"    [Selenium] 错误：chromedriver 可能权限不足 (uc)...")
+            elif "session not created" in str(e).lower(): 
+                 print(f"    [Selenium] WebDriver session not created (uc). Error: {e}")
+                 print(f"                 确保您的 Chrome 浏览器已安装并且版本与 undetected_chromedriver 兼容。")
+                 print(f"                 undetected_chromedriver 通常会自动下载匹配的 ChromeDriver。")
+            else:
+                 print(f"    [Selenium] 初始化 undetected_chromedriver 时出错: {e}")
+        return None
+    except Exception as e: # Catch-all for other potential errors during setup or get
+         print(f"    [Selenium] 获取动态页面时发生未知错误 (Setup or Get): {e}")
+         if driver: # try to quit driver if it was initialized
+             driver.quit()
+         return None
 
-        print(f"    [Selenium] 初始化 undetected_chromedriver (非 Headless - 调试模式)...")
-        try:
-            # service = Service(executable_path=chrome_driver_path) # Not typically needed with uc
-            # driver = webdriver.Chrome(service=service, options=options) # Old way
-            driver = uc.Chrome(options=options) # New way using undetected_chromedriver
-        except WebDriverException as e:
-             # if "executable needs to be in PATH" in str(e) or "cannot be found" in str(e):
-             #     print(f"    [Selenium] 错误：在路径 '{chrome_driver_path}' 找不到 chromedriver...")
-             if "'chromedriver' executable may have wrong permissions" in str(e):
-                  print(f"    [Selenium] 错误：chromedriver 可能权限不足...")
-             elif "session not created" in str(e).lower(): # Common error if Chrome version mismatch or other setup issues
-                  print(f"    [Selenium] WebDriver session not created. Error: {e}")
-                  print(f"                 确保您的 Chrome 浏览器已安装并且版本与 undetected_chromedriver 兼容。")
-                  print(f"                 undetected_chromedriver 通常会自动下载匹配的 ChromeDriver。")
-             else:
-                  print(f"    [Selenium] 初始化 undetected_chromedriver 时出错: {e}")
-             return None
-
+    # The rest of the function (driver.get(), actions, page_source, finally block) remains largely the same
+    try:
         print(f"    [Selenium] 正在访问: {url}")
         driver.get(url)
-        time.sleep(2)
+        time.sleep(2) # Initial wait for page to begin loading
 
         if selenium_actions:
             for action in selenium_actions:
@@ -452,7 +467,13 @@ def fetch_dynamic_page_with_selenium(url, school_name, page_type_suffix, seleniu
     
     # Save the HTML source to a debug file if it's not None
     if html_source is not None:
-        debug_file_path = os.path.join(os.path.dirname(__file__), 'selenium_output_debug.html')
+        sane_school_name = "".join(c if c.isalnum() else '_' for c in school_name)
+        sane_page_type = "".join(c if c.isalnum() else '_' for c in page_type_suffix)
+        sane_detail = "".join(c if c.isalnum() else '_' for c in page_specific_detail) if page_specific_detail else ""
+        
+        detail_part = f"_{sane_detail}" if sane_detail else ""
+        debug_filename = f"selenium_debug_{sane_school_name}_{sane_page_type}{detail_part}.html"
+        debug_file_path = os.path.join(os.path.dirname(__file__), debug_filename)
         try:
             with open(debug_file_path, 'w', encoding='utf-8') as f_debug:
                 f_debug.write(f"<!-- URL: {url} -->\n")
@@ -634,6 +655,19 @@ def run_scraper(target_school_name=None): # Added optional parameter
     else:
         universities_to_process = TARGET_UNIVERSITIES
 
+    # --- 选择 WebDriver 类型 --- 
+    # True 使用 undetected_chromedriver; False 使用标准 Selenium
+    use_uc_driver_for_this_run = True 
+    # --------------------------
+
+    global _CURRENTLY_USING_UNDETECTED_DRIVER # Declare intent to modify global
+    _CURRENTLY_USING_UNDETECTED_DRIVER = use_uc_driver_for_this_run
+
+    if _CURRENTLY_USING_UNDETECTED_DRIVER:
+        print("--- 本次运行将尝试使用 Undetected ChromeDriver ---")
+    else:
+        print("--- 本次运行将使用标准 Selenium WebDriver ---")
+
     for school_name, base_url in universities_to_process.items(): # Use the filtered list
         print(f"\n>>> 开始处理大学: {school_name} ({base_url})")
         current_school_info_for_csv = {
@@ -715,6 +749,20 @@ def run_scraper(target_school_name=None): # Added optional parameter
         
     print("\n爬虫运行结束。")
 
-if __name__ == "__main__":
-    # run_scraper()
-    run_scraper(target_school_name="成都理工大学")
+if __name__ == "__main__": 
+    # --- 选择 WebDriver 类型 --- 
+    # True 使用 undetected_chromedriver; False 使用标准 Selenium
+    use_uc_driver_for_this_run = False
+    # --------------------------
+
+    global _CURRENTLY_USING_UNDETECTED_DRIVER # Declare intent to modify global
+    _CURRENTLY_USING_UNDETECTED_DRIVER = use_uc_driver_for_this_run
+
+    if _CURRENTLY_USING_UNDETECTED_DRIVER:
+        print("--- 本次运行将尝试使用 Undetected ChromeDriver ---")
+    else:
+        print("--- 本次运行将使用标准 Selenium WebDriver ---")
+
+    # 运行指定学校的爬虫，或所有学校
+    # run_scraper(target_school_name="成都理工大学") 
+    run_scraper() # 运行所有学校
