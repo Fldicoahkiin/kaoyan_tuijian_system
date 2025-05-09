@@ -1,0 +1,1 @@
+# This file makes Python treat the directory school_scrapers as a package. 
