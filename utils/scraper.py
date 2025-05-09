@@ -10,6 +10,7 @@ from urllib.parse import urljoin
 import warnings
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import platform # 导入 platform 模块用于 OS 检测
+import csv # 导入csv模块用于导出CSV文件
 
 # --- Selenium Imports ---
 from selenium import webdriver
@@ -49,14 +50,24 @@ if '085400' in TARGET_MAJOR_CODES:
 DATA_DIR = os.path.join(os.path.dirname(__file__), '../data')
 SCHOOLS_FILE = os.path.join(DATA_DIR, 'schools.json')
 
-# 目标院校列表 (示例，需要根据实际情况填充四川省高校)
+# 爬虫输出目录
+CRAWLER_DIR = os.path.join(DATA_DIR, 'crawler')
+CRAWLER_RAW_DATA_FILE = os.path.join(CRAWLER_DIR, 'crawler_raw_data.json')
+CRAWLER_SCHOOLS_CSV_FILE = os.path.join(CRAWLER_DIR, 'crawler_schools.csv')
+CRAWLER_SUMMARY_FILE = os.path.join(CRAWLER_DIR, 'crawler_summary.json')
+
+# 目标院校列表 (四川省内高校)
 TARGET_UNIVERSITIES = {
     "四川大学": "https://yz.scu.edu.cn/",
     "电子科技大学": "https://yz.uestc.edu.cn/",
-    "西南交通大学": "https://yz.swjtu.edu.cn/", # 示例 URL，需核实
-    "西南财经大学": "https://yz.swufe.edu.cn/", # 示例 URL，需核实
-    "四川师范大学": "https://yjsc.sicnu.edu.cn/", # 示例 URL，需核实
-    # 添加更多四川省的高校...
+    "西南交通大学": "https://yz.swjtu.edu.cn/",
+    "西南财经大学": "https://yz.swufe.edu.cn/",
+    "四川师范大学": "https://yjsc.sicnu.edu.cn/",
+    "成都理工大学": "https://gs.cdut.edu.cn/",
+    "西南科技大学": "https://graduate.swust.edu.cn/",
+    "成都信息工程大学": "https://yjs.cuit.edu.cn/",
+    "西华大学": "https://yanjiusheng.xhu.edu.cn/",
+    "成都大学": "https://yjsc.cdu.edu.cn/"
 }
 
 def load_existing_schools():
@@ -79,6 +90,35 @@ def save_schools_data(data_list):
         # 直接保存列表
         json.dump(data_list, f, ensure_ascii=False, indent=4)
     print(f"数据已保存到 {SCHOOLS_FILE}")
+
+def save_crawler_raw_data(data_dict):
+    """保存爬虫原始数据到JSON文件"""
+    os.makedirs(CRAWLER_DIR, exist_ok=True)
+    with open(CRAWLER_RAW_DATA_FILE, 'w', encoding='utf-8') as f:
+        json.dump(data_dict, f, ensure_ascii=False, indent=4)
+    print(f"爬虫原始数据已保存到 {CRAWLER_RAW_DATA_FILE}")
+
+def save_crawler_schools_csv(schools_info):
+    """保存爬取的学校URL信息到CSV文件"""
+    os.makedirs(CRAWLER_DIR, exist_ok=True)
+    with open(CRAWLER_SCHOOLS_CSV_FILE, 'w', encoding='utf-8', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(['学校名称', '研究生院网址', '专业目录URL', '分数线URL'])
+        for school in schools_info:
+            writer.writerow([
+                school.get('name', ''),
+                school.get('url', ''),
+                school.get('major_catalog_url', ''),
+                school.get('score_line_url', '')
+            ])
+    print(f"学校URL信息已保存到 {CRAWLER_SCHOOLS_CSV_FILE}")
+
+def save_crawler_summary(summary_data):
+    """保存爬虫汇总数据到JSON文件"""
+    os.makedirs(CRAWLER_DIR, exist_ok=True)
+    with open(CRAWLER_SUMMARY_FILE, 'w', encoding='utf-8') as f:
+        json.dump(summary_data, f, ensure_ascii=False, indent=4)
+    print(f"爬虫汇总数据已保存到 {CRAWLER_SUMMARY_FILE}")
 
 def fetch_page(url):
     """获取网页内容，增加 SSL 验证忽略选项"""
@@ -263,7 +303,9 @@ def parse_school_data(school_name, base_url):
     """
     print(f"-[{school_name}] 开始处理: {base_url}")
     school_update_data = {
-        "departments": [] # Initialize empty, may not be filled for dynamic sites
+        "departments": [], # Initialize empty, may not be filled for dynamic sites
+        "major_catalog_url": "", # 添加专业目录URL字段
+        "score_line_url": ""     # 添加分数线URL字段
     }
 
     # --- Fetch main page ---
@@ -290,6 +332,7 @@ def parse_school_data(school_name, base_url):
         if major_link:
             major_catalog_url = urljoin(base_url, major_link['href'])
             print(f"  [{school_name}] 找到专业目录链接: {major_catalog_url}")
+            school_update_data["major_catalog_url"] = major_catalog_url
         else:
             print(f"  [{school_name}] 未找到预期的专业目录链接。")
 
@@ -309,6 +352,8 @@ def parse_school_data(school_name, base_url):
                         if score_link_tag and score_link_tag.has_attr('href'):
                             score_line_urls[year] = urljoin(historical_data_url, score_link_tag['href'])
                             print(f"      [{school_name}] 找到 {year} 分数线链接: {score_line_urls[year]}")
+                            if year == "2024": # 保存最新年份的分数线URL
+                                school_update_data["score_line_url"] = score_line_urls[year]
                         else:
                             print(f"      [{school_name}] 未在数据列表中找到 {year} 分数线的链接。")
                 else:
@@ -398,7 +443,7 @@ def parse_school_data(school_name, base_url):
                                                     "major_name": current_major_name,
                                                     "degree_type": current_degree_type,
                                                     "study_type": current_study_type,
-                                                    "enrollment": enrollment,
+                                                    "enrollment": {"2024": enrollment, "2023": 0, "2022": 0},
                                                     "exam_subjects": current_exam_subjects, # Use carried-forward value initially
                                                     "remarks": current_remarks,           # Use carried-forward value initially
                                                     "tuition_duration": current_tuition_duration,
@@ -408,13 +453,11 @@ def parse_school_data(school_name, base_url):
                                         else:
                                             print(f"          -> Code '{current_major_code}' not in TARGET_MAJOR_CODES. Ignoring this major and its directions.")
                                             current_major_code = None # Reset so subsequent direction rows are skipped
-                                else:
-                                    current_major_code = None # Match failed, reset
-                                continue # Processed major header, move to next row
+                                    continue # Processed major header, move to next row
 
                                 # --- Check for Direction Row --- 
                                 # Must be associated with a valid *target* major code found previously
-                                if num_cols == 5 and current_major_code:
+                                if num_cols == 5 and current_major_code in TARGET_MAJOR_CODES:
                                     direction_name = m_cols[0].text.strip()
                                     advisors = m_cols[1].text.strip().replace('\n', ' ').strip()
                                     
@@ -1155,6 +1198,9 @@ def update_school_data(existing_schools_list, school_name, update_data):
 def run_scraper():
     """运行爬虫的主函数"""
     print("开始运行爬虫...")
+    # 创建爬虫输出目录
+    os.makedirs(CRAWLER_DIR, exist_ok=True)
+
     # 加载学校列表
     schools_list = load_existing_schools()
 
@@ -1165,19 +1211,68 @@ def run_scraper():
     elif not schools_list:
         print("警告：现有学校数据为空。爬取结果将作为新数据保存。")
 
+    # 用于保存爬虫原始数据
+    raw_crawler_data = {}
+    # 用于保存学校URL信息
+    schools_info = []
+    # 用于保存爬虫汇总数据
+    summary_data = {
+        "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+        "target_universities": list(TARGET_UNIVERSITIES.keys()),
+        "target_major_codes": list(TARGET_MAJOR_CODES),
+        "schools_processed": 0,
+        "schools_updated": 0,
+        "total_departments_found": 0,
+        "total_majors_found": 0
+    }
+
     successful_updates = 0
     for school_name, base_url in TARGET_UNIVERSITIES.items():
+        # 记录学校基本URL信息
+        school_info = {
+            "name": school_name,
+            "url": base_url,
+            "major_catalog_url": "",
+            "score_line_url": ""
+        }
+        schools_info.append(school_info)
+        
+        # 爬取学校数据
         update_data = parse_school_data(school_name, base_url)
         if update_data:
+            # 更新学校URL信息
+            for i, info in enumerate(schools_info):
+                if info["name"] == school_name:
+                    if "major_catalog_url" in update_data:
+                        schools_info[i]["major_catalog_url"] = update_data["major_catalog_url"]
+                    if "score_line_url" in update_data:
+                        schools_info[i]["score_line_url"] = update_data["score_line_url"]
+                    break
+            
+            # 保存原始爬取数据
+            raw_crawler_data[school_name] = update_data
+            
+            # 更新汇总统计
+            summary_data["schools_processed"] += 1
+            summary_data["total_departments_found"] += len(update_data.get("departments", []))
+            total_majors = sum(len(dept.get("majors", [])) for dept in update_data.get("departments", []))
+            summary_data["total_majors_found"] += total_majors
+            
             # 传递 schools_list 进行更新
             if update_school_data(schools_list, school_name, update_data):
                 successful_updates += 1
+                summary_data["schools_updated"] += 1
         else:
             print(f"未能获取或解析学校 {school_name} 的数据。")
 
         # 添加延时，避免请求过于频繁
         print("--- 等待 2 秒 ---")
         time.sleep(2)
+
+    # 保存爬虫数据
+    save_crawler_raw_data(raw_crawler_data)
+    save_crawler_schools_csv(schools_info)
+    save_crawler_summary(summary_data)
 
     # 爬取完成后保存数据 (只有在至少成功更新了一个学校时才保存)
     if successful_updates > 0:

@@ -126,23 +126,135 @@ computer_recommendation_system/
 
 ### `schools.json`
 
-(结构同之前定义，包含 `id`, `name`, `level`, `province`, `region` (A区/B区), `intro`, `computer_rank`, `departments` [内含 `majors` {内含 `major_code`, `major_name`, `exam_subjects`, `reference_books`, `retrial_subjects`, `enrollment_24` (单个专业的招生人数), `tuition_duration`, `score_lines` {年份: 分数线字符串}, `admission_info_23`, `admission_info_24`}], `enrollment_24_school_total` (学校总招生人数), `exam_subjects_summary` (汇总后的初试科目))。
+包含所有院校信息的主要数据文件，结构如下：
+
+```json
+[
+  {
+    "id": "院校名称",
+    "name": "院校名称",
+    "level": "985/211/双一流/一般",
+    "province": "省份",
+    "region": "A区/B区",
+    "intro": "院校简介",
+    "computer_rank": "计算机学科评估等级(A+/A/A-/B+/B/B-/C+/C/C-/无评级)",
+    "departments": [
+      {
+        "department_name": "院系名称",
+        "majors": [
+          {
+            "major_code": "专业代码",
+            "major_name": "专业名称",
+            "exam_subjects": "初试科目",
+            "reference_books": "参考书目",
+            "retrial_subjects": "复试科目",
+            "enrollment": { 
+              "2022": 0, 
+              "2023": 0, 
+              "2024": 0 
+            },
+            "tuition_duration": "学费学制",
+            "score_lines": {
+              "2022": "分数线字符串",
+              "2023": "分数线字符串",
+              "2024": "分数线字符串"
+            },
+            "admission_info_23": "23年录取情况",
+            "admission_info_24": "24年录取情况"
+          }
+        ]
+      }
+    ],
+    "enrollment_24_school_total": 100,
+    "exam_subjects_summary": "初试科目汇总"
+  }
+]
+```
 
 ### `national_lines.json`
 
-存储各科国家线数据 (结构同前)。
+存储各科国家线数据，结构如下：
+
+```json
+{
+  "computer_science_total": {
+    "years": ["2023", "2024", "2025"],
+    "scores": {
+      "A区": [290, 285, null],
+      "B区": [280, 275, null]
+    }
+  },
+  "politics": {
+    "years": ["2023", "2024", "2025"],
+    "scores": {
+      "A区": [55, 55, null],
+      "B区": [55, 55, null]
+    }
+  },
+  "english_one": {
+    "years": ["2023", "2024", "2025"],
+    "scores": {
+      "A区": [55, 55, null],
+      "B区": [55, 55, null]
+    }
+  },
+  "english_two": {
+    "years": ["2023", "2024", "2025"],
+    "scores": {
+      "A区": [55, 55, null],
+      "B区": [55, 55, null]
+    }
+  },
+  "math_one": {
+    "years": ["2023", "2024", "2025"],
+    "scores": {
+      "A区": [55, 55, null],
+      "B区": [55, 55, null]
+    }
+  },
+  "math_two": {
+    "years": ["2023", "2024", "2025"],
+    "scores": {
+      "A区": [55, 55, null],
+      "B区": [55, 55, null]
+    }
+  }
+}
+```
 
 ### `announcements.json`
 
-存储公告信息列表 (结构同前)。
+存储公告信息列表：
+
+```json
+[
+  {
+    "title": "公告标题",
+    "url": "公告链接"
+  }
+]
+```
 
 ### `data/exam_type_ratios.json`
 
-存储首页"自命题 vs 408 比例"饼图的原始数据 (结构同前)。
+存储首页"自命题 vs 408 比例"饼图的原始数据：
+
+```json
+[
+  {
+    "value": 60,
+    "name": "自命题"
+  },
+  {
+    "value": 40,
+    "name": "408统考"
+  }
+]
+```
 
 ### `data/favorites_count.json`
 
-存储全局各学校被收藏次数的统计。
+存储全局各学校被收藏次数的统计：
 
 ```json
 {
@@ -152,9 +264,22 @@ computer_recommendation_system/
 }
 ```
 
+### `data/homepage_config.json`
+
+存储首页图表的配置信息：
+
+```json
+{
+  "national_line_total_title": "近三年总分国家线趋势",
+  "national_line_politics_title": "近三年政治/英语单科线",
+  "national_line_others_title": "近三年数学/专业课单科线",
+  "exam_type_ratio_title": "自命题 vs 408 比例"
+}
+```
+
 ### `data/users/username.json`
 
-存储单个用户的信息。
+存储单个用户的信息：
 
 ```json
 {
@@ -166,12 +291,20 @@ computer_recommendation_system/
     "major_area": "string",
     "target_location": "string", // 省份
     "target_level": "string",    // 985, 211, etc.
-    "target_rank": "string",     // A+, A, A-, B+, ..., 无评级 (新增)
+    "target_rank": "string",     // A+, A, A-, B+, ..., 无评级
     "expected_score": number | null
   },
   "favorites": ["string", ...] // 收藏的学校 ID (通常是学校名称) 列表
 }
 ```
+
+### `data/crawler/`
+
+爬虫输出目录：
+
+* `crawler_raw_data.json`: 爬虫原始数据，包含完整爬取结果
+* `crawler_schools.csv`: 爬取的学校和URL信息
+* `crawler_summary.json`: 爬虫处理后的汇总数据
 
 ## 5. 已实现功能
 
@@ -253,7 +386,7 @@ computer_recommendation_system/
 
 ## 8. 爬虫模块 (`utils/scraper.py`)
 
-本模块负责从指定高校的研究生招生网站爬取最新的招生信息，特别是针对四川省高校近三年的计算机相关专业数据，用以补充和更新核心数据文件 `data/schools.json`。**目前仅实现了对四川大学和电子科技大学的部分数据抓取逻辑。**
+本模块负责从指定高校的研究生招生网站爬取最新的招生信息，特别是针对四川省高校近三年的计算机相关专业数据，用以补充和更新核心数据文件 `data/schools.json`。
 
 ### 8.1 设计目标
 
@@ -262,46 +395,28 @@ computer_recommendation_system/
   * `081200` 计算机科学与技术 (学硕)
   * `083500` 软件工程 (学硕)
   * `083900` 网络空间安全 (学硕)
-  * `085400` 电子信息 (专硕大类，具体方向需区分)
-  * `085404` 计算机技术 (电子信息专硕方向)
-  * `085405` 软件工程 (电子信息专硕方向)
-  * `085410` 人工智能 (电子信息专硕方向)
-  * `085411` 大数据技术与工程 (电子信息专硕方向)
+  * `085400` 电子信息 (专硕大类)
+  * `085404` 电子信息-计算机技术 (专硕方向)
+  * `085405` 电子信息-软件工程 (专硕方向)
+  * `085410` 电子信息-人工智能 (专硕方向)
+  * `085411` 电子信息-大数据技术与工程 (专硕方向)
 * **目标数据维度 (近三年: 2022, 2023, 2024)**:
-  * **招生人数**: 各专业（区分学硕/专硕、全日制/非全日制）的计划招生人数或实际录取人数。
-  * **考试科目**: 初试科目代码和名称 (如 政治、英一/二、数一/二、408/自命题专业课)。
+  * **招生人数**: 各专业的计划招生人数或实际录取人数。
+  * **考试科目**: 初试科目代码和名称。
   * **复试分数线**: 各专业进入复试的总分线和单科线。
   * **参考书目**: 专业课初试和复试的推荐参考书。
   * **学费与学制**: 各专业的学费标准和基本学习年限。
-  * **(可选)** 录取情况: 如最高分、最低分、平均分、拟录取名单公示链接等。
-  * **(可选)** 招生简章/专业目录: 链接或关键文本内容。
-* **数据更新**: 将爬取到的新数据**合并**到 `data/schools.json` 中对应的学校和专业条目下，而不是完全覆盖，以保留历史信息或其他手动维护的数据。
+  * **录取情况**: 如最高分、最低分、平均分、拟录取名单公示链接等。
+* **数据输出**:
+  * 将爬取的原始数据输出到 `data/crawler/crawler_raw_data.json`
+  * 将学校URL信息输出到 `data/crawler/crawler_schools.csv`
+  * 将处理后的数据合并到 `data/schools.json`，保持原有结构
 
 ### 8.2 工作流程
 
-1. **加载现有数据**: 启动时，`load_existing_schools()` 函数读取 `data/schools.json` 文件，将学校列表加载到内存中。
-2. **遍历目标高校**: 脚本遍历 `TARGET_UNIVERSITIES` 字典中定义的四川省目标高校及其招生网基础 URL。
-3. **解析单个学校 (`parse_school_data`)**: 对每个学校：
-    * 使用 `fetch_page()` 获取学校招生主页的 HTML 内容。
-    * 使用 `BeautifulSoup` 解析主页，尝试查找指向"硕士招生"、"专业目录"、"分数线"、"招生简章"等关键页面的链接。
-    * 根据找到的链接，递归或迭代地 `fetch_page()` 获取更详细页面的 HTML 内容。
-    * **核心解析逻辑**: 针对具体页面的 HTML 结构 (通常是表格 `<table>` 或列表 `<ul>`/`<ol>`)，编写精确的 `BeautifulSoup` 选择器 (`find()`, `find_all()`, CSS 选择器等) 来提取目标数据维度信息。
-    * **数据结构化**: 将提取到的信息整理成符合 `schools.json` 中单个学校内部 `departments` 和 `majors` 结构的字典。
-    * 处理可能出现的异常（如网络请求失败、页面结构变化、数据格式不规范等）。
-4. **合并数据 (`update_school_data`)**: 将 `parse_school_data` 返回的单个学校的更新数据，与内存中加载的现有学校列表进行合并：
-    * 根据学校名称找到 `schools_list` 中的对应学校条目。
-    * **核心合并逻辑**: 遍历更新数据中的院系和专业，在现有数据中查找匹配项（通过院系名和专业代码）。
-    * 对于找到的匹配项，**选择性地更新**字段。例如，更新 `score_lines` 字典中特定年份的分数，更新 `enrollment_24` 字段等，而不是替换整个 `majors` 字典。
-    * 如果现有数据中不存在某个专业，可以选择添加该新专业。
-5. **保存数据**: `run_scraper()` 函数在遍历完所有目标高校后，如果至少有一个学校的数据被成功更新，则调用 `save_schools_data()` 将内存中**完整且已合并**的学校列表写回到 `data/schools.json` 文件。
-6. **延时**: 在处理完一个学校后，强制 `time.sleep()` 短暂延时，避免对目标网站造成过大压力。
-
-### 8.3 待实现与关键点
-
-* **URL 核实与填充**: 需要仔细查找并验证 `TARGET_UNIVERSITIES` 中每个学校的**准确**研究生招生信息入口 URL。
-* **`parse_school_data` 的定制化**: 这是**最核心和工作量最大**的部分。需要为每个（或每类相似网站结构的）学校编写具体的 HTML 解析逻辑。需要大量使用浏览器开发者工具进行分析。
-* **`update_school_data` 的精细化**: 实现健壮的数据合并逻辑至关重要，以避免覆盖有用信息。需要仔细设计如何根据年份、专业代码等更新特定字段。
-* **目标专业代码的精确匹配**: 在解析专业目录时，需要确保只提取在 `8.1 设计目标` 中列出的专业代码相关信息。
-* **近三年数据提取**: 解析分数线、招生人数等信息时，要特别注意识别和提取 **2022、2023、2024** 这三个年份的数据。
-* **异常处理**: 增强网络请求、HTML 解析、数据合并等环节的异常处理能力。
-* **(可选) 异步处理/后台任务**: 对于实际部署，考虑使用异步请求（如 `aiohttp`）或后台任务队列（如 Celery）来运行爬虫，避免阻塞 Web 应用主线程。
+1. **加载现有数据**: 启动时，从 `data/schools.json` 文件读取现有学校数据。
+2. **爬取目标院校数据**: 针对四川省内有计算机相关专业的高校进行爬取。
+3. **数据解析与结构化**: 将爬取的HTML内容解析为结构化数据。
+4. **导出爬取数据**: 将原始爬取数据导出到单独的JSON和CSV文件中。
+5. **合并更新数据**: 将爬取的数据与现有的schools.json数据合并，保持原有结构。
+6. **保存更新后的数据**: 将合并后的数据保存回schools.json文件。
