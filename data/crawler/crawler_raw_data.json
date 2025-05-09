@@ -262,6 +262,11 @@
         "major_catalog_url": "https://yzbm.uestc.edu.cn/zsml/sszsml/index/2025",
         "score_line_url": "https://yz.uestc.edu.cn/xxcx/sslnfsfsx.htm"
     },
+    "成都信息工程大学": {
+        "departments": [],
+        "major_catalog_url": "https://yjsc.cuit.edu.cn/list.jsp?urltype=tree.TreeTempUrl&wbtreeid=1107",
+        "score_line_url": ""
+    },
     "成都大学": {
         "departments": [],
         "major_catalog_url": "https://yjsc.cdu.edu.cn/yjszs/zsjz.htm",

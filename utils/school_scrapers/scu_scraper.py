@@ -88,7 +88,10 @@ def scrape_scu_data(base_url, school_name):
             # This should select a specific department if needed, or be empty for all.
             # For SCU, the example used a specific department, let's make it more general or configurable
             # For now, an action to search/wait for table might be enough if no pre-selection needed.
-            {"click_button_id": "searchbtn", "wait_after_click_selector": "#datatabel tbody tr"} # Click and wait
+            # {"click_button_id": "searchbtn", "wait_after_click_selector": "#datatabel tbody tr"} # Click and wait
+            {"dropdown_id": "yxslist", "option_value": "304"}, # 选择 计算机学院（软件学院、智能科学与技术学院）
+            {"dropdown_id": "Yearlist", "option_value": "2025"}, # 确保选择2025年
+            {"click_button_id": "searchbtn", "wait_after_click_selector": "#datatabel tbody tr"}
         ]
         catalog_html = fetch_dynamic_page_with_selenium(
             url=major_catalog_url,

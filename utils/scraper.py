@@ -58,8 +58,8 @@ CRAWLER_SCHOOLS_CSV_FILE = os.path.join(CRAWLER_DIR, 'crawler_schools.csv')
 CRAWLER_SUMMARY_FILE = os.path.join(CRAWLER_DIR, 'crawler_summary.json')
 
 # --- 爬虫HTML调试日志目录 ---
-HTML_DEBUG_DIR = os.path.join(CRAWLER_DIR, 'html_debug_logs')
-os.makedirs(HTML_DEBUG_DIR, exist_ok=True) # 确保目录存在
+# HTML_DEBUG_DIR = os.path.join(CRAWLER_DIR, 'html_debug_logs')
+# os.makedirs(HTML_DEBUG_DIR, exist_ok=True) # 确保目录存在
 
 ERROR_LOG_DIR = os.path.join(CRAWLER_DIR, 'error_logs')
 os.makedirs(ERROR_LOG_DIR, exist_ok=True)
@@ -78,11 +78,11 @@ TARGET_UNIVERSITIES = {
     "四川大学": "https://yz.scu.edu.cn/",
     "电子科技大学": "https://yz.uestc.edu.cn/",
     "西南交通大学": "https://yz.swjtu.edu.cn/",
-    "西南财经大学": "https://yz.swufe.edu.cn/",
-    "四川师范大学": "https://yjsc.sicnu.edu.cn/",
-    "成都理工大学": "https://gs.cdut.edu.cn/",
+    "西南财经大学": "https://yjs.swufe.edu.cn/",
+    "四川师范大学": "https://yjsy.sicnu.edu.cn/",
+    "成都理工大学": "https://gra.cdut.edu.cn/",
     "西南科技大学": "https://graduate.swust.edu.cn/",
-    "成都信息工程大学": "https://yjs.cuit.edu.cn/",
+    "成都信息工程大学": "https://yjsc.cuit.edu.cn/",
     "西华大学": "https://yanjiusheng.xhu.edu.cn/",
     "成都大学": "https://yjsc.cdu.edu.cn/"
 }
@@ -206,43 +206,46 @@ def parse_exam_subjects(subject_html_fragment):
              return cleaned_fallback if cleaned_fallback else "解析出错，原始信息待查"
         except Exception: return "解析科目出错（二次清理失败）"
 
-def save_html_debug_log(html_content, school_name, page_type_suffix, timestamp, url="N/A", page_specific_detail=""):
-    try:
-        # Sanitize page_specific_detail for filename
-        sane_detail = "".join(c if c.isalnum() or c in (' ', '_', '-') else '_' for c in page_specific_detail).rstrip()
-        detail_suffix = f"_{sane_detail}" if sane_detail else ""
-        
-        # Sanitize school_name
-        sane_school_name = "".join(c if c.isalnum() or c in (' ', '_', '-') else '_' for c in school_name).rstrip()
-
-        # 修改后的文件名格式 (去掉了timestamp)
-        file_name = f"{sane_school_name}_{page_type_suffix}{detail_suffix}.html"
-        file_path = os.path.join(HTML_DEBUG_DIR, file_name)
-        
-        with open(file_path, 'w', encoding='utf-8') as f:
-            f.write(f"<!-- School: {school_name} -->\\n")
-            f.write(f"<!-- Page Type: {page_type_suffix}{detail_suffix.replace('_', ' ', 1)} -->\\n")
-            f.write(f"<!-- URL: {url} -->\\n")
-            if page_specific_detail and detail_suffix != f"_{page_specific_detail}": # Log original if sanitized
-                 f.write(f"<!-- Suffix/Detail: {page_specific_detail} -->\\n")
-            f.write(f"<!-- Saved at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} -->\\n\\n")
-            f.write(html_content)
-        # print(f"    [Debug] Saved HTML log: {file_path}")
-    except Exception as e:
-        print(f"    [Error] Failed to save HTML debug log for {school_name} {page_type_suffix}: {e}")
+# def save_html_debug_log(html_content, school_name, page_type_suffix, timestamp, url="N/A", page_specific_detail=""):
+#     try:
+#         # Sanitize page_specific_detail for filename
+#         sane_detail = "".join(c if c.isalnum() or c in (' ', '_', '-') else '_' for c in page_specific_detail).rstrip()
+#         detail_suffix = f"_{sane_detail}" if sane_detail else ""
+#         
+#         # Sanitize school_name
+#         sane_school_name = "".join(c if c.isalnum() or c in (' ', '_', '-') else '_' for c in school_name).rstrip()
+#
+#         # 修改后的文件名格式 (去掉了timestamp)
+#         file_name = f"{sane_school_name}_{page_type_suffix}{detail_suffix}.html"
+#         file_path = os.path.join(HTML_DEBUG_DIR, file_name)
+#         
+#         with open(file_path, 'w', encoding='utf-8') as f:
+#             f.write(f"<!-- School: {school_name} -->\\n")
+#             f.write(f"<!-- Page Type: {page_type_suffix}{detail_suffix.replace('_', ' ', 1)} -->\\n")
+#             f.write(f"<!-- URL: {url} -->\\n")
+#             if page_specific_detail and detail_suffix != f"_{page_specific_detail}": # Log original if sanitized
+#                  f.write(f"<!-- Suffix/Detail: {page_specific_detail} -->\\n")
+#             f.write(f"<!-- Saved at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} -->\\n\\n")
+#             f.write(html_content)
+#         # print(f"    [Debug] Saved HTML log: {file_path}")
+#     except Exception as e:
+#         print(f"    [Error] Failed to save HTML debug log for {school_name} {page_type_suffix}: {e}")
 
 def save_error_log(school_name, error_message, timestamp, exception_obj=None):
     try:
-        file_name = f"{school_name}_error_{timestamp}.txt"
+        # 修改文件名，移除时间戳，确保每个学校只有一个日志文件，新的日志会覆盖旧的
+        # Sanitize school_name for filename to avoid issues with special characters
+        sane_school_name = "".join(c if c.isalnum() or c in (' ', '_', '-') else '_' for c in school_name).rstrip()
+        file_name = f"{sane_school_name}_error.txt"
         file_path = os.path.join(ERROR_LOG_DIR, file_name)
         with open(file_path, 'w', encoding='utf-8') as f:
-            f.write(f"School: {school_name}\\n")
-            f.write(f"Timestamp: {timestamp}\\n")
-            f.write(f"Error Message: {error_message}\\n\\n")
+            f.write(f"School: {school_name}\n")
+            f.write(f"Timestamp: {timestamp}\n") # 仍然在文件内容中记录时间戳
+            f.write(f"Error Message: {error_message}\n\n")
             if exception_obj:
-                f.write(f"Exception Type: {type(exception_obj).__name__}\\n")
-                f.write(f"Exception Details: {str(exception_obj)}\\n\\n")
-                f.write("Traceback:\\n")
+                f.write(f"Exception Type: {type(exception_obj).__name__}\n")
+                f.write(f"Exception Details: {str(exception_obj)}\n\n")
+                f.write("Traceback:\n")
                 import traceback
                 traceback.print_exc(file=f)
         print(f"    [ErrorLog] Saved error log: {file_path}")
@@ -256,9 +259,9 @@ def fetch_page(url, school_name_for_log="", page_type_for_log="", page_specific_
     school_name = school_name_for_log
     page_type_suffix_for_debug = page_type_for_log
 
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-        }
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    }
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     try:
         # 禁用 SSL 警告
@@ -280,7 +283,8 @@ def fetch_page(url, school_name_for_log="", page_type_for_log="", page_specific_
                 current_page_specific_detail = year_str
         
         if school_name and page_type_suffix_for_debug:
-             save_html_debug_log(response.text, school_name, page_type_suffix_for_debug, timestamp, url, current_page_specific_detail)
+            # save_html_debug_log(response.text, school_name, page_type_suffix_for_debug, timestamp, url, current_page_specific_detail)
+            pass # HTML 日志已禁用
         return response.text
     except requests.exceptions.RequestException as e:
         print(f"  [{school_name}] 获取页面失败 (url: {url}): {e}")
@@ -374,7 +378,8 @@ def fetch_dynamic_page_with_selenium(url, school_name, page_type_suffix, seleniu
         html_source = driver.page_source
         print(f"    [Selenium] 成功获取页面源码。")
         if html_source:
-            save_html_debug_log(html_source, school_name, page_type_suffix, datetime.now().strftime('%Y%m%d_%H%M%S'), url, page_specific_detail)
+            # save_html_debug_log(html_source, school_name, page_type_suffix, datetime.now().strftime('%Y%m%d_%H%M%S'), url, page_specific_detail)
+            pass # HTML 日志已禁用
         
     except TimeoutException:
         print(f"    [Selenium] 错误：等待元素选择器 '{selenium_actions[-1]['wait_after_click_selector']}' 超时 ({SELENIUM_TIMEOUT}秒)。页面可能未完全加载或元素不存在。")
@@ -386,7 +391,8 @@ def fetch_dynamic_page_with_selenium(url, school_name, page_type_suffix, seleniu
                  # 也尝试保存此时的页面源码
                  timeout_html_source = driver.page_source
                  if timeout_html_source:
-                     save_html_debug_log(timeout_html_source, school_name, f"{page_type_suffix}_Timeout", datetime.now().strftime('%Y%m%d_%H%M%S'), url)
+                     # save_html_debug_log(timeout_html_source, school_name, f"{page_type_suffix}_Timeout", datetime.now().strftime('%Y%m%d_%H%M%S'), url)
+                     pass # HTML 日志已禁用
              except Exception as screenshot_e:
                  print(f"    [Selenium] 保存截图或超时HTML时出错: {screenshot_e}")
     except WebDriverException as e:
