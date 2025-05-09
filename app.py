@@ -68,7 +68,7 @@ def load_json_data(file_path, default_value={}):
     """通用 JSON 数据加载函数，带共享文件锁。优先使用 portalocker，失败则回退到 fcntl。"""
     try:
         # 主路径：尝试使用 portalocker
-        import portalocker
+        # import portalocker # 已在顶部导入
         # app.logger.debug(f"Attempting to read {file_path} using portalocker")
         with open(file_path, 'r', encoding='utf-8') as f:
             portalocker.lock(f, portalocker.LOCK_SH) # 获取共享锁
@@ -85,40 +85,46 @@ def load_json_data(file_path, default_value={}):
     except ImportError: # portalocker 未安装或找不到
         app.logger.warning("portalocker 模块未找到，回退到 fcntl 进行文件读取锁定 (如果可用)。")
         # 后备路径：尝试使用 fcntl
-        try:
-            import fcntl # fcntl 主要用于 POSIX 系统
-            # app.logger.debug(f"Attempting to read {file_path} using fcntl")
-            with open(file_path, 'r', encoding='utf-8') as f:
-                fcntl.flock(f.fileno(), fcntl.LOCK_SH) # 获取共享锁
-                try:
-                    content = f.read()
-                    if not content:
-                        app.logger.warning(f"数据文件 {file_path} 为空 (fcntl path)，返回默认值: {default_value}")
-                        return default_value
-                    data = json.loads(content)
-                    # app.logger.debug(f"Successfully read {file_path} using fcntl")
-                finally:
-                    fcntl.flock(f.fileno(), fcntl.LOCK_UN) # 确保释放锁
-                return data
-        except ImportError: # fcntl 模块也未找到 (例如在非 POSIX 系统如 Windows)
-            app.logger.warning(f"fcntl 模块也未找到。将尝试在不加锁的情况下读取文件 {file_path} (非线程安全)。")
-            # 最后手段：在不加锁的情况下读取 (注意：非线程安全)
+        if platform.system() != "Windows":
             try:
-                # app.logger.debug(f"Attempting to read {file_path} without locking")
+                import fcntl # fcntl 主要用于 POSIX 系统
+                # app.logger.debug(f"Attempting to read {file_path} using fcntl")
                 with open(file_path, 'r', encoding='utf-8') as f:
-                    content = f.read()
-                    if not content:
-                        app.logger.warning(f"数据文件 {file_path} 为空 (no-lock path)，返回默认值: {default_value}")
-                        return default_value
-                    data = json.loads(content)
-                    # app.logger.debug(f"Successfully read {file_path} without locking")
-                return data
-            except Exception as e_nolock:
-                app.logger.error(f"在没有锁的情况下读取文件 {file_path} 也失败了: {e_nolock}", exc_info=True)
+                    fcntl.flock(f.fileno(), fcntl.LOCK_SH) # 获取共享锁
+                    try:
+                        content = f.read()
+                        if not content:
+                            app.logger.warning(f"数据文件 {file_path} 为空 (fcntl path)，返回默认值: {default_value}")
+                            return default_value
+                        data = json.loads(content)
+                        # app.logger.debug(f"Successfully read {file_path} using fcntl")
+                    finally:
+                        fcntl.flock(f.fileno(), fcntl.LOCK_UN) # 确保释放锁
+                    return data
+            except ImportError: # fcntl 模块也未找到 (例如在非 POSIX 系统如 Windows)
+                app.logger.warning(f"fcntl 模块在非Windows系统上也未找到。将尝试在不加锁的情况下读取文件 {file_path} (非线程安全)。")
+                # Fall through to no-lock read
+            except Exception as e_fcntl: # fcntl 路径下的其他错误 (例如 IOError, json.JSONDecodeError)
+                app.logger.error(f"使用 fcntl 加载 JSON 数据 {file_path} 时发生错误: {e_fcntl}", exc_info=True) # Corrected typo
                 return default_value
-        except Exception as e_fcntl: # fcntl 路径下的其他错误 (例如 IOError, json.JSONDecodeError)
-            app.logger.error(f"使用 fcntl 加载 JSON 数据 {file_path} 时发生错误: {e_fcntl}", exc_info=True) # Corrected typo
+        else:
+            app.logger.warning(f"当前为Windows系统且portalocker不可用，fcntl不适用。将尝试在不加锁的情况下读取文件 {file_path} (非线程安全)。")
+        
+        # 最后手段：在不加锁的情况下读取 (注意：非线程安全) - 适用于 portalocker/fcntl 均失败或 Windows下portalocker失败
+        try:
+            # app.logger.debug(f"Attempting to read {file_path} without locking")
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+                if not content:
+                    app.logger.warning(f"数据文件 {file_path} 为空 (no-lock path)，返回默认值: {default_value}")
+                    return default_value
+                data = json.loads(content)
+                # app.logger.debug(f"Successfully read {file_path} without locking")
+            return data
+        except Exception as e_nolock:
+            app.logger.error(f"在没有锁的情况下读取文件 {file_path} 也失败了: {e_nolock}", exc_info=True)
             return default_value
+            
     except FileNotFoundError:
         # 文件未找到是常见情况，可能不是一个error，而是逻辑的一部分（例如，首次运行时）
         app.logger.info(f"数据文件未找到: {file_path}。这可能是正常的，将返回默认值: {default_value}")
@@ -539,6 +545,7 @@ def get_exam_type_ratio():
 def get_announcements():
     """API 端点，用于获取公告信息"""
     announcements_file_path = os.path.join(app.root_path, 'data', 'announcements.json')
+    lock_acquired = False
     try:
         # 确保数据目录存在
         data_dir = os.path.dirname(announcements_file_path)
@@ -553,7 +560,29 @@ def get_announcements():
             app.logger.info(f"创建空的公告文件: {announcements_file_path}")
 
         with open(announcements_file_path, 'r', encoding='utf-8') as f:
-            fcntl.flock(f.fileno(), fcntl.LOCK_SH) # 获取共享锁
+            # 尝试 portalocker
+            try:
+                # import portalocker # 已在顶部导入
+                portalocker.lock(f, portalocker.LOCK_SH)
+                lock_acquired = True
+                app.logger.debug(f"portalocker shared lock acquired for {announcements_file_path}")
+            except ImportError:
+                 # 尝试 fcntl (非Windows)
+                if platform.system() != "Windows":
+                    try:
+                        import fcntl
+                        fcntl.flock(f.fileno(), fcntl.LOCK_SH) # 获取共享锁
+                        lock_acquired = True
+                        app.logger.debug(f"fcntl shared lock acquired for {announcements_file_path}")
+                    except ImportError:
+                        app.logger.warning(f"portalocker and fcntl not available for reading {announcements_file_path}. Proceeding without lock.")
+                else:
+                    app.logger.warning(f"portalocker not available on Windows for reading {announcements_file_path}. fcntl not applicable. Proceeding without lock.")
+            except Exception as e_lock:
+                app.logger.error(f"Error acquiring lock for {announcements_file_path}: {e_lock}")
+                # 继续尝试无锁读取
+
+            # 读取文件内容
             try:
                 content = f.read()
                 if not content: # 文件为空
@@ -563,9 +592,21 @@ def get_announcements():
                     announcements = json.loads(content)
             except json.JSONDecodeError as e_decode:
                 app.logger.error(f"在 get_announcements 中解析公告文件 {announcements_file_path} 时出错: {e_decode}")
-                # 对于API端点，返回错误JSON可能比抛出500更好，或者返回空数据
-                return jsonify([]) # 或 jsonify({'error': 'Failed to parse announcements data'}), 500
-            # fcntl.flock(f.fileno(), fcntl.LOCK_UN) # 锁会在文件关闭时自动释放
+                return jsonify([]) 
+            finally:
+                if lock_acquired:
+                    try:
+                        # import portalocker # 已在顶部导入
+                        portalocker.unlock(f)
+                        app.logger.debug(f"portalocker lock released for {announcements_file_path}")
+                    except (ImportError, NameError, AttributeError): # NameError/AttributeError if portalocker was not successfully used
+                        if platform.system() != "Windows":
+                            try:
+                                import fcntl
+                                fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+                                app.logger.debug(f"fcntl lock released for {announcements_file_path}")
+                            except (ImportError, NameError):
+                                pass # No lock to release
             return jsonify(announcements)
         
     except IOError as e_io:
@@ -1178,7 +1219,7 @@ def admin_create_user():
     }
 
     if save_user_data(username, new_user_data):
-        flash(f'用户 "{username}" 创建成功！{' (管理员)' if is_admin else ''}', 'success')
+        flash(f'用户 "{username}" 创建成功！{" (管理员)" if is_admin else ""}', 'success')
         app.logger.info(f"管理员 '{admin_username}' 创建了新用户 '{username}' (管理员: {is_admin})")
     else:
         flash(f'创建用户 "{username}" 时出错。', 'error')
@@ -1211,14 +1252,59 @@ def admin_announcements():
             flash('公告标题不能为空！', 'error')
         else:
             new_announcement = {"title": title, "url": url}
-            current_announcements = load_json_data(ANNOUNCEMENTS_PATH, default_value=[])
+            announcements_file_path = ANNOUNCEMENTS_PATH # Use defined path
+            current_announcements = load_json_data(announcements_file_path, default_value=[]) # Use robust loader
             current_announcements.append(new_announcement)
+            
+            lock_acquired = False
             try:
-                with open(ANNOUNCEMENTS_PATH, 'w', encoding='utf-8') as f:
-                    json.dump(current_announcements, f, ensure_ascii=False, indent=2)
-                flash('新公告已添加。', 'success')
+                with open(announcements_file_path, 'w', encoding='utf-8') as f:
+                    # 尝试 portalocker
+                    try:
+                        # import portalocker # 已在顶部导入
+                        portalocker.lock(f, portalocker.LOCK_EX)
+                        lock_acquired = True
+                    except ImportError:
+                        if platform.system() != "Windows":
+                            try:
+                                import fcntl
+                                fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+                                lock_acquired = True
+                            except ImportError:
+                                app.logger.warning(f"portalocker and fcntl not available for writing {announcements_file_path}. Proceeding without lock.")
+                        else:
+                             app.logger.warning(f"portalocker not available on Windows for writing {announcements_file_path}. fcntl not applicable. Proceeding without lock.")
+                    except Exception as e_lock:
+                        app.logger.error(f"Error acquiring exclusive lock for {announcements_file_path}: {e_lock}")
+
+                    # 写入文件
+                    try:
+                        json.dump(current_announcements, f, ensure_ascii=False, indent=2)
+                        f.flush()
+                        os.fsync(f.fileno()) # 确保写入磁盘
+                        flash('新公告已添加。', 'success')
+                    except Exception as e_write:
+                        flash(f'保存公告时出错: {e_write}', 'error')
+                        app.logger.error(f"写入公告到 {announcements_file_path} 时出错: {e_write}", exc_info=True)
+                    finally:
+                        if lock_acquired:
+                            try:
+                                # import portalocker # 已在顶部导入
+                                portalocker.unlock(f)
+                            except (ImportError, NameError, AttributeError):
+                                if platform.system() != "Windows":
+                                    try:
+                                        import fcntl
+                                        fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+                                    except (ImportError, NameError):
+                                        pass
             except IOError as e:
-                flash(f'保存公告时出错: {e}', 'error')
+                flash(f'打开或写入公告文件时出错: {e}', 'error')
+                app.logger.error(f"IOError for {announcements_file_path} in admin_announcements: {e}", exc_info=True)
+            except Exception as e_outer:
+                flash(f'保存公告时发生未知错误: {e_outer}', 'error')
+                app.logger.error(f"未知错误 for {announcements_file_path} in admin_announcements: {e_outer}", exc_info=True)
+
         return redirect(url_for('admin_announcements'))
 
     announcements = load_json_data(ANNOUNCEMENTS_PATH, default_value=[])
@@ -1227,7 +1313,8 @@ def admin_announcements():
 @app.route('/admin/announcements/reorder', methods=['POST'])
 @admin_required
 def admin_reorder_announcements():
-    announcements_file_path = os.path.join(app.root_path, 'data', 'announcements.json')
+    announcements_file_path = ANNOUNCEMENTS_PATH # Use defined path
+    lock_acquired = False
     try:
         new_order_data = request.get_json()
         if not new_order_data or 'order' not in new_order_data:
@@ -1247,6 +1334,12 @@ def admin_reorder_announcements():
                     current_announcements = json.loads(content)
             except json.JSONDecodeError as e_decode:
                 app.logger.error(f"在 admin_reorder_announcements 中解析公告文件时出错: {e_decode}")
+                if lock_acquired: # Release lock if acquired before error
+                    try: portalocker.unlock(f)
+                    except: 
+                        if platform.system() != "Windows":
+                            try: import fcntl; fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+                            except: pass
                 return jsonify({'status': 'error', 'message': f'解析公告数据时出错: {e_decode}'}), 500
 
             announcement_map = {ann['title']: ann for ann in current_announcements}
@@ -1275,25 +1368,42 @@ def admin_reorder_announcements():
             if missing_titles:
                 app.logger.warning(f"前端发送了以下不存在的公告标题: {missing_titles}")
 
-            app.logger.debug(f"即将写入公告文件的内容:\\n{json.dumps(reordered_announcements, indent=2, ensure_ascii=False)}")
+            app.logger.debug(f"即将写入公告文件的内容:\n{json.dumps(reordered_announcements, indent=2, ensure_ascii=False)}")
             
             f.seek(0)
             f.truncate()
             json.dump(reordered_announcements, f, ensure_ascii=False, indent=2)
             f.flush()
             os.fsync(f.fileno())
-
-            app.logger.debug(f"公告文件 {announcements_file_path} 保存后的内容:\\n{json.dumps(reordered_announcements, indent=2, ensure_ascii=False)}")
+            app.logger.debug(f"公告文件 {announcements_file_path} 保存后的内容:\n{json.dumps(reordered_announcements, indent=2, ensure_ascii=False)}")
+            
+            if lock_acquired:
+                try: 
+                    # import portalocker # 已在顶部导入
+                    portalocker.unlock(f)
+                except (ImportError, NameError, AttributeError):
+                    if platform.system() != "Windows":
+                        try: 
+                            import fcntl
+                            fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+                        except (ImportError, NameError):
+                            pass
             return jsonify({'status': 'success', 'message': '公告顺序已更新'})
 
     except IOError as e_io:
         app.logger.error(f"读写或锁定公告文件时发生IO错误: {e_io}", exc_info=True)
         return jsonify({'status': 'error', 'message': '文件操作失败'}), 500
-    except json.JSONDecodeError as e_json:
+    except json.JSONDecodeError as e_json: # For request.get_json()
         app.logger.error(f"解析请求数据时出错: {e_json}", exc_info=True)
         return jsonify({'status': 'error', 'message': f'请求数据格式错误: {e_json}'}), 400
     except Exception as e:
         app.logger.error(f"处理公告排序请求时发生意外错误: {e}", exc_info=True)
+        if lock_acquired: # Ensure lock release on unexpected error
+            try: portalocker.unlock(f) # Assuming f is still in scope
+            except: 
+                if platform.system() != "Windows":
+                    try: import fcntl; fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+                    except: pass
         return jsonify({'status': 'error', 'message': f'处理请求时发生内部错误: {e}'}), 500
 
 @app.route('/admin/profile', methods=['GET', 'POST'])
@@ -1523,6 +1633,7 @@ def admin_edit_exam_ratios():
 @app.route('/admin/save-exam-ratios', methods=['POST'])
 @admin_required
 def admin_save_exam_ratios():
+    lock_acquired = False
     try:
         ratios_form = request.form.to_dict(flat=False)
         
@@ -1548,10 +1659,47 @@ def admin_save_exam_ratios():
             return redirect(url_for('admin_edit_exam_ratios'))
 
         with open(EXAM_TYPE_RATIOS_PATH, 'w', encoding='utf-8') as f:
-            json.dump(updated_ratios, f, ensure_ascii=False, indent=2)
-        flash('考试类型比例已成功更新。', 'success')
+            # 尝试 portalocker
+            try:
+                # import portalocker # 已在顶部导入
+                portalocker.lock(f, portalocker.LOCK_EX)
+                lock_acquired = True
+            except ImportError:
+                if platform.system() != "Windows":
+                    try:
+                        import fcntl
+                        fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+                        lock_acquired = True
+                    except ImportError:
+                        app.logger.warning(f"portalocker and fcntl not available for saving exam ratios. Proceeding without lock.")
+                else:
+                    app.logger.warning(f"portalocker not available on Windows for saving exam ratios. fcntl not applicable. Proceeding without lock.")
+            except Exception as e_lock:
+                 app.logger.error(f"Error acquiring lock for exam ratios: {e_lock}")
+            
+            # 写入文件
+            try:
+                json.dump(updated_ratios, f, ensure_ascii=False, indent=2)
+                f.flush()
+                os.fsync(f.fileno())
+                flash('考试类型比例已成功更新。', 'success')
+            except Exception as e_write:
+                app.logger.error(f"保存考试类型比例时写入文件出错: {e_write}", exc_info=True)
+                flash(f'保存考试类型比例时写入文件发生错误: {e_write}', 'danger')
+            finally:
+                if lock_acquired:
+                    try:
+                        # import portalocker # 已在顶部导入
+                        portalocker.unlock(f)
+                    except (ImportError, NameError, AttributeError):
+                        if platform.system() != "Windows":
+                            try:
+                                import fcntl
+                                fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+                            except (ImportError, NameError):
+                                pass
     except Exception as e:
-        app.logger.error(f"保存考试类型比例时出错: {e}", exc_info=True)
+        app.logger.error(f"保存考试类型比例时发生主错误: {e}", exc_info=True)
         flash(f'保存考试类型比例时发生错误: {e}', 'danger')
     return redirect(url_for('admin_edit_exam_ratios'))
 
@@ -1686,6 +1834,7 @@ def admin_save_national_lines():
 @app.route('/admin/announcements/update', methods=['POST'])
 @admin_required
 def admin_update_announcement():
+    lock_acquired = False
     try:
         data = request.get_json()
         original_title = data.get('original_title')
@@ -1695,11 +1844,29 @@ def admin_update_announcement():
         if not original_title or not new_title:
             return jsonify({'status': 'error', 'message': '缺少必要的公告信息。'}), 400
 
-        announcements_file_path = os.path.join(app.root_path, 'data', 'announcements.json')
+        announcements_file_path = ANNOUNCEMENTS_PATH # Use defined path
         updated = False
 
         with open(announcements_file_path, 'r+', encoding='utf-8') as f:
-            portalocker.lock(f, portalocker.LOCK_EX)
+            # 尝试 portalocker
+            try:
+                # import portalocker # 已在顶部导入
+                portalocker.lock(f, portalocker.LOCK_EX)
+                lock_acquired = True
+            except ImportError:
+                if platform.system() != "Windows":
+                    try:
+                        import fcntl
+                        fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+                        lock_acquired = True
+                    except ImportError:
+                        app.logger.warning(f"portalocker and fcntl not available for updating announcement. Proceeding without lock.")
+                else:
+                    app.logger.warning(f"portalocker not available on Windows for updating announcement. fcntl not applicable. Proceeding without lock.")
+            except Exception as e_lock:
+                app.logger.error(f"Error acquiring lock for updating announcement: {e_lock}")
+
+            # 文件操作
             try:
                 content = f.read()
                 if not content:
@@ -1708,6 +1875,12 @@ def admin_update_announcement():
                     announcements = json.loads(content)
             except json.JSONDecodeError as e_decode:
                 app.logger.error(f"在 admin_update_announcement 中解析公告文件时出错: {e_decode}")
+                if lock_acquired: # Release lock if acquired before error
+                    try: portalocker.unlock(f)
+                    except: 
+                        if platform.system() != "Windows":
+                            try: import fcntl; fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+                            except: pass
                 return jsonify({'status': 'error', 'message': f'解析公告数据时出错: {e_decode}'}), 500
 
             for ann in announcements:
@@ -1723,23 +1896,42 @@ def admin_update_announcement():
                 json.dump(announcements, f, ensure_ascii=False, indent=2)
                 f.flush(); os.fsync(f.fileno())
                 app.logger.info(f"公告 '{original_title}' 已更新为 '{new_title}'")
+                if lock_acquired:
+                    try: portalocker.unlock(f) 
+                    except (ImportError, NameError, AttributeError):
+                        if platform.system() != "Windows":
+                            try: import fcntl; fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+                            except (ImportError, NameError): pass
                 return jsonify({'status': 'success', 'message': '公告已成功更新。'})
             else:
+                if lock_acquired: # Not found, but release lock
+                    try: portalocker.unlock(f)
+                    except (ImportError, NameError, AttributeError):
+                         if platform.system() != "Windows":
+                            try: import fcntl; fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+                            except (ImportError, NameError): pass
                 return jsonify({'status': 'error', 'message': '未找到要更新的公告。'}), 404
         
     except IOError as e_io:
         app.logger.error(f"读写或锁定公告文件时发生IO错误 (update): {e_io}", exc_info=True)
         return jsonify({'status': 'error', 'message': '文件操作失败'}), 500
-    except json.JSONDecodeError as e_json:
+    except json.JSONDecodeError as e_json: # for request.get_json()
         app.logger.error(f"解析更新公告的请求数据时出错: {e_json}", exc_info=True)
         return jsonify({'status': 'error', 'message': f'请求数据格式错误: {e_json}'}), 400
     except Exception as e:
         app.logger.error(f"更新公告时发生意外错误: {e}", exc_info=True)
+        if lock_acquired: # Ensure lock release on unexpected error
+            try: portalocker.unlock(f)
+            except: 
+                if platform.system() != "Windows":
+                    try: import fcntl; fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+                    except: pass
         return jsonify({'status': 'error', 'message': f'更新公告时发生内部错误: {e}'}), 500
 
 @app.route('/admin/announcement/delete', methods=['POST'])
 @admin_required
 def delete_announcement():
+    lock_acquired = False
     try:
         data = request.get_json()
         title_to_delete = data.get('title')
@@ -1747,11 +1939,29 @@ def delete_announcement():
         if not title_to_delete:
             return jsonify({'status': 'error', 'message': '缺少要删除的公告标题。'}), 400
 
-        announcements_file_path = os.path.join(app.root_path, 'data', 'announcements.json')
+        announcements_file_path = ANNOUNCEMENTS_PATH # Use defined path
         deleted = False
 
         with open(announcements_file_path, 'r+', encoding='utf-8') as f:
-            portalocker.lock(f, portalocker.LOCK_EX)
+            # 尝试 portalocker
+            try:
+                # import portalocker # 已在顶部导入
+                portalocker.lock(f, portalocker.LOCK_EX)
+                lock_acquired = True
+            except ImportError:
+                if platform.system() != "Windows":
+                    try:
+                        import fcntl
+                        fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+                        lock_acquired = True
+                    except ImportError:
+                        app.logger.warning(f"portalocker and fcntl not available for deleting announcement. Proceeding without lock.")
+                else:
+                    app.logger.warning(f"portalocker not available on Windows for deleting announcement. fcntl not applicable. Proceeding without lock.")
+            except Exception as e_lock:
+                app.logger.error(f"Error acquiring lock for deleting announcement: {e_lock}")
+
+            # 文件操作
             try:
                 content = f.read()
                 if not content:
@@ -1760,6 +1970,12 @@ def delete_announcement():
                     announcements = json.loads(content)
             except json.JSONDecodeError as e_decode:
                 app.logger.error(f"在 delete_announcement 中解析公告文件时出错: {e_decode}")
+                if lock_acquired: # Release lock if acquired before error
+                    try: portalocker.unlock(f)
+                    except: 
+                        if platform.system() != "Windows":
+                            try: import fcntl; fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+                            except: pass
                 return jsonify({'status': 'error', 'message': f'解析公告数据时出错: {e_decode}'}), 500
 
             original_count = len(announcements)
@@ -1772,39 +1988,64 @@ def delete_announcement():
                 json.dump(announcements, f, ensure_ascii=False, indent=2)
                 f.flush(); os.fsync(f.fileno())
                 app.logger.info(f"公告 '{title_to_delete}' 已被删除。")
+                if lock_acquired:
+                    try: portalocker.unlock(f)
+                    except (ImportError, NameError, AttributeError): 
+                        if platform.system() != "Windows":
+                            try: import fcntl; fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+                            except(ImportError, NameError): pass
                 return jsonify({'status': 'success', 'message': '公告已成功删除。'})
             else:
                 app.logger.warning(f"尝试删除公告 '{title_to_delete}' 但未找到。")
+                if lock_acquired: # Not found, but release lock
+                     try: portalocker.unlock(f)
+                     except (ImportError, NameError, AttributeError):
+                        if platform.system() != "Windows":
+                            try: import fcntl; fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+                            except (ImportError, NameError): pass
                 return jsonify({'status': 'error', 'message': '未找到要删除的公告。'}), 404
 
     except IOError as e_io:
         app.logger.error(f"读写或锁定公告文件时发生IO错误 (delete): {e_io}", exc_info=True)
         return jsonify({'status': 'error', 'message': '文件操作失败'}), 500
-    except json.JSONDecodeError as e_json:
+    except json.JSONDecodeError as e_json: # for request.get_json()
         app.logger.error(f"解析删除公告的请求数据时出错: {e_json}", exc_info=True)
         return jsonify({'status': 'error', 'message': f'请求数据格式错误: {e_json}'}), 400
     except Exception as e:
         app.logger.error(f"删除公告时发生意外错误: {e}", exc_info=True)
+        if lock_acquired: # Ensure lock release on unexpected error
+            try: portalocker.unlock(f)
+            except: 
+                if platform.system() != "Windows":
+                    try: import fcntl; fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+                    except: pass
         return jsonify({'status': 'error', 'message': f'删除公告时发生内部错误: {e}'}), 500
 
 # --- 新增：收藏数文件读写函数 ---
-def load_favorites_count():
+def load_favorites_count(): # Renamed from load_favorites_count to match usage
     """安全地加载收藏数 JSON 文件。"""
     if not os.path.exists(FAVORITES_COUNT_PATH):
-        # 如果文件不存在，可以返回空字典或尝试初始化
-        app.logger.warning(f"收藏数文件 {FAVORITES_COUNT_PATH} 不存在，返回空字典。可能需要初始化。")
+        app.logger.warning(f"收藏数文件 {FAVORITES_COUNT_PATH} 不存在，返回空字典。")
         return {}
+    
+    lock_acquired = False
     try:
         with open(FAVORITES_COUNT_PATH, 'r', encoding='utf-8') as f:
             portalocker.lock(f, portalocker.LOCK_SH) # 共享锁
             try:
                 counts = json.load(f)
+            except json.JSONDecodeError as e_json_decode:
+                 app.logger.error(f"解析收藏数文件 {FAVORITES_COUNT_PATH} 时出错: {e_json_decode}", exc_info=True)
+                 counts = {} # Return empty on error
             finally:
                 portalocker.unlock(f)
             return counts if isinstance(counts, dict) else {}
-    except (IOError, json.JSONDecodeError) as e:
-        app.logger.error(f"加载收藏数文件 {FAVORITES_COUNT_PATH} 时出错: {e}", exc_info=True)
+    except (IOError) as e: # Removed json.JSONDecodeError here as it's handled inside
+        app.logger.error(f"加载收藏数文件 {FAVORITES_COUNT_PATH} 时发生IO错误: {e}", exc_info=True)
         return {} # 出错时返回空字典
+    except Exception as e_main_fav: # Catch any other unexpected errors
+        app.logger.error(f"加载收藏数文件 {FAVORITES_COUNT_PATH} 时发生未知错误: {e_main_fav}", exc_info=True)
+        return {}
 
 def save_favorites_count(counts_dict):
     """安全地保存收藏数 JSON 文件。"""
