@@ -98,42 +98,29 @@ def clean_column_names(df):
     df.columns = df.columns.str.strip()
     return df
 
-def extract_school_level(name_str, row_level_val, intro_str=None):
-    """从行数据、名称或简介中提取院校等级"""
-    explicit_level_from_col = None
-    # 1. 优先检查等级列
-    if pd.notna(row_level_val):
-        level_str = str(row_level_val).strip()
-        # "普通院校" 也是一个可接受的等级列值
-        if level_str in ["985", "211", "双一流", "一般", "普通院校"]:
-            # 如果等级列是明确的 985/211/双一流，直接返回
-            if level_str in ["985", "211", "双一流"]:
-                return level_str
-            # 如果等级列是 "一般" 或 "普通院校"，我们稍后还会检查名称和简介
-            explicit_level_from_col = level_str 
-        # else: 如果等级列的值不是预期的，则视为无效，继续检查名称和简介
-    
-    # 2. 检查名称
-    if isinstance(name_str, str):
-        if "985" in name_str: return "985"
-        if "211" in name_str: return "211"
-        # "双一流" 在名称中可能不那么常见或明确，主要依赖简介或列
-        # if "双一流" in name_str: return "双一流" 
-    
-    # 3. 检查简介 (新增逻辑)
-    if isinstance(intro_str, str):
-        intro_lower = intro_str.lower() # 转为小写以便匹配
-        # 更精确地匹配 "985工程" 或 "985大学" 等，避免误判包含 "985" 数字的其他文本
-        if re.search(r"985工程|985大学|\"985\"", intro_lower): return "985"
-        if re.search(r"211工程|211大学|\"211\"", intro_lower): return "211"
-        # 双一流的判断可以更宽松一些，因为它通常以文本形式出现
-        if "双一流" in intro_lower or "一流大学" in intro_lower or "一流学科" in intro_lower: return "双一流"
+def extract_school_level(school_name, school_type_str):
+    """根据学校名称和类型字符串提取学校等级。"""
+    if not isinstance(school_type_str, str):
+        return "普通院校"  # 或 "未知"
+    if "985" in school_type_str and "211" in school_type_str:
+        return "985"
+    if "985" in school_type_str:
+        return "985"
+    if "211" in school_type_str:
+        return "211"
+    if "一流学科建设高校" in school_type_str or "双一流" in school_type_str:
+        return "双一流"
+    # 兜底逻辑，如果不是以上特殊类型，则认为是普通院校
+    return "普通院校"
 
-    # 4. 如果等级列有明确的 "一般" 或 "普通院校"，且名称和简介中没找到更高级别的，则使用它
-    if explicit_level_from_col in ["一般", "普通院校"]:
-        return explicit_level_from_col
-
-    return "普通院校" # 默认返回 "普通院校"
+def extract_computer_rank(notes_str):
+    """从备注字符串中提取计算机学科评估等级。"""
+    if not isinstance(notes_str, str):
+        return "无"
+    match = re.search(r"计算机评估结果：([A-Ca-c][+-]?)", notes_str)
+    if match:
+        return match.group(1)
+    return "无"
 
 def find_header_row(df_peek, keywords):
     best_header_index = -1
@@ -371,7 +358,7 @@ def process_excel_sheet(df_sheet, sheet_name, all_schools_data):
                 
                 all_schools_data[school_name_cleaned] = {
                     "id": school_name_cleaned, "name": school_name_cleaned,
-                    "level": extract_school_level(school_name_cleaned, level_val, intro_for_level_check),
+                    "level": extract_school_level(school_name_cleaned, row.get(find_actual_col(level_cols_l))),
                     "province": province,
                     "region": current_sheet_region if current_sheet_region else "未知分区",
                     "intro": get_multiline_str(intro_raw),

@@ -322,7 +322,7 @@ class ProfileForm(FlaskForm):
     major_area = StringField('专业领域', validators=[Optional()])
     target_location = StringField('目标地区', validators=[Optional()])
     target_level = SelectField('目标院校等级', 
-                             choices=[('', '-- 请选择 --'), ('985', '985'), ('211', '211'), ('双一流', '双一流'), ('一般', '一般')], 
+                             choices=[('', '-- 请选择 --'), ('985', '985'), ('211', '211'), ('双一流', '双一流'), ('普通院校', '普通院校')], 
                              validators=[Optional()])
     target_rank = SelectField('偏好计算机等级', choices=[], validators=[Optional()])
     expected_score = IntegerField('预期分数', validators=[Optional()])
@@ -346,7 +346,7 @@ class AdminUserForm(FlaskForm):
 
 class SchoolEditForm(FlaskForm):
     name = StringField('学校名称', validators=[DataRequired(), Length(max=100)])
-    level = SelectField('院校等级', choices=[('', '未知'), ('985', '985'), ('211', '211'), ('双一流', '双一流'), ('一般', '一般')], validators=[Optional()], default='')
+    level = SelectField('院校等级', choices=[('', '未知'), ('985', '985'), ('211', '211'), ('双一流', '双一流'), ('普通院校', '普通院校')], validators=[Optional()], default='')
     province = StringField('省份', validators=[Optional(), Length(max=50)])
     computer_rank = StringField('计算机等级', validators=[Optional(), Length(max=100)])
     intro = TextAreaField('简介', validators=[Optional()])
@@ -820,7 +820,7 @@ def school_list():
     paginated_schools = filtered_schools[start_index:end_index]
 
     all_provinces = sorted(list(set(s.get('province', '未知省份') for s in all_schools if s.get('province'))))
-    all_levels = sorted(list(set(s.get('level', '一般') for s in all_schools if s.get('level'))), key=lambda x: (x != '985', x != '211', x != '双一流', x))
+    all_levels = sorted(list(set(s.get('level', '普通院校') for s in all_schools if s.get('level'))), key=lambda x: (x != '985', x != '211', x != '双一流', x))
     all_ranks = sorted(list(set(s.get('computer_rank', '') for s in all_schools if s.get('computer_rank'))))
     all_regions = sorted(list(set(s.get('region', '') for s in all_schools if s.get('region'))))
 
@@ -1067,7 +1067,7 @@ def calculate_recommendations(target_score, target_level, target_rank_pref, targ
         target_score = None
 
     recommendations = []
-    level_scores = {"985": 100, "211": 80, "双一流": 60, "一般": 30, None: 0, "":0}
+    level_scores = {"985": 100, "211": 80, "双一流": 60, "普通院校": 30, None: 0, "":0}
     rank_map = {"A+": 100, "A": 90, "A-": 85, "B+": 75, "B": 70, "B-": 65, "C+": 55, "C": 50, "C-": 45, "无": 20, None: 20, "":20}
     weights = {"score_similarity": 0.35, "level": 0.20, "rank": 0.15, "location": 0.20, "popularity": 0.10}
 
