@@ -1,5 +1,5 @@
 # utils/school_scrapers/cdut_scraper.py
-from ..scraper import fetch_page, TARGET_MAJOR_CODES, find_generic_link, save_html_debug_log, parse_exam_subjects
+from ..scraper import fetch_page, TARGET_MAJOR_CODES, find_generic_link, parse_exam_subjects
 from bs4 import BeautifulSoup # 如果进行HTML解析则需要
 import re
 import time
@@ -26,7 +26,7 @@ def scrape_cdut_data(base_url, school_name):
         return None
     
     soup = BeautifulSoup(main_page_html, 'html.parser')
-    save_html_debug_log(main_page_html, school_name, "MainPage_Fetched", "initial")
+    # save_html_debug_log(main_page_html, school_name, "MainPage_Fetched", "initial") # 调用已删除
 
     # 2. 尝试找到专业目录链接和分数线链接 (通用方法)
     catalog_keywords = ["硕士专业目录", "招生专业目录", "招生简章", "专业介绍", "硕士招生"]

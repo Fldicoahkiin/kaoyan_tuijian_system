@@ -1,4 +1,4 @@
-from ..scraper import fetch_page, TARGET_MAJOR_CODES, find_generic_link, save_html_debug_log, parse_exam_subjects, TARGET_CATEGORY_PREFIXES
+from ..scraper import fetch_page, TARGET_MAJOR_CODES, find_generic_link, parse_exam_subjects, TARGET_CATEGORY_PREFIXES
 from bs4 import BeautifulSoup
 import re
 import time
@@ -25,7 +25,6 @@ def scrape_swjtu_data(base_url, school_name, **kwargs):
         return None
     
     soup = BeautifulSoup(main_page_html, 'html.parser')
-    save_html_debug_log(main_page_html, school_name, "MainPage_Fetched", "initial_swjtu")
 
     # 尝试找到专业目录链接 (通常在"招生信息" -> "硕士招生"下)
     # 西南交大网站结构可能将专业目录放在特定栏目下，如 /xwgg/zsgg.htm, /list.htm?type=7
@@ -64,7 +63,6 @@ def scrape_swjtu_data(base_url, school_name, **kwargs):
         score_index_html = fetch_page(score_index_page_url, school_name_for_log=school_name, page_type_for_log="ScoreIndexPage_SWJTU")
         if score_index_html:
             score_index_soup = BeautifulSoup(score_index_html, 'html.parser')
-            save_html_debug_log(score_index_html, school_name, "ScoreIndexPage_Fetched", "swjtu")
             # 在索引页中查找具体年份的分数线链接
             for year in ["2024", "2023", "2022"]:
                 # 例如: "西南交通大学2024年硕士研究生招生复试基本分数线"
@@ -89,7 +87,6 @@ def scrape_swjtu_data(base_url, school_name, **kwargs):
         print(f"    [{school_name}] 尝试解析专业目录页面: {school_update_data['major_catalog_url']}")
         catalog_html = fetch_page(school_update_data["major_catalog_url"], school_name_for_log=school_name, page_type_for_log="MajorCatalog_SWJTU")
         if catalog_html:
-            save_html_debug_log(catalog_html, school_name, "MajorCatalog_Fetched", "swjtu")
             catalog_soup = BeautifulSoup(catalog_html, 'html.parser')
             # TODO: 西南交通大学专业目录HTML结构分析与解析
             # 查找包含专业信息的表格，通常会有表头如 "学院名称", "专业代码", "专业名称", "拟招生人数", "考试科目"
@@ -136,7 +133,6 @@ def scrape_swjtu_data(base_url, school_name, **kwargs):
             print(f"    [{school_name}] 尝试获取 {year} 分数线页面: {url}")
             score_html = fetch_page(url, school_name_for_log=school_name, page_type_for_log="ScoreLinePage_SWJTU", year_for_log=year)
             if score_html:
-                save_html_debug_log(score_html, school_name, f"ScorePage_{year}_Fetched", "swjtu")
                 score_soup = BeautifulSoup(score_html, 'html.parser')
                 # TODO: 西南交通大学分数线页面HTML结构分析与解析
                 # 通常分数线信息也在表格中，包含 "学科门类"/"专业学位类别", "总分", "单科" 等

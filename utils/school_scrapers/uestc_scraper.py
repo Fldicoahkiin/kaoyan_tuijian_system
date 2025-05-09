@@ -15,7 +15,6 @@ import os
 from ..scraper import (
     fetch_page,
     fetch_dynamic_page_with_selenium, # Although UESTC logic might call webdriver directly
-    save_html_debug_log, 
     parse_exam_subjects, # Though UESTC iframe often lacks this directly
     TARGET_MAJOR_CODES,
     TARGET_CATEGORY_PREFIXES,
@@ -161,7 +160,6 @@ def scrape_uestc_data(base_url, school_name, project_root_dir="../"):
 
             print(f"      [Selenium UESTC] 正在访问主目录页: {uestc_major_catalog_page_url}")
             driver.get(uestc_major_catalog_page_url)
-            save_html_debug_log(driver.page_source, school_name, "MajorCatalog_UESTC_MainPage_Selenium_scraper", datetime.now().strftime('%Y%m%d_%H%M%S'), url=uestc_major_catalog_page_url)
 
             WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, "#zsml-dept-tree li a")))
             department_links_to_click = []
@@ -183,7 +181,6 @@ def scrape_uestc_data(base_url, school_name, project_root_dir="../"):
                     WebDriverWait(driver, 10).until(EC.frame_to_be_available_and_switch_to_it((By.ID, "iframeContent")))
                     WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "table")))
                     iframe_html = driver.page_source
-                    save_html_debug_log(iframe_html, school_name, f"MajorCatalog_UESTC_iframe_scraper", datetime.now().strftime('%Y%m%d_%H%M%S'), url=driver.current_url, page_specific_detail=dept_name_clean)
                     iframe_soup = BeautifulSoup(iframe_html, 'html.parser')
                     major_table_in_iframe = iframe_soup.find('table')
                     if major_table_in_iframe:

@@ -1,7 +1,7 @@
 # utils/school_scrapers/swufe_scraper.py
 # from ..scraper import fetch_page, find_generic_link # Import when needed
 
-from ..scraper import fetch_page, TARGET_MAJOR_CODES, find_generic_link, save_html_debug_log, parse_exam_subjects, TARGET_CATEGORY_PREFIXES
+from ..scraper import fetch_page, TARGET_MAJOR_CODES, find_generic_link, parse_exam_subjects, TARGET_CATEGORY_PREFIXES
 from bs4 import BeautifulSoup
 import re
 import time
@@ -29,7 +29,6 @@ def scrape_swufe_data(base_url, school_name, **kwargs):
         return None
     
     soup = BeautifulSoup(main_page_html, 'html.parser')
-    save_html_debug_log(main_page_html, school_name, "MainPage_Fetched", "initial_swufe")
 
     # 尝试找到专业目录链接 (通常在"硕士招生" -> "招生简章"或"专业目录")
     catalog_keywords = ["硕士专业目录", "招生专业目录", "招生简章", "硕士研究生招生专业", "硕士招生简章"]
@@ -64,7 +63,6 @@ def scrape_swufe_data(base_url, school_name, **kwargs):
         score_index_html = fetch_page(score_index_page_url, school_name_for_log=school_name, page_type_for_log="ScoreIndexPage_SWUFE")
         if score_index_html:
             score_index_soup = BeautifulSoup(score_index_html, 'html.parser')
-            save_html_debug_log(score_index_html, school_name, "ScoreIndexPage_Fetched", "swufe")
             for year in ["2024", "2023", "2022"]:
                 year_score_link = score_index_soup.find('a', string=re.compile(f'{year}.*硕士.*复试.*分数线'), href=True)
                 if not year_score_link:
@@ -85,10 +83,8 @@ def scrape_swufe_data(base_url, school_name, **kwargs):
         print(f"    [{school_name}] 尝试解析专业目录页面: {school_update_data['major_catalog_url']}")
         catalog_html = fetch_page(school_update_data["major_catalog_url"], school_name_for_log=school_name, page_type_for_log="MajorCatalog_SWUFE")
         if catalog_html:
-            save_html_debug_log(catalog_html, school_name, "MajorCatalog_Fetched", "swufe")
             catalog_soup = BeautifulSoup(catalog_html, 'html.parser')
             # TODO: 西南财经大学专业目录HTML结构分析与解析 (通常为表格)
-            # print(f"    [{school_name}] TODO: 西南财经大学专业目录HTML表格解析逻辑需要根据实际页面结构实现。")
             tables = catalog_soup.find_all('table') # 寻找所有表格，可能需要更精确的定位
             # for table in tables:
                 # try:
@@ -123,7 +119,6 @@ def scrape_swufe_data(base_url, school_name, **kwargs):
             print(f"    [{school_name}] 尝试获取 {year} 分数线页面: {url}")
             score_html = fetch_page(url, school_name_for_log=school_name, page_type_for_log="ScoreLinePage_SWUFE", year_for_log=year)
             if score_html:
-                save_html_debug_log(score_html, school_name, f"ScorePage_{year}_Fetched", "swufe")
                 score_soup = BeautifulSoup(score_html, 'html.parser')
                 # TODO: 西南财经大学分数线页面HTML结构分析与解析 (通常为表格)
                 # print(f"    [{school_name}] TODO: 西南财经大学 {year} 分数线解析逻辑需要根据实际页面结构实现。")

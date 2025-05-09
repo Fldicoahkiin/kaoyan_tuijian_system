@@ -1,5 +1,5 @@
 # utils/school_scrapers/cuit_scraper.py
-from ..scraper import fetch_page, TARGET_MAJOR_CODES, find_generic_link, save_html_debug_log, parse_exam_subjects
+from ..scraper import fetch_page, TARGET_MAJOR_CODES, find_generic_link, parse_exam_subjects
 from bs4 import BeautifulSoup
 import re
 import time
@@ -25,7 +25,6 @@ def scrape_cuit_data(base_url, school_name):
         return None
     
     soup = BeautifulSoup(main_page_html, 'html.parser')
-    save_html_debug_log(main_page_html, school_name, "MainPage_Fetched", "initial")
 
     catalog_keywords = ["硕士专业目录", "招生专业目录", "招生简章", "硕士研究生招生专业"]
     score_keywords = ["硕士复试分数线", "历年分数线", "复试分数线", "研究生复试分数线"]

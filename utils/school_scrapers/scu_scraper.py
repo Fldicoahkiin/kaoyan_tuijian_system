@@ -10,7 +10,6 @@ from ..scraper import (
     fetch_page, 
     fetch_dynamic_page_with_selenium,
     parse_exam_subjects,
-    save_html_debug_log, # If SCU specific HTML logging is needed beyond what fetch_page does
     TARGET_MAJOR_CODES,
     TARGET_CATEGORY_PREFIXES,
     # HTML_DEBUG_DIR # Not directly needed if save_html_debug_log is used
