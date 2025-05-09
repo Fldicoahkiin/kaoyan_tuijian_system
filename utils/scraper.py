@@ -23,6 +23,9 @@ from selenium.common.exceptions import TimeoutException, WebDriverException
 from selenium.webdriver.chrome.service import Service # 导入 Service
 from selenium.webdriver.support.ui import Select # 导入 Select
 
+# --- Attempt to use undetected-chromedriver --- 
+import undetected_chromedriver as uc
+
 # --- 目标计算机相关专业代码集合 ---
 TARGET_MAJOR_CODES = {
     '081200', # 计算机科学与技术 (学硕)
@@ -69,21 +72,29 @@ os.makedirs(ERROR_LOG_DIR, exist_ok=True)
 # ... (其他常量)
 USE_HEADLESS_BROWSER = False # True for production, False for debugging to see browser UI
 REQUEST_TIMEOUT = 30 # seconds for requests
-SELENIUM_TIMEOUT = 30 # seconds for Selenium explicit waits
-RETRY_ATTEMPTS = 2
-RETRY_DELAY = 5 # seconds
+SELENIUM_TIMEOUT = 30 # seconds for selenium waits (Increased from 30)
+RETRY_DELAY = 10  # seconds
+MAX_RETRIES = 3
+
+DEFAULT_HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+    'Accept-Language': 'en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7',
+    'Connection': 'keep-alive',
+    'Upgrade-Insecure-Requests': '1',
+}
 
 # --- TARGET_UNIVERSITIES Definition ---
 TARGET_UNIVERSITIES = {
     "四川大学": "https://yz.scu.edu.cn/",
     "电子科技大学": "https://yz.uestc.edu.cn/",
     "西南交通大学": "https://yz.swjtu.edu.cn/",
-    "西南财经大学": "https://yjs.swufe.edu.cn/",
-    "四川师范大学": "https://yjsy.sicnu.edu.cn/",
+    "西南财经大学": "https://yz.swufe.edu.cn/",
+    "四川师范大学": "https://yjsc.sicnu.edu.cn/",
     "成都理工大学": "https://gra.cdut.edu.cn/",
-    "西南科技大学": "https://graduate.swust.edu.cn/",
+    "西南科技大学": "http://www.swust.edu.cn/",
     "成都信息工程大学": "https://yjsc.cuit.edu.cn/",
-    "西华大学": "https://yanjiusheng.xhu.edu.cn/",
+    "西华大学": "https://yjs.xhu.edu.cn/",
     "成都大学": "https://yjsc.cdu.edu.cn/"
 }
 
@@ -253,22 +264,44 @@ def save_error_log(school_name, error_message, timestamp, exception_obj=None):
         print(f"    [Critical] Failed to save error log itself: {e}")
 
 # --- Utility: Fetch Page Content ---
-def fetch_page(url, school_name_for_log="", page_type_for_log="", page_specific_detail="", retries=RETRY_ATTEMPTS, delay=RETRY_DELAY, year_for_log=None, **kwargs):
+def fetch_page(url, school_name_for_log="", page_type_for_log="", page_specific_detail="", retries=MAX_RETRIES, delay=RETRY_DELAY, year_for_log=None, **kwargs):
     # Use the passed-in log-specific names internally for clarity if needed,
     # or simply use them directly for saving logs.
     school_name = school_name_for_log
     page_type_suffix_for_debug = page_type_for_log
 
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    current_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    log_prefix = f"    [{school_name_for_log if school_name_for_log else 'Unknown School'}]"
+    if year_for_log:
+        log_prefix += f" ({year_for_log})"
+
+    # Define headers locally within the function to ensure they are always fresh for each call
+    active_headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7',
+        'Connection': 'keep-alive',
+        'Upgrade-Insecure-Requests': '1',
     }
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+
+    # Always add these additional headers for all requests in fetch_page
+    active_headers['DNT'] = '1'
+    active_headers['Sec-Fetch-Dest'] = 'document'
+    active_headers['Sec-Fetch-Mode'] = 'navigate'
+    active_headers['Sec-Fetch-Site'] = 'none'
+    active_headers['Sec-Fetch-User'] = '?1'
+    active_headers['Cache-Control'] = 'max-age=0'
+
+    if 'gra.cdut.edu.cn' in url:
+        print(f"{log_prefix} Note: CDUT URL ({url}) is now using the standard full header set for requests-based fetch.")
+    # No else needed, as all URLs processed by fetch_page will use the full set defined above
+
     try:
-        # 禁用 SSL 警告
+        # Suppress only the InsecureRequestWarning from urllib3 needed during development for bad SSL certs
         warnings.filterwarnings('ignore', category=InsecureRequestWarning)
-        # 添加 verify=False 来忽略 SSL 证书验证错误
-        response = requests.get(url, headers=headers, timeout=REQUEST_TIMEOUT, verify=False) 
-        response.raise_for_status() # 如果请求失败 (4xx, 5xx) 则抛出异常
+        # Use headers_to_use instead of DEFAULT_HEADERS directly
+        response = requests.get(url, headers=active_headers, timeout=REQUEST_TIMEOUT, verify=False, **kwargs) # Added verify=False, consider certs
+        response.raise_for_status() # Raises an HTTPError for bad responses (4XX or 5XX)
         response.encoding = response.apparent_encoding 
         # 恢复警告（如果需要在其他地方验证 SSL）
         warnings.resetwarnings()
@@ -283,7 +316,7 @@ def fetch_page(url, school_name_for_log="", page_type_for_log="", page_specific_
                 current_page_specific_detail = year_str
         
         if school_name and page_type_suffix_for_debug:
-            # save_html_debug_log(response.text, school_name, page_type_suffix_for_debug, timestamp, url, current_page_specific_detail)
+            # save_html_debug_log(response.text, school_name, page_type_suffix_for_debug, current_timestamp, url, current_page_specific_detail)
             pass # HTML 日志已禁用
         return response.text
     except requests.exceptions.RequestException as e:
@@ -294,12 +327,12 @@ def fetch_page(url, school_name_for_log="", page_type_for_log="", page_specific_
             return fetch_page(url, school_name_for_log, page_type_for_log, page_specific_detail, retries - 1, delay, year_for_log, **kwargs)
         else:
             error_message = f"获取页面失败 (url: {url}): {e}"
-            save_error_log(school_name, error_message, timestamp, e)
+            save_error_log(school_name, error_message, current_timestamp, e)
         return None
     except Exception as e_gen:
         print(f"  [{school_name}] 获取页面时发生未知错误 (url: {url}): {e_gen}")
         error_message = f"获取页面时发生未知错误 (url: {url}): {e_gen}"
-        save_error_log(school_name, error_message, timestamp, e_gen)
+        save_error_log(school_name, error_message, current_timestamp, e_gen)
         return None
 
 # --- Utility: Fetch Dynamic Page with Selenium ---
@@ -319,23 +352,34 @@ def fetch_dynamic_page_with_selenium(url, school_name, page_type_suffix, seleniu
         options.add_argument('--disable-dev-shm-usage')
         options.add_argument("user-agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'")
 
-        script_dir = os.path.dirname(__file__)
-        project_root = os.path.dirname(script_dir)
-        chromedriver_filename = "chromedriver.exe" if platform.system() == "Windows" else "chromedriver"
-        chrome_driver_path = os.path.join(project_root, 'utils', chromedriver_filename)
-        print(f"    [Selenium] 尝试使用 ChromeDriver 路径 ({platform.system()}): {chrome_driver_path}")
+        # Add anti-detection options
+        options.add_argument("--disable-blink-features=AutomationControlled")
+        # The following experimental options might conflict with undetected_chromedriver
+        # options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        # options.add_experimental_option('useAutomationExtension', False)
 
-        print(f"    [Selenium] 初始化 WebDriver (非 Headless - 调试模式)...")
+        # script_dir = os.path.dirname(__file__)
+        # project_root = os.path.dirname(script_dir)
+        # chromedriver_filename = "chromedriver.exe" if platform.system() == "Windows" else "chromedriver"
+        # chrome_driver_path = os.path.join(project_root, 'utils', chromedriver_filename)
+        # print(f"    [Selenium] 尝试使用 ChromeDriver 路径 ({platform.system()}): {chrome_driver_path}")
+
+        print(f"    [Selenium] 初始化 undetected_chromedriver (非 Headless - 调试模式)...")
         try:
-            service = Service(executable_path=chrome_driver_path)
-            driver = webdriver.Chrome(service=service, options=options)
+            # service = Service(executable_path=chrome_driver_path) # Not typically needed with uc
+            # driver = webdriver.Chrome(service=service, options=options) # Old way
+            driver = uc.Chrome(options=options) # New way using undetected_chromedriver
         except WebDriverException as e:
-             if "executable needs to be in PATH" in str(e) or "cannot be found" in str(e):
-                 print(f"    [Selenium] 错误：在路径 '{chrome_driver_path}' 找不到 chromedriver...")
-             elif "'chromedriver' executable may have wrong permissions" in str(e):
-                  print(f"    [Selenium] 错误：'{chrome_driver_path}' 可能权限不足...")
+             # if "executable needs to be in PATH" in str(e) or "cannot be found" in str(e):
+             #     print(f"    [Selenium] 错误：在路径 '{chrome_driver_path}' 找不到 chromedriver...")
+             if "'chromedriver' executable may have wrong permissions" in str(e):
+                  print(f"    [Selenium] 错误：chromedriver 可能权限不足...")
+             elif "session not created" in str(e).lower(): # Common error if Chrome version mismatch or other setup issues
+                  print(f"    [Selenium] WebDriver session not created. Error: {e}")
+                  print(f"                 确保您的 Chrome 浏览器已安装并且版本与 undetected_chromedriver 兼容。")
+                  print(f"                 undetected_chromedriver 通常会自动下载匹配的 ChromeDriver。")
              else:
-                  print(f"    [Selenium] 初始化 WebDriver 时出错: {e}")
+                  print(f"    [Selenium] 初始化 undetected_chromedriver 时出错: {e}")
              return None
 
         print(f"    [Selenium] 正在访问: {url}")
@@ -372,8 +416,8 @@ def fetch_dynamic_page_with_selenium(url, school_name, page_type_suffix, seleniu
              wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, selenium_actions[-1]['wait_after_click_selector'])))
              print(f"    [Selenium] 元素选择器 '{selenium_actions[-1]['wait_after_click_selector']}' 匹配成功。")
         else:
-              print(f"    [Selenium] 未指定等待元素(点击后)，默认等待 5 秒...")
-              time.sleep(5)
+              print(f"    [Selenium] 未指定等待元素(点击后)，默认等待 10 秒...")
+              time.sleep(10) # Increased from 5
               
         html_source = driver.page_source
         print(f"    [Selenium] 成功获取页面源码。")
@@ -385,7 +429,7 @@ def fetch_dynamic_page_with_selenium(url, school_name, page_type_suffix, seleniu
         print(f"    [Selenium] 错误：等待元素选择器 '{selenium_actions[-1]['wait_after_click_selector']}' 超时 ({SELENIUM_TIMEOUT}秒)。页面可能未完全加载或元素不存在。")
         if driver:
              try:
-                 screenshot_path = os.path.join(project_root, 'utils', 'selenium_timeout_screenshot.png')
+                 screenshot_path = os.path.join(os.path.dirname(__file__), 'selenium_timeout_screenshot.png')
                  driver.save_screenshot(screenshot_path)
                  print(f"    [Selenium] 已保存超时截图到: {screenshot_path}")
                  # 也尝试保存此时的页面源码
@@ -404,6 +448,21 @@ def fetch_dynamic_page_with_selenium(url, school_name, page_type_suffix, seleniu
              print(f"    [Selenium] 关闭 WebDriver。")
              driver.quit()
              
+    print(f"    [Selenium] Returning html_source. Type: {type(html_source)}, Length: {len(html_source) if html_source is not None else 'None'}")
+    
+    # Save the HTML source to a debug file if it's not None
+    if html_source is not None:
+        debug_file_path = os.path.join(os.path.dirname(__file__), 'selenium_output_debug.html')
+        try:
+            with open(debug_file_path, 'w', encoding='utf-8') as f_debug:
+                f_debug.write(f"<!-- URL: {url} -->\n")
+                f_debug.write(f"<!-- School: {school_name}, Page Type: {page_type_suffix}, Detail: {page_specific_detail} -->\n")
+                f_debug.write(f"<!-- Fetched at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} -->\n")
+                f_debug.write(html_source)
+            print(f"    [Selenium] Saved HTML output for debugging to: {debug_file_path}")
+        except Exception as e_save:
+            print(f"    [Selenium] Error saving HTML debug output: {e_save}")
+            
     return html_source
 
 # --- Utility: Load School Targets ---
@@ -535,8 +594,11 @@ def update_school_data(existing_schools_list, school_name, update_data):
         print(f"-[{school_name}] 检查完成，未发现需要合并或更新的数据。")
         return False
 
-def run_scraper():
+def run_scraper(target_school_name=None): # Added optional parameter
     print("开始运行爬虫...")
+    if target_school_name:
+        print(f"目标大学: {target_school_name}")
+
     os.makedirs(CRAWLER_DIR, exist_ok=True) # Ensure crawler output directory exists
 
     schools_list = load_existing_schools()
@@ -550,7 +612,7 @@ def run_scraper():
     schools_info_for_csv = [] 
     summary_data = {
         "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
-        "target_universities": list(TARGET_UNIVERSITIES.keys()),
+        "target_universities": list(TARGET_UNIVERSITIES.keys()) if not target_school_name else [target_school_name],
         "target_major_codes": list(TARGET_MAJOR_CODES),
         "schools_processed": 0,
         "schools_updated": 0,
@@ -559,11 +621,20 @@ def run_scraper():
     }
     successful_updates = 0
 
-    # utils 目录的绝对路径，用于构建 chromedriver 的路径等
     # utils_dir = os.path.dirname(os.path.abspath(__file__))
     # project_root = os.path.dirname(utils_dir)
 
-    for school_name, base_url in TARGET_UNIVERSITIES.items():
+    universities_to_process = {}
+    if target_school_name:
+        if target_school_name in TARGET_UNIVERSITIES:
+            universities_to_process[target_school_name] = TARGET_UNIVERSITIES[target_school_name]
+        else:
+            print(f"!! 错误: 指定的大学 '{target_school_name}' 不在 TARGET_UNIVERSITIES 列表中。可用列表: {list(TARGET_UNIVERSITIES.keys())}")
+            return
+    else:
+        universities_to_process = TARGET_UNIVERSITIES
+
+    for school_name, base_url in universities_to_process.items(): # Use the filtered list
         print(f"\n>>> 开始处理大学: {school_name} ({base_url})")
         current_school_info_for_csv = {
             "name": school_name, "url": base_url,
@@ -645,8 +716,5 @@ def run_scraper():
     print("\n爬虫运行结束。")
 
 if __name__ == "__main__":
-    # 可以直接运行此脚本来测试爬虫
-    run_scraper()
-
-    # Placeholder for potentially scraping other schools or data types
-    # print("Scraper script executed (Placeholder).") # 已移除
+    # run_scraper()
+    run_scraper(target_school_name="成都理工大学")

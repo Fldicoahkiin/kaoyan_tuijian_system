@@ -1,5 +1,5 @@
 School: 成都理工大学
-Timestamp: 20250509_234139
+Timestamp: 2025-05-09 23:48:56
 Error Message: 获取页面失败 (url: https://gra.cdut.edu.cn/): 412 Client Error: Precondition Failed for url: https://gra.cdut.edu.cn/
 
 Exception Type: HTTPError
@@ -7,8 +7,8 @@ Exception Details: 412 Client Error: Precondition Failed for url: https://gra.cd
 
 Traceback:
 Traceback (most recent call last):
-  File "/Users/mac/WorkSpace/考研推荐系统/utils/scraper.py", line 271, in fetch_page
-    response.raise_for_status() # 如果请求失败 (4xx, 5xx) 则抛出异常
+  File "/Users/mac/WorkSpace/考研推荐系统/utils/scraper.py", line 309, in fetch_page
+    response.raise_for_status() # Raises an HTTPError for bad responses (4XX or 5XX)
     ~~~~~~~~~~~~~~~~~~~~~~~~~^^
   File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/requests/models.py", line 1024, in raise_for_status
     raise HTTPError(http_error_msg, response=self)
@@ -17,8 +17,8 @@ requests.exceptions.HTTPError: 412 Client Error: Precondition Failed for url: ht
 During handling of the above exception, another exception occurred:
 
 Traceback (most recent call last):
-  File "/Users/mac/WorkSpace/考研推荐系统/utils/scraper.py", line 271, in fetch_page
-    response.raise_for_status() # 如果请求失败 (4xx, 5xx) 则抛出异常
+  File "/Users/mac/WorkSpace/考研推荐系统/utils/scraper.py", line 309, in fetch_page
+    response.raise_for_status() # Raises an HTTPError for bad responses (4XX or 5XX)
     ~~~~~~~~~~~~~~~~~~~~~~~~~^^
   File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/requests/models.py", line 1024, in raise_for_status
     raise HTTPError(http_error_msg, response=self)
@@ -27,8 +27,18 @@ requests.exceptions.HTTPError: 412 Client Error: Precondition Failed for url: ht
 During handling of the above exception, another exception occurred:
 
 Traceback (most recent call last):
-  File "/Users/mac/WorkSpace/考研推荐系统/utils/scraper.py", line 271, in fetch_page
-    response.raise_for_status() # 如果请求失败 (4xx, 5xx) 则抛出异常
+  File "/Users/mac/WorkSpace/考研推荐系统/utils/scraper.py", line 309, in fetch_page
+    response.raise_for_status() # Raises an HTTPError for bad responses (4XX or 5XX)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/requests/models.py", line 1024, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 412 Client Error: Precondition Failed for url: https://gra.cdut.edu.cn/
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/mac/WorkSpace/考研推荐系统/utils/scraper.py", line 309, in fetch_page
+    response.raise_for_status() # Raises an HTTPError for bad responses (4XX or 5XX)
     ~~~~~~~~~~~~~~~~~~~~~~~~~^^
   File "/Users/mac/WorkSpace/考研推荐系统/.venv/lib/python3.13/site-packages/requests/models.py", line 1024, in raise_for_status
     raise HTTPError(http_error_msg, response=self)
