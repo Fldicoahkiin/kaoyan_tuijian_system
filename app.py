@@ -12,9 +12,7 @@ from wtforms import StringField, PasswordField, SubmitField, SelectField, TextAr
 from wtforms.validators import DataRequired, Length, EqualTo, Optional, NumberRange
 import logging # 导入 logging
 from flask_wtf.csrf import CSRFProtect # 导入 CSRFProtect
-# import fcntl # 移除 fcntl
 import portalocker # 导入 portalocker
-import fcntl # 添加导入
 import time # 添加导入
 from logging.handlers import RotatingFileHandler
 import pandas as pd # 导入 pandas 用于 replace_nan_with_none 函数
@@ -1240,7 +1238,7 @@ def admin_reorder_announcements():
         app.logger.debug(f"接收到的新公告顺序 (titles): {ordered_titles}")
 
         with open(announcements_file_path, 'r+', encoding='utf-8') as f:
-            fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+            portalocker.lock(f, portalocker.LOCK_EX)
             try:
                 content = f.read()
                 if not content:
@@ -1672,16 +1670,6 @@ def admin_save_national_lines():
                     finally:
                         portalocker.unlock(f)
                 flash('国家线数据已成功更新 (固定年份: 2023-2025)。', 'success')
-            except ImportError: 
-                app.logger.warning("portalocker not available for saving national lines. Attempting fcntl.")
-                with open(NATIONAL_LINES_PATH, 'w', encoding='utf-8') as f:
-                    fcntl.flock(f.fileno(), fcntl.LOCK_EX)
-                    try:
-                        json.dump(new_national_lines_data, f, ensure_ascii=False, indent=2)
-                        f.flush(); os.fsync(f.fileno())
-                    finally:
-                        fcntl.flock(f.fileno(), fcntl.LOCK_UN)
-                flash('国家线数据已成功更新 (使用fcntl, 固定年份: 2023-2025)。', 'success')
             except Exception as e_save_lock: 
                 app.logger.error(f"保存国家线数据时在锁定或写入阶段出错: {e_save_lock}", exc_info=True)
                 flash(f'保存国家线数据时发生内部错误: {str(e_save_lock)}', 'danger')
@@ -1808,11 +1796,11 @@ def load_favorites_count():
         return {}
     try:
         with open(FAVORITES_COUNT_PATH, 'r', encoding='utf-8') as f:
-            fcntl.flock(f.fileno(), fcntl.LOCK_SH) # 共享锁
+            portalocker.lock(f, portalocker.LOCK_SH) # 共享锁
             try:
                 counts = json.load(f)
             finally:
-                fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+                portalocker.unlock(f)
             return counts if isinstance(counts, dict) else {}
     except (IOError, json.JSONDecodeError) as e:
         app.logger.error(f"加载收藏数文件 {FAVORITES_COUNT_PATH} 时出错: {e}", exc_info=True)
@@ -1830,20 +1818,6 @@ def save_favorites_count(counts_dict):
             finally:
                 portalocker.unlock(f)
             return True
-    except ImportError:
-        app.logger.warning("portalocker not found, using fcntl for save_favorites_count.")
-        try:
-            with open(FAVORITES_COUNT_PATH, 'w', encoding='utf-8') as f:
-                fcntl.flock(f.fileno(), fcntl.LOCK_EX)
-                try:
-                    json.dump(counts_dict, f, ensure_ascii=False, indent=2)
-                    f.flush(); os.fsync(f.fileno())
-                finally:
-                    fcntl.flock(f.fileno(), fcntl.LOCK_UN)
-                return True
-        except Exception as e_fcntl: # Catch fcntl specific errors
-            app.logger.error(f"使用fcntl保存收藏统计时出错: {e_fcntl}", exc_info=True)
-            return False
     except Exception as e: # Catch general errors like IOError from open() if portalocker path fails before import error
         app.logger.error(f"保存收藏统计时发生错误: {e}", exc_info=True)
         return False
