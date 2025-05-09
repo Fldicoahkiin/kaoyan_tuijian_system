@@ -1,5 +1,5 @@
 {
-    "timestamp": "2025-05-09 14:17:09",
+    "timestamp": "2025-05-09 21:08:28",
     "target_universities": [
         "四川大学",
         "电子科技大学",
@@ -13,17 +13,17 @@
         "成都大学"
     ],
     "target_major_codes": [
+        "085411",
         "083900",
-        "083500",
-        "085410",
-        "081200",
-        "085400",
-        "085405",
         "085404",
-        "085411"
+        "083500",
+        "085405",
+        "085400",
+        "085410",
+        "081200"
     ],
-    "schools_processed": 2,
-    "schools_updated": 2,
-    "total_departments_found": 3,
-    "total_majors_found": 11
+    "schools_processed": 1,
+    "schools_updated": 0,
+    "total_departments_found": 0,
+    "total_majors_found": 0
 }

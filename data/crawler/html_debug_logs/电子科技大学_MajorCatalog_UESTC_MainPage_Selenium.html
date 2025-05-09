@@ -1,0 +1,117 @@
+<!-- School: 电子科技大学 -->\n<!-- Page Type: MajorCatalog_UESTC_MainPage_Selenium -->\n<!-- URL: https://yzbm.uestc.edu.cn/zsml/sszsml/index/2025 -->\n<!-- Saved at: 2025-05-09 21:08:44 -->\n\n<html><head>
+		<title>招生目录</title>
+		<meta charset="utf-8">
+		
+
+
+
+
+<script src="/static/jquery/jquery-1.12.4.min.js"></script>
+<script src="/static/jquery-ztree/3.5/js/jquery.ztree.all-3.5.js"></script>
+<script src="/resource/js/zsml.js?1.1.54"></script>
+<link rel="stylesheet" href="/static/jquery-ztree/3.5/css/metro/zTreeStyle.css">
+<link rel="stylesheet" href="/static/Endless/css/font.css">
+<link rel="stylesheet" href="/resource/css/zsml.css?1.1.54">
+    </head>
+    <body>
+		<header>
+			<h1>电子科技大学2025年招收攻读硕士学位研究生专业目录</h1>
+		</header>
+		
+			
+			
+				<div>
+					<div class="zsml-search-container">
+						<!-- <span>提示：请输入专业代码/名称，研究方向代码/名称查询！</span> 
+						<input type="text" id="searchVal" maxlength="100" autocomplete="off" />
+						<button type="button" class="zsml-search-btn" id="search" > 搜索 </button>
+						-->
+					</div>
+				</div>
+				<div>
+					<nav>
+						<ul id="zsml-dept-tree" class="ztree"></ul>
+					</nav>
+					<section>
+						<div id="table-container">
+							<iframe id="iframeContent" width="100%" height="85%" style="min-height: 600px; height: 669px;" scrolling="auto" frameborder="no"></iframe>
+						</div>
+					</section>
+				</div>
+				<script>
+					var nd = '2025';
+					var zslb = '1';
+					
+					(function($) {
+						initTree();
+						
+					})(jQuery);
+					
+					var setting = {
+					    view : {
+					      showIcon: false,
+					      dblClickExpand: false
+					    },
+					    data : {
+					      key : {
+					        name : "name"
+					      },
+					      simpleData : {
+					        enable : true,
+					        idKey : "id",
+					        pIdKey : "pId"
+					      }
+					    },
+					    callback : {
+					      // 单击事件
+					      onClick : zTreeOnClick
+					    }
+					};
+				
+					  var zTreeObj;
+					  function initTree() {
+					    $.post("/zsml/getTreeData", {nd:nd, zslb:zslb}, function(data) {
+					      zTreeObj = $.fn.zTree.init($("#zsml-dept-tree"), setting, data);
+					      var nodes = zTreeObj.getNodes();
+						  var firstNode = nodes[0];
+						  zTreeObj.selectNode(firstNode); //选中第一个节点
+						  zTreeObj.setting.callback.onClick(null, zTreeObj.setting.treeId, firstNode);//调用事件
+					    }, 'json');
+					  }
+					  
+					  function zTreeOnClick(event, treeId, treeNode) {
+				          if (treeNode.isParent) {
+				        	  // 根据院系信息展示专业信息
+				        	  $('#iframeContent').attr('src', ''+getZsmlZyUrl(zslb, nd, treeNode.id));
+				        	  // 节点展开/折叠
+				        	  var zTree = $.fn.zTree.getZTreeObj("zsml-dept-tree");
+				  			  zTree.expandNode(treeNode);
+				          } else {
+				        	 // 根据专业信息展示研究方向信息
+				        	 $('#iframeContent').attr('src', ''+getZsmlYjfxUrl(zslb, nd, treeNode.pId, treeNode.id,treeNode.scode));
+				          }
+					  }
+					  
+					  $('#search').click(function() {
+						  search();
+					  });
+					  
+					  $('#searchVal').bind('keyup', function(event) {
+						　　if (event.keyCode == "13") {
+						　　　　 search();
+						　　}
+					  });
+					  
+					  function search() {
+						  var val = $('#searchVal').val();
+						  if (val == '') {
+							  alert('请输入专业代码/名称或研究方向代码/名称！');
+							  return;
+						  }
+						  $('#iframeContent').attr('src', ''+getSearchUrl(zslb, nd, val));
+					  }
+				</script>
+			
+		
+    
+</body></html>
