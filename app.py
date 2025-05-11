@@ -351,6 +351,8 @@ class SchoolEditForm(FlaskForm):
     computer_rank = StringField('计算机等级', validators=[Optional(), Length(max=100)])
     intro = TextAreaField('简介', validators=[Optional()])
     enrollment_24_school_total = StringField('24年总招生人数', validators=[Optional()])
+    enrollment_24_academic = StringField('24年学硕人数', validators=[Optional()])
+    enrollment_24_professional = StringField('24年专硕人数', validators=[Optional()])
     submit = SubmitField('保存更改')
 
 # --- 新增：首页配置表单 ---
@@ -388,8 +390,9 @@ def api_schools_list():
             'level': school.get('level'),
             'region': school.get('region'),
             'computer_rank': school.get('computer_rank'),
-            'enrollment_24_school_total': school.get('enrollment_24_school_total', '未知'), # Make sure this key exists or provide default
-            'exam_subjects': school.get('exam_subjects_summary', "见各专业详情") # Use the new summary field
+            'enrollment_24_school_total': school.get('enrollment_24_school_total', '未知'),
+            'enrollment_24_academic': school.get('enrollment_24_academic', '未知'),
+            'enrollment_24_professional': school.get('enrollment_24_professional', '未知'),
         })
     
     # print(f"API /api/schools/list returning {len(simplified_schools)} schools.") # Optional: for debugging
@@ -1584,6 +1587,8 @@ def admin_edit_school(school_id):
             target_school_in_list['computer_rank'] = form.computer_rank.data
             target_school_in_list['intro'] = form.intro.data
             target_school_in_list['enrollment_24_school_total'] = form.enrollment_24_school_total.data
+            target_school_in_list['enrollment_24_academic'] = form.enrollment_24_academic.data
+            target_school_in_list['enrollment_24_professional'] = form.enrollment_24_professional.data
             # 注意：'region' 是只读的，不应在此更新。
             # 注意：'id' 也不应在此更改。
 

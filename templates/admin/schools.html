@@ -40,6 +40,8 @@
                     <th style="width: 80px; position: relative;">区域<div class="col-resizer"></div></th>
                     <th style="width: 180px; position: relative;">计算机等级<div class="col-resizer"></div></th>
                     <th style="width: 100px; position: relative; text-align: center;">24年总招生<div class="col-resizer"></div></th>
+                    <th style="width: 100px; position: relative; text-align: center;">24年学硕人数<div class="col-resizer"></div></th>
+                    <th style="width: 100px; position: relative; text-align: center;">24年专硕人数<div class="col-resizer"></div></th>
                     <th style="width: 90px; position: relative; text-align: center;">院系数量<div class="col-resizer"></div></th>
                     <th style="width: 90px; position: relative; text-align: center;">专业数量<div class="col-resizer"></div></th>
                     <th style="width: 120px; text-align: center;" class="sticky-col-right">操作</th>
@@ -55,6 +57,8 @@
                     <td>{{ school.region | default('未知') }}</td>
                     <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;" title="{{ school.computer_rank | default('无') }}">{{ school.computer_rank | default('无') }}</td>
                     <td>{{ school.enrollment_24_school_total | default('N/A') }}</td>
+                    <td>{{ school.enrollment_24_academic | default('N/A') }}</td>
+                    <td>{{ school.enrollment_24_professional | default('N/A') }}</td>
                     <td>{{ school.department_count | default(0) }}</td>
                     <td>{{ school.major_count | default(0) }}</td>
                     <td class="sticky-col-right">

@@ -562,6 +562,8 @@ def main_process_excel_file(excel_file_path, output_json_path):
 
     for school_name, school_data in all_schools_data.items():
         total_enrollment_24 = 0
+        academic_enrollment_24 = 0
+        professional_enrollment_24 = 0
         exam_subjects_list = set()
         try:
             if 'departments' in school_data and isinstance(school_data['departments'], list):
@@ -570,22 +572,42 @@ def main_process_excel_file(excel_file_path, output_json_path):
                         for major in department['majors']:
                             enrollment_data = major.get('enrollment', {})
                             enrollment_24 = enrollment_data.get('2024', 0)
-                            total_enrollment_24 += int(enrollment_24) if isinstance(enrollment_24, (int, float)) or (isinstance(enrollment_24, str) and enrollment_24.isdigit()) else 0
-                            
+                            # --- 新增：从 major_code 或 major_name 提取专业代码 ---
+                            code = major.get('major_code', '')
+                            if not code:
+                                # 尝试从 major_name 提取6位数字
+                                major_name = major.get('major_name', '')
+                                match = re.match(r'(\d{6})', major_name)
+                                if match:
+                                    code = match.group(1)
+                            # 统计总人数
+                            try:
+                                enrollment_24_int = int(enrollment_24)
+                            except Exception:
+                                enrollment_24_int = 0
+                            total_enrollment_24 += enrollment_24_int
+                            # 区分学硕/专硕
+                            if code.startswith(('081', '082', '083')):
+                                academic_enrollment_24 += enrollment_24_int
+                            elif code.startswith('085'):
+                                professional_enrollment_24 += enrollment_24_int
+                            # exam_subjects 合并
                             subjects_str = major.get('exam_subjects')
                             if subjects_str and isinstance(subjects_str, str):
-                                subjects = [s.strip() for s in subjects_str.split('\\n') if s.strip()] # Handle escaped newlines if any, or direct
-                                subjects_flat = []
-                                for s_part in subjects: # Further split if multiple subjects are in one line, e.g. "subj1 subj2"
-                                    subjects_flat.extend(s_part.split()) # Basic split, might need refinement
-                                exam_subjects_list.update(subjects_flat)
-
-
+                                # 拆分所有科目，去重
+                                for s in re.split(r'[，,;；\n ]+', subjects_str):
+                                    s = s.strip()
+                                    if s:
+                                        exam_subjects_list.add(s)
             school_data['enrollment_24_school_total'] = total_enrollment_24
+            school_data['enrollment_24_academic'] = academic_enrollment_24
+            school_data['enrollment_24_professional'] = professional_enrollment_24
             school_data['exam_subjects_summary'] = " | ".join(sorted(list(exam_subjects_list))) if exam_subjects_list else "未提供"
         except Exception as e_post:
             print(f"Error during post-processing for school '{school_name}': {e_post}")
             school_data['enrollment_24_school_total'] = 0 
+            school_data['enrollment_24_academic'] = 0
+            school_data['enrollment_24_professional'] = 0
             school_data['exam_subjects_summary'] = "处理错误"
 
     final_school_list = list(all_schools_data.values())

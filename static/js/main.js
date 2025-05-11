@@ -170,6 +170,8 @@ function renderDashboardSchoolPage(page) {
                     <td style=\"min-width: 60px; white-space: nowrap;\"><span class=\"badge ${ school.region === 'A区' ? 'bg-primary' : (school.region === 'B区' ? 'bg-info' : 'bg-secondary') }\">${school.region || 'N/A'}</span></td>
                     <td style=\"min-width: 120px; white-space: nowrap;\">${school.computer_rank || 'N/A'}</td>
                     <td style=\"min-width: 100px; text-align: center; white-space: nowrap;\">${school.enrollment_24_school_total || '-'}</td>
+                    <td style=\"min-width: 100px; text-align: center; white-space: nowrap;\">${school.enrollment_24_academic || '-'}</td>
+                    <td style=\"min-width: 100px; text-align: center; white-space: nowrap;\">${school.enrollment_24_professional || '-'}</td>
                     <td style=\"white-space: nowrap;\">${school.exam_subjects || '-'}</td>
                 </tr>
             `;

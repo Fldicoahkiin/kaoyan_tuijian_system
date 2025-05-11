@@ -72,6 +72,15 @@
         </div>
 
         <div class="mb-3">
+            <label for="enrollment_24_academic" class="form-label">24年学硕人数</label>
+            {{ form.enrollment_24_academic(class="form-control", id="enrollment_24_academic") }}
+        </div>
+        <div class="mb-3">
+            <label for="enrollment_24_professional" class="form-label">24年专硕人数</label>
+            {{ form.enrollment_24_professional(class="form-control", id="enrollment_24_professional") }}
+        </div>
+
+        <div class="mb-3">
             {{ form.intro.label(class="form-label") }}
             {{ form.intro(class="form-control" + (" is-invalid" if form.intro.errors else ""), rows=5) }}
              {% if form.intro.errors %}
