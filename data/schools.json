@@ -1240,9 +1240,9 @@
       }
     ],
     "exam_subjects_summary": "101 | 201英语（一） | 202英语（二） | 301 | 302 | 408 | 408计算机学科专业基础 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一） | 数学（二） | 计算机学科专业基础",
-    "enrollment_24_school_total": 435,
+    "enrollment_24_school_total": 385,
     "enrollment_24_academic": 103,
-    "enrollment_24_professional": 332
+    "enrollment_24_professional": 282
   },
   {
     "id": "内蒙古工业大学",
@@ -1470,8 +1470,8 @@
       }
     ],
     "exam_subjects_summary": "101 | 201英语（一） | 202英语（二） | 301数学（一） | 302数学（二） | 408计算机学科专业基础 | ① | ② | ③ | ④ | 思想政治理论",
-    "enrollment_24_school_total": 115,
-    "enrollment_24_academic": 35,
+    "enrollment_24_school_total": 69,
+    "enrollment_24_academic": 16,
     "enrollment_24_professional": 12
   },
   {
@@ -2239,8 +2239,8 @@
       }
     ],
     "exam_subjects_summary": "(数据结构、C语言程序设计、密码学与网络安全) | (数据结构、算法、软件工程、操作系统) | (组成原理、操作系统、计算机网络) | 101 | 201英语（一） | 202 | 301 | 302 | 840 | 961 | 991 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一） | 数学（二） | 网络空间安全专业综合 | 英语（二） | 计算机基础综合 | 软件工程基础综合",
-    "enrollment_24_school_total": 310,
-    "enrollment_24_academic": 147,
+    "enrollment_24_school_total": 272,
+    "enrollment_24_academic": 109,
     "enrollment_24_professional": 163
   },
   {
@@ -2523,8 +2523,8 @@
       }
     ],
     "exam_subjects_summary": "101 | 201 | 201英语（一） | 202英语（二） | 301 | 302数学（二） | 408计算机学科专业基础 | 833数据结构与操作系统 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一） | 英语（一）",
-    "enrollment_24_school_total": 217,
-    "enrollment_24_academic": 57,
+    "enrollment_24_school_total": 116,
+    "enrollment_24_academic": 31,
     "enrollment_24_professional": 0
   },
   {
@@ -2728,10 +2728,10 @@
         ]
       }
     ],
-    "exam_subjects_summary": "①101思想政治理论 | ②202英语（二） | ②204英语（二） | ③302数学（二） | ④808数据结构",
-    "enrollment_24_school_total": 100,
+    "exam_subjects_summary": "①101思想政治理论 | ②204英语（二） | ③302数学（二） | ④808数据结构",
+    "enrollment_24_school_total": 50,
     "enrollment_24_academic": 0,
-    "enrollment_24_professional": 100
+    "enrollment_24_professional": 50
   },
   {
     "id": "长春理工大学",
@@ -2823,9 +2823,9 @@
       }
     ],
     "exam_subjects_summary": "101 | 202英语（二） | 302 | 809数据结构+操作系统 | ① | ② | ③ | ④ | 思想政治理论 | 数学（二）",
-    "enrollment_24_school_total": 300,
+    "enrollment_24_school_total": 150,
     "enrollment_24_academic": 0,
-    "enrollment_24_professional": 300
+    "enrollment_24_professional": 150
   },
   {
     "id": "四川大学",
@@ -4059,9 +4059,9 @@
       }
     ],
     "exam_subjects_summary": "101 | 201英语（一） | 202英语（二） | 301 | 302 | 408计算机学科专业基础 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一） | 数学（二）",
-    "enrollment_24_school_total": 1180,
-    "enrollment_24_academic": 50,
-    "enrollment_24_professional": 1130
+    "enrollment_24_school_total": 590,
+    "enrollment_24_academic": 25,
+    "enrollment_24_professional": 565
   },
   {
     "id": "合肥工业大学",
@@ -4227,9 +4227,9 @@
       }
     ],
     "exam_subjects_summary": "101 | 201英语（一） | 202英语（二） | 301 | 408计算机学科专业基础 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一）",
-    "enrollment_24_school_total": 382,
-    "enrollment_24_academic": 150,
-    "enrollment_24_professional": 232
+    "enrollment_24_school_total": 191,
+    "enrollment_24_academic": 75,
+    "enrollment_24_professional": 116
   },
   {
     "id": "安徽农业大学",
@@ -4321,9 +4321,9 @@
       }
     ],
     "exam_subjects_summary": "101 | 201英语（一） | 202 | 301 | 302 | 829数据结构 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一） | 数学（二） | 英语（二）",
-    "enrollment_24_school_total": 136,
-    "enrollment_24_academic": 66,
-    "enrollment_24_professional": 70
+    "enrollment_24_school_total": 68,
+    "enrollment_24_academic": 33,
+    "enrollment_24_professional": 35
   },
   {
     "id": "安徽大学",
@@ -4642,9 +4642,9 @@
       }
     ],
     "exam_subjects_summary": "101 | 201英语（一） | 301 | 408计算机学科专业基础 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一）",
-    "enrollment_24_school_total": 834,
-    "enrollment_24_academic": 322,
-    "enrollment_24_professional": 512
+    "enrollment_24_school_total": 322,
+    "enrollment_24_academic": 129,
+    "enrollment_24_professional": 193
   },
   {
     "id": "安徽工业大学",
@@ -4736,9 +4736,9 @@
       }
     ],
     "exam_subjects_summary": "101 | 201英语（一） | 202 | 301 | 302 | 408计算机学科专业基础 | 816数据结构 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一） | 数学（二） | 英语（二）",
-    "enrollment_24_school_total": 148,
-    "enrollment_24_academic": 70,
-    "enrollment_24_professional": 78
+    "enrollment_24_school_total": 74,
+    "enrollment_24_academic": 35,
+    "enrollment_24_professional": 39
   },
   {
     "id": "安徽理工大学",
@@ -4867,9 +4867,9 @@
       }
     ],
     "exam_subjects_summary": "101 | 201英语（一） | 202英语（二） | 301 | 302 | 842数据结构+C语言 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一） | 数学（二）",
-    "enrollment_24_school_total": 280,
-    "enrollment_24_academic": 92,
-    "enrollment_24_professional": 188
+    "enrollment_24_school_total": 140,
+    "enrollment_24_academic": 46,
+    "enrollment_24_professional": 94
   },
   {
     "id": "中国石油大学",
@@ -5058,10 +5058,10 @@
         ]
       }
     ],
-    "exam_subjects_summary": "101 | 201英语（一） | 202英语（二） | 301 | 302 | 408计算机学科专业基础 | 859数据结构 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一） | 数学（二）",
-    "enrollment_24_school_total": 200,
-    "enrollment_24_academic": 56,
-    "enrollment_24_professional": 144
+    "exam_subjects_summary": "101 | 202英语（二） | 301 | 302 | 408计算机学科专业基础 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一） | 数学（二）",
+    "enrollment_24_school_total": 138,
+    "enrollment_24_academic": 43,
+    "enrollment_24_professional": 95
   },
   {
     "id": "山东科技大学",
@@ -5235,8 +5235,8 @@
       }
     ],
     "exam_subjects_summary": "101 | 201英语（一） | 202英语（二） | 301 | 302 | 847算法与数据结构 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一） | 数学（二）",
-    "enrollment_24_school_total": 140,
-    "enrollment_24_academic": 54,
+    "enrollment_24_school_total": 111,
+    "enrollment_24_academic": 25,
     "enrollment_24_professional": 86
   },
   {
@@ -6090,10 +6090,10 @@
         ]
       }
     ],
-    "exam_subjects_summary": "101 | 201英语（一） | 202英语（二） | 301 | 302 | 408计算机学科专业基础 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一） | 数学（二） | 数据结构+操作系统",
-    "enrollment_24_school_total": 231,
+    "exam_subjects_summary": "101 | 201英语（一） | 202英语（二） | 301 | 302 | 408计算机学科专业基础 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一） | 数学（二）",
+    "enrollment_24_school_total": 213,
     "enrollment_24_academic": 51,
-    "enrollment_24_professional": 180
+    "enrollment_24_professional": 162
   },
   {
     "id": "华南理工大学",
@@ -6507,10 +6507,10 @@
         ]
       }
     ],
-    "exam_subjects_summary": "101 | 201英语（一） | 202英语（二） | 301 | 302 | 408计算机学科专业基础 | 834数据结构 | 914数据结构与组成原理 | 933数据结构与计算机网络 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一） | 数学（二）",
-    "enrollment_24_school_total": 370,
+    "exam_subjects_summary": "101 | 201英语（一） | 202英语（二） | 301 | 302 | 408计算机学科专业基础 | 834数据结构 | 914数据结构与组成原理 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一） | 数学（二）",
+    "enrollment_24_school_total": 260,
     "enrollment_24_academic": 70,
-    "enrollment_24_professional": 300
+    "enrollment_24_professional": 190
   },
   {
     "id": "暨南大学",
@@ -7439,9 +7439,9 @@
         ]
       }
     ],
-    "exam_subjects_summary": "101 | 201英语（一） | 202 | 301 | 302 | 408计算机学科专业基础 | 842数据结构、软件工程、操作系统和计算机网络 | 855 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一） | 数学（二） | 数据结构、算法、人工智能、概率统计 | 英语（二）",
-    "enrollment_24_school_total": 177,
-    "enrollment_24_academic": 34,
+    "exam_subjects_summary": "101 | 201英语（一） | 202 | 301 | 302 | 408计算机学科专业基础 | 842数据结构、软件工程、操作系统和计算机网络 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一） | 数学（二） | 英语（二）",
+    "enrollment_24_school_total": 162,
+    "enrollment_24_academic": 19,
     "enrollment_24_professional": 143
   },
   {
@@ -8367,9 +8367,9 @@
       }
     ],
     "exam_subjects_summary": "101 | 201 | 202英语（二） | 301 | 302 | 408计算机学科专业基础 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一） | 数学（二） | 英语（一）",
-    "enrollment_24_school_total": 252,
+    "enrollment_24_school_total": 213,
     "enrollment_24_academic": 37,
-    "enrollment_24_professional": 215
+    "enrollment_24_professional": 176
   },
   {
     "id": "华北理工大学",
@@ -9241,9 +9241,9 @@
       }
     ],
     "exam_subjects_summary": "101 | 201 | 202英语（二） | 301 | 302 | 408计算机学科专业基础 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一） | 数学（二） | 英语（一）",
-    "enrollment_24_school_total": 391,
-    "enrollment_24_academic": 79,
-    "enrollment_24_professional": 312
+    "enrollment_24_school_total": 318,
+    "enrollment_24_academic": 69,
+    "enrollment_24_professional": 249
   },
   {
     "id": "郑州轻工业大学",
@@ -9446,9 +9446,9 @@
       }
     ],
     "exam_subjects_summary": "101 | 201 | 202 | 302 | 823 | 841 | ① | ② | ③ | ④ | 思想政治理论 | 数学（二） | 数据结构 | 英语（一） | 英语（二） | 计算机专业综合 | （数据结构+计算机网络）",
-    "enrollment_24_school_total": 129,
+    "enrollment_24_school_total": 93,
     "enrollment_24_academic": 16,
-    "enrollment_24_professional": 113
+    "enrollment_24_professional": 77
   },
   {
     "id": "中国计量大学",
@@ -9827,9 +9827,9 @@
       }
     ],
     "exam_subjects_summary": "101 | 201英语（一） | 301 | 408计算机专业学科基础 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一）",
-    "enrollment_24_school_total": 275,
+    "enrollment_24_school_total": 269,
     "enrollment_24_academic": 35,
-    "enrollment_24_professional": 240
+    "enrollment_24_professional": 234
   },
   {
     "id": "浙江工业大学",
@@ -10016,9 +10016,9 @@
       }
     ],
     "exam_subjects_summary": "101 | 201英语（一） | 202英语（二） | 301 | 302 | 408计算机学科专业基础 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一） | 数学（二）",
-    "enrollment_24_school_total": 146,
+    "enrollment_24_school_total": 104,
     "enrollment_24_academic": 29,
-    "enrollment_24_professional": 117
+    "enrollment_24_professional": 75
   },
   {
     "id": "浙江师范大学",
@@ -10525,9 +10525,9 @@
       }
     ],
     "exam_subjects_summary": "101 | 201英语（一） | 202 | 301 | 302 | 408计算机学科专业基础 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一） | 数学（二） | 英语（二）",
-    "enrollment_24_school_total": 210,
-    "enrollment_24_academic": 96,
-    "enrollment_24_professional": 114
+    "enrollment_24_school_total": 57,
+    "enrollment_24_academic": 21,
+    "enrollment_24_professional": 36
   },
   {
     "id": "华中科技大学",
@@ -10910,9 +10910,9 @@
       }
     ],
     "exam_subjects_summary": "101 | 201英语（一） | 202 | 301 | 302 | 408计算机学科专业基础 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一） | 数学（二） | 英语（二）",
-    "enrollment_24_school_total": 328,
-    "enrollment_24_academic": 74,
-    "enrollment_24_professional": 254
+    "enrollment_24_school_total": 164,
+    "enrollment_24_academic": 37,
+    "enrollment_24_professional": 127
   },
   {
     "id": "武汉科技大学",
@@ -11078,9 +11078,9 @@
       }
     ],
     "exam_subjects_summary": "101 | 201英语（一） | 202 | 301 | 302 | 408 | 829 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一） | 数学（二） | 数据结构+计算机网络 | 英语（二） | 计算机学科专业基础",
-    "enrollment_24_school_total": 304,
-    "enrollment_24_academic": 120,
-    "enrollment_24_professional": 184
+    "enrollment_24_school_total": 152,
+    "enrollment_24_academic": 60,
+    "enrollment_24_professional": 92
   },
   {
     "id": "湖北大学",
@@ -11274,9 +11274,9 @@
       }
     ],
     "exam_subjects_summary": "101 | 201英语（一） | 202 | 301 | 302 | 836 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一） | 数学（二） | 数据结构与算法 | 英语（二）",
-    "enrollment_24_school_total": 296,
-    "enrollment_24_academic": 104,
-    "enrollment_24_professional": 192
+    "enrollment_24_school_total": 148,
+    "enrollment_24_academic": 52,
+    "enrollment_24_professional": 96
   },
   {
     "id": "湖南大学",
@@ -11808,9 +11808,9 @@
       }
     ],
     "exam_subjects_summary": "101 | 201英语（一） | 202英语（二） | 301 | 302 | 408计算机学科专业基础 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一） | 数学（二）",
-    "enrollment_24_school_total": 198,
-    "enrollment_24_academic": 24,
-    "enrollment_24_professional": 174
+    "enrollment_24_school_total": 74,
+    "enrollment_24_academic": 12,
+    "enrollment_24_professional": 62
   },
   {
     "id": "厦门理工学院",
@@ -12069,9 +12069,9 @@
       }
     ],
     "exam_subjects_summary": "101 | 201英语（一） | 202英语（二） | 301 | 302 | 408计算机学科专业基础 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一） | 数学（二）",
-    "enrollment_24_school_total": 284,
-    "enrollment_24_academic": 62,
-    "enrollment_24_professional": 222
+    "enrollment_24_school_total": 142,
+    "enrollment_24_academic": 31,
+    "enrollment_24_professional": 111
   },
   {
     "id": "东北大学",
@@ -12279,9 +12279,9 @@
       }
     ],
     "exam_subjects_summary": "101 | 201 | 202 | 301 | 302 | 408 | ① | ② | ③ | ④ | ④858C语言程序设计与数据结构 | 思想政治理论 | 数学（一） | 数学（二） | 英语（一） | 英语（二） | 计算机学科专业基础",
-    "enrollment_24_school_total": 496,
-    "enrollment_24_academic": 124,
-    "enrollment_24_professional": 146
+    "enrollment_24_school_total": 248,
+    "enrollment_24_academic": 62,
+    "enrollment_24_professional": 73
   },
   {
     "id": "大连海事大学",
@@ -12637,9 +12637,9 @@
       }
     ],
     "exam_subjects_summary": "101 | 201 | 202英语（二） | 301 | 302数学（二） | 408计算机学科专业基础 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一） | 英语（一）",
-    "enrollment_24_school_total": 354,
-    "enrollment_24_academic": 106,
-    "enrollment_24_professional": 210
+    "enrollment_24_school_total": 177,
+    "enrollment_24_academic": 53,
+    "enrollment_24_professional": 105
   },
   {
     "id": "沈阳工业大学",
@@ -12820,9 +12820,9 @@
       }
     ],
     "exam_subjects_summary": "101 | 202英语（二） | 302 | 834程序设计基础 | 844程序设计与数据结构 | ① | ② | ③ | ④ | 思想政治理论 | 数学（二）",
-    "enrollment_24_school_total": 244,
+    "enrollment_24_school_total": 122,
     "enrollment_24_academic": 0,
-    "enrollment_24_professional": 244
+    "enrollment_24_professional": 122
   },
   {
     "id": "辽宁工业大学",
@@ -12998,9 +12998,9 @@
       }
     ],
     "exam_subjects_summary": "101 | 201 | 202 | 301 | 302 | 808 | 848 | 855 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一） | 数学（二） | 数据结构 | 数据结构与算法 | 数据结构基础 | 英语（一） | 英语（二）",
-    "enrollment_24_school_total": 324,
-    "enrollment_24_academic": 64,
-    "enrollment_24_professional": 260
+    "enrollment_24_school_total": 162,
+    "enrollment_24_academic": 32,
+    "enrollment_24_professional": 130
   },
   {
     "id": "重庆大学",
@@ -13497,9 +13497,9 @@
       }
     ],
     "exam_subjects_summary": "101 | 201英语（一） | 301 | 844数据结构+操作系统+计算机网络 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一）",
-    "enrollment_24_school_total": 206,
-    "enrollment_24_academic": 76,
-    "enrollment_24_professional": 130
+    "enrollment_24_school_total": 103,
+    "enrollment_24_academic": 38,
+    "enrollment_24_professional": 65
   },
   {
     "id": "西北工业大学",
@@ -13749,9 +13749,9 @@
       }
     ],
     "exam_subjects_summary": "(数据结构+组成原理)各占75 | (数据结构+计算机网络)各占75 | (组成原理+计算机网络)各占75 | 101 | 201 | 201英语（一） | 202 | 301 | 302 | 801 | 847 | 879 | ① | ② | ③ | ④ | 专业综合 | 思想政治理论 | 数学（一） | 数学（二） | 英语（一） | 英语（二） | 计算机专业基础 | 计算机原理及网络",
-    "enrollment_24_school_total": 1132,
-    "enrollment_24_academic": 262,
-    "enrollment_24_professional": 870
+    "enrollment_24_school_total": 566,
+    "enrollment_24_academic": 131,
+    "enrollment_24_professional": 435
   },
   {
     "id": "西安交通大学",
@@ -13964,9 +13964,9 @@
       }
     ],
     "exam_subjects_summary": "101 | 201 | 202 | 301 | 302 | 814 | 912 | 915 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一） | 数学（二） | 英语（一） | 英语（二） | 计算机基础综合 | 计算机技术基础 | 计算机软件基础 | （数据结构+程序设计） | （数据结构+组成原理）",
-    "enrollment_24_school_total": 520,
-    "enrollment_24_academic": 26,
-    "enrollment_24_professional": 494
+    "enrollment_24_school_total": 260,
+    "enrollment_24_academic": 13,
+    "enrollment_24_professional": 247
   },
   {
     "id": "西安理工大学",
@@ -14094,7 +14094,7 @@
       }
     ],
     "exam_subjects_summary": "101 | 201 | 202英语（二） | 301 | 302数学（二） | 863数据结构 | 864 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一） | 英语（一） | 软件工程",
-    "enrollment_24_school_total": 260,
+    "enrollment_24_school_total": 155,
     "enrollment_24_academic": 50,
     "enrollment_24_professional": 0
   },
@@ -14419,10 +14419,10 @@
         ]
       }
     ],
-    "exam_subjects_summary": "(数据结构、计算机组织与体系结构) | 101 | 201英语（一） | 301 | 833 | 834数据结构+计算机组成原理 | 953953网络空间安全基础综合 | ① | ② | ③ | ④ | ④833计算机专业基础综合 | 思想政治理论 | 数学（一） | 数据结构、计算机组织与体系结构 | （数据结构、计算机网络、密码学）",
-    "enrollment_24_school_total": 640,
-    "enrollment_24_academic": 368,
-    "enrollment_24_professional": 272
+    "exam_subjects_summary": "101 | 201英语（一） | 301 | 833 | 834数据结构+计算机组成原理 | 953953网络空间安全基础综合 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一） | 数据结构、计算机组织与体系结构 | （数据结构、计算机网络、密码学）",
+    "enrollment_24_school_total": 198,
+    "enrollment_24_academic": 123,
+    "enrollment_24_professional": 75
   },
   {
     "id": "长安大学",
@@ -14588,9 +14588,9 @@
       }
     ],
     "exam_subjects_summary": "101 | 201 | 202英语（二） | 301 | 302 | 846 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一） | 数学（二） | 数据结构与组成原理 | 英语（一）",
-    "enrollment_24_school_total": 258,
-    "enrollment_24_academic": 70,
-    "enrollment_24_professional": 188
+    "enrollment_24_school_total": 129,
+    "enrollment_24_academic": 35,
+    "enrollment_24_professional": 94
   },
   {
     "id": "陕西师范大学",
@@ -14812,9 +14812,9 @@
       }
     ],
     "exam_subjects_summary": "101 | 201 | 301 | 811 | 812 | ① | ② | ③ | ④ | 思想政治理论 | 数学（一） | 数据结构+操作系统 | 数据结构+组成原理 | 英语（一）",
-    "enrollment_24_school_total": 276,
-    "enrollment_24_academic": 68,
-    "enrollment_24_professional": 178
+    "enrollment_24_school_total": 138,
+    "enrollment_24_academic": 34,
+    "enrollment_24_professional": 89
   },
   {
     "id": "哈尔滨理工大学",
@@ -15051,10 +15051,10 @@
         ]
       }
     ],
-    "exam_subjects_summary": "101 | 201 | 202 | 301 | 302 | 809 | ① | ①101 | ② | ②201 | ②202 | ③ | ③301 | ③302 | ④ | ④809 | 思想政治理论 | 数学（一） | 数学（二） | 数据结构+组成原理 | 数据结构与计算机组成原理 | 英语（一） | 英语（二）",
-    "enrollment_24_school_total": 420,
-    "enrollment_24_academic": 174,
-    "enrollment_24_professional": 246
+    "exam_subjects_summary": "101 | 201 | 202 | 301 | 302 | 809 | ① | ①101 | ② | ②202 | ③ | ③302 | ④ | ④809 | 思想政治理论 | 数学（一） | 数学（二） | 数据结构+组成原理 | 数据结构与计算机组成原理 | 英语（一） | 英语（二）",
+    "enrollment_24_school_total": 204,
+    "enrollment_24_academic": 58,
+    "enrollment_24_professional": 146
   },
   {
     "id": "云南大学",
@@ -15225,9 +15225,9 @@
       }
     ],
     "exam_subjects_summary": "101 | 202 | 302 | 408 | ① | ② | ③ | ④ | 思想政治理论 | 数学（二） | 英语（二） | 计算机学科专业基础",
-    "enrollment_24_school_total": 218,
+    "enrollment_24_school_total": 109,
     "enrollment_24_academic": 0,
-    "enrollment_24_professional": 218
+    "enrollment_24_professional": 109
   },
   {
     "id": "昆明理工大学",
@@ -15356,9 +15356,9 @@
       }
     ],
     "exam_subjects_summary": "101 | 202 | 302 | 891 | ① | ② | ③ | ④ | 思想政治理论 | 数学（二） | 英语（二） | 计算机专业核心综合",
-    "enrollment_24_school_total": 314,
+    "enrollment_24_school_total": 157,
     "enrollment_24_academic": 0,
-    "enrollment_24_professional": 314
+    "enrollment_24_professional": 157
   },
   {
     "id": "内蒙古大学",
@@ -15561,8 +15561,8 @@
       }
     ],
     "exam_subjects_summary": "101 | 202英语（二） | 302 | 408计算机学科专业基础 | ① | ② | ③ | ④ | 思想政治理论 | 数学（二）",
-    "enrollment_24_school_total": 314,
+    "enrollment_24_school_total": 157,
     "enrollment_24_academic": 0,
-    "enrollment_24_professional": 314
+    "enrollment_24_professional": 157
   }
 ]

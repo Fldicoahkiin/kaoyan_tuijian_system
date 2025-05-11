@@ -565,6 +565,8 @@ def main_process_excel_file(excel_file_path, output_json_path):
         academic_enrollment_24 = 0
         professional_enrollment_24 = 0
         exam_subjects_list = set()
+        counted_major_keys = set()  # 用于去重
+
         try:
             if 'departments' in school_data and isinstance(school_data['departments'], list):
                 for department in school_data['departments']:
@@ -572,14 +574,18 @@ def main_process_excel_file(excel_file_path, output_json_path):
                         for major in department['majors']:
                             enrollment_data = major.get('enrollment', {})
                             enrollment_24 = enrollment_data.get('2024', 0)
-                            # --- 新增：从 major_code 或 major_name 提取专业代码 ---
+                            # --- 提取专业代码 ---
                             code = major.get('major_code', '')
                             if not code:
-                                # 尝试从 major_name 提取6位数字
                                 major_name = major.get('major_name', '')
                                 match = re.match(r'(\d{6})', major_name)
                                 if match:
                                     code = match.group(1)
+                            # --- 唯一标识 ---
+                            major_key = f"{code}_{major.get('major_name', '')}"
+                            if major_key in counted_major_keys:
+                                continue  # 跳过重复
+                            counted_major_keys.add(major_key)
                             # 统计总人数
                             try:
                                 enrollment_24_int = int(enrollment_24)
@@ -594,7 +600,6 @@ def main_process_excel_file(excel_file_path, output_json_path):
                             # exam_subjects 合并
                             subjects_str = major.get('exam_subjects')
                             if subjects_str and isinstance(subjects_str, str):
-                                # 拆分所有科目，去重
                                 for s in re.split(r'[，,;；\n ]+', subjects_str):
                                     s = s.strip()
                                     if s:
