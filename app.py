@@ -1058,7 +1058,7 @@ def toggle_favorite(school_id):
     return jsonify({'status': 'success', 'action': action, 'school_id': actual_school_id, 'message': message, 'new_count': new_total_count})
 
 def calculate_recommendations(target_score, target_level, target_rank_pref, target_location, favorites_counts):
-    """根据用户偏好计算推荐结果（新版权重和分数线提取逻辑）"""
+    """根据用户偏好计算推荐结果"""
     schools = load_json_data(SCHOOLS_DATA_PATH)
     if not schools:
         app.logger.error("计算推荐时无法加载学校数据！")
@@ -1103,10 +1103,10 @@ def calculate_recommendations(target_score, target_level, target_rank_pref, targ
             rank_score = rank_map.get(school_rank_val, 0)
         recommend_score += weights["rank"] * rank_score
 
-        # 分数相似度分
+        # 分数相似度分（分数线取所有专业最大值中的最小值）
         score_similarity = 0
         if target_score is not None:
-            max_scores = []
+            major_max_scores = []
             if school.get('departments'):
                 for dept in school.get('departments', []):
                     for major in dept.get('majors', []):
@@ -1116,10 +1116,11 @@ def calculate_recommendations(target_score, target_level, target_rank_pref, targ
                             # 提取所有数字，取最大值
                             nums = [int(x) for x in re.findall(r'\d+', score_str)]
                             if nums:
-                                max_scores.append(max(nums))
-            if max_scores:
-                max_major_score = max(max_scores)
-                diff = abs(target_score - max_major_score)
+                                major_max_scores.append(max(nums))
+            school_score_line = None
+            if major_max_scores:
+                school_score_line = min(major_max_scores)
+                diff = abs(target_score - school_score_line)
                 score_similarity = max(0, 100 - diff)
         recommend_score += weights["score_similarity"] * score_similarity
 
