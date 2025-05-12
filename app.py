@@ -1058,90 +1058,70 @@ def toggle_favorite(school_id):
     return jsonify({'status': 'success', 'action': action, 'school_id': actual_school_id, 'message': message, 'new_count': new_total_count})
 
 def calculate_recommendations(target_score, target_level, target_rank_pref, target_location, favorites_counts):
-    """根据用户偏好计算推荐结果"""
+    """根据用户偏好计算推荐结果（新版权重和分数线提取逻辑）"""
     schools = load_json_data(SCHOOLS_DATA_PATH)
     if not schools:
         app.logger.error("计算推荐时无法加载学校数据！")
         return [] 
-    
     try:
         target_score = int(target_score) if target_score is not None else None
     except (ValueError, TypeError):
         target_score = None
 
-    recommendations = []
-    level_scores = {"985": 100, "211": 80, "双一流": 60, "普通院校": 30, None: 0, "":0}
-    rank_map = {"A+": 100, "A": 90, "A-": 85, "B+": 75, "B": 70, "B-": 65, "C+": 55, "C": 50, "C-": 45, "无": 20, None: 20, "":20}
-    weights = {"score_similarity": 0.35, "level": 0.20, "rank": 0.15, "location": 0.20, "popularity": 0.10}
+    # 院校等级分数映射
+    level_scores = {"985": 60, "211": 40, "双一流": 20, "普通院校": 0, None: 0, "": 0}
+    # 计算机等级分数映射
+    rank_map = {"A+": 100, "A": 80, "A-": 70, "B+": 60, "B": 50, "B-": 40, "C+": 30, "C": 20, "C-": 10, "无": 0, None: 0, "": 0}
+    # 权重
+    weights = {"score_similarity": 0.4, "level": 0.2, "rank": 0.2, "location": 0.2}
 
+    recommendations = []
     for school in schools:
         school_id = school.get('id', school.get('name'))
         recommend_score = 0
 
-        location_match_score = 0
-        if target_location and school.get('province') == target_location:
-            location_match_score = 100
-        elif target_location and school.get('region') == target_location:
-            location_match_score = 50
-        recommend_score += weights["location"] * location_match_score
-        
-        school_level_val = school.get('level')
-        level_match_score = level_scores.get(school_level_val, 0)
-        if target_level and school_level_val == target_level:
-            level_match_score = 100
-        elif target_level:
-            level_match_score *= 0.7
-        recommend_score += weights["level"] * level_match_score
+        # 地区分：省份或region与目标地区完全一致为100，否则为0
+        location_score = 0
+        if target_location:
+            if school.get('province') == target_location or school.get('region') == target_location:
+                location_score = 100
+        recommend_score += weights["location"] * location_score
 
+        # 院校等级分
+        school_level_val = school.get('level')
+        if target_level and school_level_val == target_level:
+            level_score = 100
+        else:
+            level_score = level_scores.get(school_level_val, 0)
+        recommend_score += weights["level"] * level_score
+
+        # 计算机等级分
         school_rank_val = school.get('computer_rank')
-        rank_match_score = rank_map.get(school_rank_val, 20)
         if target_rank_pref and school_rank_val == target_rank_pref:
-            rank_match_score = rank_map.get(target_rank_pref, rank_match_score)
-        elif target_rank_pref:
-            if rank_map.get(school_rank_val, 0) < rank_map.get(target_rank_pref, 100):
-                 rank_match_score *= 0.8 
-        recommend_score += weights["rank"] * rank_match_score
-        
-        score_similarity_points = 0
+            rank_score = 100
+        else:
+            rank_score = rank_map.get(school_rank_val, 0)
+        recommend_score += weights["rank"] * rank_score
+
+        # 分数相似度分
+        score_similarity = 0
         if target_score is not None:
-            avg_major_score = None
-            relevant_major_scores = []
+            max_scores = []
             if school.get('departments'):
                 for dept in school.get('departments', []):
                     for major in dept.get('majors', []):
-                        score_24_str = major.get('score_lines', {}).get('2024')
-                        score_23_str = major.get('score_lines', {}).get('2023')
-                        
-                        current_major_scores = []
-                        for s_str in [score_24_str, score_23_str]:
-                            if s_str and isinstance(s_str, str):
-                                match = re.search(r'总分(\d+)', s_str)
-                                if not match:
-                                     match = re.search(r'(\d{3})', s_str)
-                                if match:
-                                    try:
-                                        current_major_scores.append(int(match.group(1)))
-                                    except ValueError:
-                                        pass
-                        if current_major_scores:
-                            relevant_major_scores.append(max(current_major_scores))
-            
-            if relevant_major_scores:
-                avg_major_score = sum(relevant_major_scores) / len(relevant_major_scores)
-
-            if avg_major_score is not None and target_score is not None:
-                diff = abs(target_score - avg_major_score)
-                score_similarity_points = max(0, 100 - (diff * 2))
-            elif target_level and school.get('level') == target_level:
-                 score_similarity_points = 30
-            else:
-                score_similarity_points = 10
-
-        recommend_score += weights["score_similarity"] * score_similarity_points
-        
-        fav_count = favorites_counts.get(school_id, 0)
-        popularity_score = min(100, (fav_count / 50) * 100) if fav_count > 0 else 0
-        recommend_score += weights["popularity"] * popularity_score
+                        # 优先取2024年分数线，否则取2023年
+                        score_str = major.get('score_lines', {}).get('2024') or major.get('score_lines', {}).get('2023')
+                        if score_str and isinstance(score_str, str):
+                            # 提取所有数字，取最大值
+                            nums = [int(x) for x in re.findall(r'\d+', score_str)]
+                            if nums:
+                                max_scores.append(max(nums))
+            if max_scores:
+                max_major_score = max(max_scores)
+                diff = abs(target_score - max_major_score)
+                score_similarity = max(0, 100 - diff)
+        recommend_score += weights["score_similarity"] * score_similarity
 
         recommendations.append({
             "id": school_id,
@@ -1151,12 +1131,12 @@ def calculate_recommendations(target_score, target_level, target_rank_pref, targ
             "region": school.get("region"),
             "computer_rank": school.get("computer_rank"),
             "enrollment_24_school_total": school.get("enrollment_24_school_total", "未知"),
-            "favorites_count": fav_count,
             "recommend_score": round(recommend_score, 2),
         })
 
+    # 按推荐分数降序排序，只取前20个
     recommendations.sort(key=lambda x: x['recommend_score'], reverse=True)
-    return recommendations
+    return recommendations[:20]
 
 @app.route('/admin/')
 @admin_required
