@@ -1103,7 +1103,7 @@ def calculate_recommendations(target_score, target_level, target_rank_pref, targ
             rank_score = rank_map.get(school_rank_val, 0)
         recommend_score += weights["rank"] * rank_score
 
-        # 分数相似度分（分数线取所有专业最大值中的最小值）
+        # 分数相似度分（分数线取所有专业最大值的平均值）
         score_similarity = 0
         if target_score is not None:
             major_max_scores = []
@@ -1119,7 +1119,7 @@ def calculate_recommendations(target_score, target_level, target_rank_pref, targ
                                 major_max_scores.append(max(nums))
             school_score_line = None
             if major_max_scores:
-                school_score_line = min(major_max_scores)
+                school_score_line = sum(major_max_scores) / len(major_max_scores)
                 diff = abs(target_score - school_score_line)
                 score_similarity = max(0, 100 - diff)
         recommend_score += weights["score_similarity"] * score_similarity
