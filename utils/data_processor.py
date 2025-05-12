@@ -98,19 +98,25 @@ def clean_column_names(df):
     df.columns = df.columns.str.strip()
     return df
 
-def extract_school_level(school_name, school_type_str):
-    """根据学校名称和类型字符串提取学校等级。"""
-    if not isinstance(school_type_str, str):
-        return "普通院校"  # 或 "未知"
-    if "985" in school_type_str and "211" in school_type_str:
-        return "985"
-    if "985" in school_type_str:
-        return "985"
-    if "211" in school_type_str:
-        return "211"
-    if "一流学科建设高校" in school_type_str or "双一流" in school_type_str:
-        return "双一流"
-    # 兜底逻辑，如果不是以上特殊类型，则认为是普通院校
+def extract_school_level(school_name, school_type_str, intro_str=None):
+    """根据学校名称、类型字符串和简介提取学校等级。优先级：985>211>双一流>普通院校"""
+    # 1. 先用school_type_str
+    if isinstance(school_type_str, str):
+        if "985" in school_type_str:
+            return "985"
+        if "211" in school_type_str:
+            return "211"
+        if "一流学科建设高校" in school_type_str or "双一流" in school_type_str:
+            return "双一流"
+    # 2. intro_str和school_name兜底
+    check_strs = [str(intro_str or ""), str(school_name or "")]
+    for s in check_strs:
+        if "985" in s:
+            return "985"
+        if "211" in s:
+            return "211"
+        if "一流学科建设高校" in s or "双一流" in s:
+            return "双一流"
     return "普通院校"
 
 def extract_computer_rank(notes_str):
@@ -358,7 +364,7 @@ def process_excel_sheet(df_sheet, sheet_name, all_schools_data):
                 
                 all_schools_data[school_name_cleaned] = {
                     "id": school_name_cleaned, "name": school_name_cleaned,
-                    "level": extract_school_level(school_name_cleaned, row.get(find_actual_col(level_cols_l))),
+                    "level": extract_school_level(school_name_cleaned, row.get(find_actual_col(level_cols_l)), get_multiline_str(intro_raw)),
                     "province": province,
                     "region": current_sheet_region if current_sheet_region else "未知分区",
                     "intro": get_multiline_str(intro_raw),

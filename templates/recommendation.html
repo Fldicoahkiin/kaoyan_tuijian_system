@@ -91,10 +91,18 @@
                                     <tr>
                                         <td>{{ (pagination.page - 1) * pagination.per_page + loop.index }}</td>
                                         <td><a href="{{ url_for('school_detail', school_id=(school.id or school.name)) }}">{{ school.name }}</a></td>
-                                        <td>{{ school.level }}</td>
-                                        <td>{{ school.computer_rank }}</td>
-                                        <td>{{ school.province }}</td>
-                                        <td><span class="badge {% if school.region == 'A区' %}bg-primary{% elif school.region == 'B区' %}bg-info{% else %}bg-secondary{% endif %}">{{ school.region }}</span></td>
+                                        <td>
+                                            <span class="badge {% if school.level == '985' %}bg-danger{% elif school.level == '211' %}bg-warning text-dark{% elif school.level == '双一流' %}bg-success{% else %}bg-secondary{% endif %}">
+                                                {{ school.level or '未知' }}
+                                            </span>
+                                        </td>
+                                        <td class="td-truncate" style="max-width: 100px;" title="{{ school.computer_rank or '-' }}">{{ school.computer_rank or '-' }}</td>
+                                        <td>{{ school.province or '未知' }}</td>
+                                        <td>
+                                            <span class="badge {% if school.region == 'A区' %}bg-primary{% elif school.region == 'B区' %}bg-info{% else %}bg-secondary{% endif %}">
+                                                {{ school.region or '未知' }}
+                                            </span>
+                                        </td>
                                         <td>{{ "%.2f"|format(school.recommend_score) }}</td>
                                         <td>
                                             <a href="{{ url_for('school_detail', school_id=(school.id or school.name)) }}" class="btn btn-sm btn-info">详情</a>
