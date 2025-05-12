@@ -152,7 +152,7 @@ function renderDashboardSchoolPage(page) {
 
     tableBody.innerHTML = ''; // 清空表格内容
     if (schoolsToShow.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan=\"7\" class=\"text-center p-5 text-muted\">没有更多院校数据</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan=\"9\" class=\"text-center p-5 text-muted\">没有更多院校数据</td></tr>`;
     } else {
         schoolsToShow.forEach(school => {
             let levelBadgeClass = 'bg-secondary'; // Default color
@@ -162,16 +162,21 @@ function renderDashboardSchoolPage(page) {
                 case '双一流': levelBadgeClass = 'bg-info'; break;
             }
 
+            // 判断人数字段，0也要显示0，只有null/undefined/空才显示'-'
+            function safeNumber(val) {
+                return (val === 0 || val === '0') ? '0' : (val ? val : '-');
+            }
+
             const row = `
                 <tr>
                     <td style=\"min-width: 180px; white-space: nowrap;\"><a href=\"/school/${encodeURIComponent(school.id)}\" class=\"text-decoration-none link-light\">${school.name || 'N/A'}</a></td>
                     <td style=\"min-width: 80px; white-space: nowrap;\"><span class=\"badge ${levelBadgeClass}\">${school.level || '普通院校'}</span></td>
                     <td style=\"min-width: 80px; white-space: nowrap;\">${school.province || 'N/A'}</td>
                     <td style=\"min-width: 60px; white-space: nowrap;\"><span class=\"badge ${ school.region === 'A区' ? 'bg-primary' : (school.region === 'B区' ? 'bg-info' : 'bg-secondary') }\">${school.region || 'N/A'}</span></td>
-                    <td style=\"min-width: 120px; white-space: nowrap;\">${school.computer_rank || 'N/A'}</td>
-                    <td style=\"min-width: 100px; text-align: center; white-space: nowrap;\">${school.enrollment_24_school_total || '-'}</td>
-                    <td style=\"min-width: 100px; text-align: center; white-space: nowrap;\">${school.enrollment_24_academic || '-'}</td>
-                    <td style=\"min-width: 100px; text-align: center; white-space: nowrap;\">${school.enrollment_24_professional || '-'}</td>
+                    <td style=\"min-width: 120px; white-space: nowrap;\">${school.computer_rank || '无评级'}</td>
+                    <td style=\"min-width: 100px; text-align: center; white-space: nowrap;\">${safeNumber(school.enrollment_24_school_total)}</td>
+                    <td style=\"min-width: 100px; text-align: center; white-space: nowrap;\">${safeNumber(school.enrollment_24_academic)}</td>
+                    <td style=\"min-width: 100px; text-align: center; white-space: nowrap;\">${safeNumber(school.enrollment_24_professional)}</td>
                     <td style=\"white-space: nowrap;\">${school.exam_subjects || '-'}</td>
                 </tr>
             `;
