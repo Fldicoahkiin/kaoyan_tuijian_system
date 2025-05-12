@@ -102,12 +102,12 @@ def extract_school_level(school_name, school_type_str, intro_str=None):
     """根据学校名称、类型字符串和简介提取学校等级。优先级：985>211>双一流>普通院校"""
     # 1. 先用school_type_str
     if isinstance(school_type_str, str):
-        if "985" in school_type_str:
-            return "985"
-        if "211" in school_type_str:
-            return "211"
-        if "一流学科建设高校" in school_type_str or "双一流" in school_type_str:
-            return "双一流"
+    if "985" in school_type_str:
+        return "985"
+    if "211" in school_type_str:
+        return "211"
+    if "一流学科建设高校" in school_type_str or "双一流" in school_type_str:
+        return "双一流"
     # 2. intro_str和school_name兜底
     check_strs = [str(intro_str or ""), str(school_name or "")]
     for s in check_strs:
