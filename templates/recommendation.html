@@ -82,7 +82,7 @@
                                     <th>计算机等级</th>
                                     <th>省份</th>
                                     <th>地区</th>
-                                    <th>推荐分数</th>
+                                    
                                     <th>操作</th>
                                 </tr>
                             </thead>
@@ -103,7 +103,7 @@
                                                 {{ school.region or '未知' }}
                                             </span>
                                         </td>
-                                        <td>{{ "%.2f"|format(school.recommend_score) }}</td>
+                                        
                                         <td>
                                             <a href="{{ url_for('school_detail', school_id=(school.id or school.name)) }}" class="btn btn-sm btn-info">详情</a>
                                         </td>
