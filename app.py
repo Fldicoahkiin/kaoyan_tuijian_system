@@ -1196,7 +1196,7 @@ def admin_create_user():
         app.logger.warning(f"管理员 '{admin_username}' 尝试创建已存在的用户 '{username}'")
         return redirect(url_for('admin_users'))
 
-    hashed_password = generate_password_hash(password)
+    # hashed_password = generate_password_hash(password) # This line will be removed
     new_user_data = {
         "username": username,
         "password": password, # 直接存储明文密码
