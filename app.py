@@ -21,6 +21,7 @@ import pandas as pd # 导入 pandas 用于 replace_nan_with_none 函数
 from utils.scraper import run_scraper
 
 app = Flask(__name__)
+app.jinja_env.add_extension('jinja2.ext.loopcontrols') # 启用循环控制扩展
 # 设置一个密钥用于 session 加密，请在实际部署中替换为更安全的随机值
 app.config['SECRET_KEY'] = 'dev_secret_key_please_change'
 csrf = CSRFProtect(app) # 初始化 CSRFProtect
@@ -1449,7 +1450,8 @@ def admin_user_detail(username):
     display_data = user_data.copy()
     display_data.pop('password_hash', None)
 
-    return render_template('admin/user_detail.html', user=display_data)
+    schools_data = load_json_data(SCHOOLS_DATA_PATH, default_value=[]) # 加载学校数据
+    return render_template('admin/user_detail.html', user=display_data, schools_data=schools_data) # 传递 schools_data
 
 @app.route('/admin/user/toggle_admin/<username>', methods=['POST'])
 @admin_required
